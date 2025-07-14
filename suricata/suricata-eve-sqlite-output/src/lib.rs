@@ -1,4 +1,5 @@
 // Copyright (C) 2024  ANSSI
+// Copyright (C) 2025  A. Iooss
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 mod database;
@@ -126,9 +127,12 @@ extern "C" fn plugin_init() {
 #[no_mangle]
 extern "C" fn SCPluginRegister() -> *const ffi::SCPlugin {
     let plugin = ffi::SCPlugin {
+        version: ffi::SC_API_VERSION,
+        suricata_version: ffi::SC_PACKAGE_VERSION.as_ptr(),
         name: c"Eve SQLite Output".as_ptr(),
+        plugin_version: c"0.1.0".as_ptr(),
         license: c"GPL-2.0".as_ptr(),
-        author: c"ANSSI".as_ptr(),
+        author: c"ECSC TeamFrance".as_ptr(),
         Init: plugin_init,
     };
     Box::into_raw(Box::new(plugin))

@@ -1,7 +1,13 @@
 -- Copyright (C) 2024  ANSSI
+-- Copyright (C) 2025  A. Iooss
 -- SPDX-License-Identifier: GPL-2.0-or-later
 
 -- This Suricata plugin logs UDP frames data to a SQLite database.
+
+local config = require("suricata.config")
+local flow = require("suricata.flow")
+local logger = require("suricata.log")
+local packet = require("suricata.packet")
 
 function init (args)
     local needs = {}
@@ -10,11 +16,11 @@ function init (args)
 end
 
 function setup (args)
-    SCLogNotice("Initializing plugin UDP payload SQLite Output; author=ANSSI; license=GPL-2.0")
+    logger.notice("Initializing plugin UDP payload SQLite Output")
 
     -- open database in WAL mode and init schema
     sqlite3 = require("lsqlite3")
-    database = sqlite3.open(SCLogPath() .. "/payload.db")
+    database = sqlite3.open(config.log_path() .. "/payload.db")
     assert(database:exec([[
         PRAGMA journal_mode=wal;
         PRAGMA synchronous=off;
@@ -36,22 +42,25 @@ function setup (args)
 end
 
 function log (args)
+    local p = packet.get()
+    local f = flow.get()
+
     -- drop if not UDP (17)
     -- https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
-    local ipver, srcip, dstip, proto, sp, dp = SCPacketTuple()
+    local ipver, srcip, dstip, proto, sp, dp = p:tuple()
     if proto ~= 17 then
         return
     end
 
     -- get packet direction
-    local ipver, srcip_flow, dstip_flow, proto, sp_flow, dp_flow = SCFlowTuple()
+    local ipver, srcip_flow, dstip_flow, proto, sp_flow, dp_flow = f:tuple()
     local direction = "1"
     if srcip == srcip_flow and dstip == dstip_flow and sp == sp_flow and dp == dp_flow then
         direction = "0"
     end
 
     -- create log entry
-    local flow_id = SCFlowId()
+    local flow_id = f:id()
     if flow_pkt_count[flow_id] == nil then
         flow_pkt_count[flow_id] = 0
     else
@@ -59,7 +68,7 @@ function log (args)
     end
     local count = flow_pkt_count[flow_id]
     flow_pkt_count_total = flow_pkt_count_total + 1
-    local data = SCPacketPayload()
+    local data = p:payload()
     if #data == 0 then
         return
     end
@@ -69,6 +78,6 @@ function log (args)
 end
 
 function deinit (args)
-    SCLogNotice("UDP payloads logged: " .. flow_pkt_count_total)
+    logger.notice("UDP payloads logged: " .. flow_pkt_count_total)
     database:close()
 end

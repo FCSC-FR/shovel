@@ -1,21 +1,23 @@
 -- Copyright (C) 2024  ANSSI
+-- Copyright (C) 2025  A. Iooss
 -- SPDX-License-Identifier: GPL-2.0-or-later
 
 -- This Suricata plugin logs TCP flows data to a SQLite database.
 
+local config = require("suricata.config")
+local flow = require("suricata.flow")
+local logger = require("suricata.log")
+
 function init (args)
-    local needs = {}
-    needs["type"] = "streaming"
-    needs["filter"] = "tcp"
-    return needs
+    return {streaming = "tcp"}
 end
 
 function setup (args)
-    SCLogNotice("Initializing plugin TCP payload SQLite Output; author=ANSSI; license=GPL-2.0")
+    logger.notice("Initializing plugin TCP payload SQLite Output")
 
     -- open database in WAL mode and init schema
     sqlite3 = require("lsqlite3")
-    database = sqlite3.open(SCLogPath() .. "/payload.db")
+    database = sqlite3.open(config.log_path() .. "/payload.db")
     assert(database:exec([[
         PRAGMA journal_mode=wal;
         PRAGMA synchronous=off;
@@ -37,8 +39,12 @@ function setup (args)
 end
 
 function log (args)
+    local data = args["stream"]["data"]
+    local toclient = args["stream"]["to_client"]
+    local f = flow.get()
+
     -- create log entry
-    local flow_id = SCFlowId()
+    local flow_id = f:id()
     if flow_pkt_count[flow_id] == nil then
         flow_pkt_count[flow_id] = 0
     else
@@ -46,12 +52,12 @@ function log (args)
     end
     local count = flow_pkt_count[flow_id]
     flow_pkt_count_total = flow_pkt_count_total + 1
-    local data, sb_open, sb_close, sb_ts, sb_tc = SCStreamingBuffer()
+
     if #data == 0 then
         return
     end
     local direction = "0"
-    if sb_tc then
+    if toclient then
         direction = "1"
     end
     assert(stmt:reset() == sqlite3.OK)
@@ -60,6 +66,6 @@ function log (args)
 end
 
 function deinit (args)
-    SCLogNotice("TCP payloads logged: " .. flow_pkt_count_total)
+    logger.notice("TCP payloads logged: " .. flow_pkt_count_total)
     database:close()
 end
