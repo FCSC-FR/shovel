@@ -77,6 +77,10 @@ iframe {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAPCAIAAABiEdh4AAAAJ0lEQVQoz2OcOXMmAzZw9uxZrOJMDCSCEamBBVfwGRsbj4YS/TQAAH8aB1JXTyw+AAAAAElFTkSuQmCC");
 }
 
+.audio-payload {
+  width: 100%;
+}
+
 /* Extend background color on whole line height */
 pre code {
   padding: .1875em 0;

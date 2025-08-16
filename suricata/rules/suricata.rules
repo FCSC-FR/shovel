@@ -76,6 +76,7 @@ alert ip any any -> any any (msg: "tag"; file.data; content: "|7F|ELF|02 01 01 0
 alert ip any any -> any any (msg: "tag"; file.data; content: "f0VMRgIBAQAAAAAAAAAAAA"; metadata: tag ELF B64, color primary; sid: 1018;)
 alert ip any any -> any any (msg: "tag"; file.data; content: "<html"; depth: 256; nocase; fast_pattern; filemagic: "HTML document"; metadata: tag HTML, color primary; sid: 1019;)
 alert ip any any -> any any (msg: "tag"; file.data; content: "ftyp"; offset: 4; depth: 4; fast_pattern; filemagic: "ISO Media"; metadata: tag MP4, color primary; sid: 1020;)
+alert ip any any -> any any (msg: "tag"; file.data; content: "RIFF"; startswith; fast_pattern; filemagic: "WAVE audio"; metadata: tag WAV, color primary; sid: 1021;)
 
 # Tag HTTP methods and status (sid 2001-3000)
 alert http any any -> any any (msg: "tag"; http.method; content: "GET"; startswith; metadata: tag GET, color info; flowint: tag_GET, +, 1; sid: 2001;)

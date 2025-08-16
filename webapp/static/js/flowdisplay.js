@@ -17,6 +17,7 @@ const MAGIC_EXT = {
   'PNG image': 'png',
   'SVG Scalable Vector Graphics image': 'svg',
   'VGM Video Game Music': 'vgm',
+  'RIFF (little-endian) data, WAVE audio': 'wav',
   'Web Open Font': 'woff',
   'Zip archive': 'zip'
 }
@@ -161,6 +162,12 @@ class FlowDisplay {
       videoEl.controls = true
       videoEl.src = URL.createObjectURL(blob)
       targetEl.appendChild(videoEl)
+    } else if (fileType === 'wav') {
+      const audioEl = document.createElement('audio')
+      audioEl.classList.add('audio-payload')
+      audioEl.controls = true
+      audioEl.src = URL.createObjectURL(blob)
+      targetEl.appendChild(audioEl)
     } else if (fileType === 'pdf') {
       const iframeEl = document.createElement('iframe')
       iframeEl.width = 500
