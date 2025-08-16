@@ -153,7 +153,6 @@ async def api_flow_get(request):
     if not flow:
         raise HTTPException(404)
     result = {"flow": row_to_dict(flow)}
-    app_proto = result["flow"].get("app_proto")
 
     # Get associated events
     cursor = await eve_database.execute(
