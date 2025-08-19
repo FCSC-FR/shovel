@@ -41,12 +41,12 @@ async def index(request):
 async def api_filedata_get(request):
     sha256 = request.path_params["sha256"]
 
-    cursor = await filedata_database.execute(
-        "SELECT blob FROM filedata WHERE sha256 = ?",
-        [bytes.fromhex(sha256)],
-    )
-    row = await cursor.fetchone()
-    return Response(row["blob"], headers={"Cache-Control": "max-age=86400"})
+    async with filedata_db.execute(
+        "SELECT blob FROM filedata WHERE sha256 = ?", (bytes.fromhex(sha256),)
+    ) as cursor:
+        row = await cursor.fetchone()
+        blob = row["blob"]
+    return Response(blob, headers={"Cache-Control": "max-age=86400"})
 
 
 async def api_flow_list(request):
@@ -95,33 +95,31 @@ async def api_flow_list(request):
     search_fid = []
     if search:
         # Collect all flows id with raw payload matching search
-        cursor = await payload_database.execute(
-            "SELECT flow_id FROM raw WHERE blob GLOB ?1",
-            (f"*{search}*",),
-        )
-        rows = await cursor.fetchall()
-        search_fid = [r["flow_id"] for r in rows]
+        async with payload_db.execute(
+            "SELECT flow_id FROM raw WHERE blob GLOB ?1", (f"*{search}*",)
+        ) as cursor:
+            rows = await cursor.fetchall()
+            search_fid = [r["flow_id"] for r in rows]
 
         # Collect all flows id with filedata matching search
-        cursor = await filedata_database.execute(
-            "SELECT sha256 FROM filedata WHERE blob GLOB ?1",
-            (f"*{search}*",),
-        )
-        rows = await cursor.fetchall()
-        filedata_sha256 = [r["sha256"].hex() for r in rows]
-        cursor = await eve_database.execute(
+        async with filedata_db.execute(
+            "SELECT sha256 FROM filedata WHERE blob GLOB ?1", (f"*{search}*",)
+        ) as cursor:
+            rows = await cursor.fetchall()
+            filedata_sha256 = [r["sha256"].hex() for r in rows]
+        async with eve_db.execute(
             "WITH fsha256 AS (SELECT value FROM json_each(?1)) "
             "SELECT flow_id FROM 'other-event' "
             "WHERE event_type = 'fileinfo' AND extra_data->>'sha256' IN fsha256",
             (json.dumps(filedata_sha256),),
-        )
-        rows = await cursor.fetchall()
-        search_fid += [r["flow_id"] for r in rows]
+        ) as cursor:
+            rows = await cursor.fetchall()
+            search_fid += [r["flow_id"] for r in rows]
 
         query += " AND flow.id IN fsearchfid"
     query += " ORDER BY ts_start DESC LIMIT 100"
 
-    cursor = await eve_database.execute(
+    async with eve_db.execute(
         query,
         (
             json.dumps(services),
@@ -131,21 +129,21 @@ async def api_flow_list(request):
             "failed" if app_proto == "raw" else app_proto,
             json.dumps(search_fid),
         ),
-    )
-    rows = await cursor.fetchall()
-    flows = [row_to_dict(row) for row in rows]
+    ) as cursor:
+        rows = await cursor.fetchall()
+        flows = [row_to_dict(row) for row in rows]
 
     # Fetch application protocols
-    cursor = await eve_database.execute("SELECT DISTINCT app_proto FROM flow")
-    rows = await cursor.fetchall()
-    prs = [r["app_proto"] for r in rows if r["app_proto"] not in [None, "failed"]]
+    async with eve_db.execute("SELECT DISTINCT app_proto FROM flow") as cursor:
+        rows = await cursor.fetchall()
+        prs = [r["app_proto"] for r in rows if r["app_proto"] not in [None, "failed"]]
 
     # Fetch tags
-    cursor = await eve_database.execute(
+    async with eve_db.execute(
         "SELECT tag, color FROM alert GROUP BY tag ORDER BY color"
-    )
-    rows = await cursor.fetchall()
-    tags = [dict(row) for row in rows]
+    ) as cursor:
+        rows = await cursor.fetchall()
+        tags = [dict(row) for row in rows]
 
     return JSONResponse(
         {
@@ -160,36 +158,36 @@ async def api_flow_get(request):
     flow_id = request.path_params["flow_id"]
 
     # Query flow from database
-    cursor = await eve_database.execute(
+    async with eve_db.execute(
         (
             "SELECT id, ts_start, ts_end, src_ipport, dest_ipport, dest_port, "
             "proto, app_proto, metadata, extra_data FROM flow WHERE id = ?"
         ),
-        [flow_id],
-    )
-    flow = await cursor.fetchone()
-    if not flow:
-        raise HTTPException(404)
-    result = {"flow": row_to_dict(flow)}
+        (flow_id,),
+    ) as cursor:
+        flow = await cursor.fetchone()
+        if not flow:
+            raise HTTPException(404)
+        result = {"flow": row_to_dict(flow)}
 
     # Get associated events
-    cursor = await eve_database.execute(
+    async with eve_db.execute(
         "SELECT event_type, extra_data FROM 'other-event' WHERE flow_id = ? ORDER BY id",
-        [flow_id],
-    )
-    for row in await cursor.fetchall():
-        result[row["event_type"]] = result.get(row["event_type"], []) + [
-            json.loads(row["extra_data"])
-        ]
+        (flow_id,),
+    ) as cursor:
+        for row in await cursor.fetchall():
+            result[row["event_type"]] = result.get(row["event_type"], []) + [
+                json.loads(row["extra_data"])
+            ]
 
     # Get associated alert
     if result["flow"]["alerted"]:
-        cursor = await eve_database.execute(
+        async with eve_db.execute(
             "SELECT extra_data, color FROM alert WHERE flow_id = ? ORDER BY id",
-            [flow_id],
-        )
-        rows = await cursor.fetchall()
-        result["alert"] = [row_to_dict(f) for f in rows]
+            (flow_id,),
+        ) as cursor:
+            rows = await cursor.fetchall()
+            result["alert"] = [row_to_dict(f) for f in rows]
 
     return JSONResponse(result, headers={"Cache-Control": "max-age=86400"})
 
@@ -198,13 +196,13 @@ async def api_flow_pcap_get(request):
     flow_id = request.path_params["flow_id"]
 
     # Query flow start timestamp from database
-    cursor = await eve_database.execute(
-        "SELECT ts_start FROM flow WHERE id = ?", [flow_id]
-    )
-    flow = await cursor.fetchone()
-    if not flow:
-        raise HTTPException(404)
-    flow_us = flow["ts_start"] // 1000
+    async with eve_db.execute(
+        "SELECT ts_start FROM flow WHERE id = ?", (flow_id,)
+    ) as cursor:
+        flow = await cursor.fetchone()
+        if not flow:
+            raise HTTPException(404)
+        flow_us = flow["ts_start"] // 1000
 
     # Serve corresponding pcap, found using timestamp
     flow_pcap_path = ""
@@ -225,15 +223,15 @@ async def api_flow_raw_get(request):
     flow_id = request.path_params["flow_id"]
 
     # Get associated raw data
-    cursor = await payload_database.execute(
+    async with payload_db.execute(
         "SELECT server_to_client, blob FROM raw WHERE flow_id = ?1 ORDER BY count",
-        [flow_id],
-    )
-    rows = await cursor.fetchall()
-    result = []
-    for r in rows:
-        data = base64.b64encode(r["blob"]).decode()
-        result.append({"server_to_client": r["server_to_client"], "data": data})
+        (flow_id,),
+    ) as cursor:
+        rows = await cursor.fetchall()
+        result = []
+        for r in rows:
+            data = base64.b64encode(r["blob"]).decode()
+            result.append({"server_to_client": r["server_to_client"], "data": data})
 
     return JSONResponse(result, headers={"Cache-Control": "max-age=86400"})
 
@@ -242,11 +240,11 @@ async def api_replay_http(request):
     flow_id = request.path_params["flow_id"]
 
     # Get HTTP events
-    cursor = await eve_database.execute(
+    async with eve_db.execute(
         "SELECT flow_id, extra_data FROM 'other-event' WHERE flow_id = ? AND event_type = 'http' ORDER BY id",
-        [flow_id],
-    )
-    rows = await cursor.fetchall()
+        (flow_id,),
+    ) as cursor:
+        rows = await cursor.fetchall()
 
     # For each HTTP request, load client payload if it exists
     data = []
@@ -255,24 +253,24 @@ async def api_replay_http(request):
         req["rq_content"] = None
         if req["http_method"] in ["POST"]:
             # First result should be the request
-            cursor = await eve_database.execute(
+            async with eve_db.execute(
                 "SELECT extra_data FROM 'other-event' WHERE flow_id = ? AND event_type = 'fileinfo' AND extra_data->>'tx_id' = ? ORDER BY id",
-                [flow_id, tx_id],
-            )
-            fileinfo_first_event = await cursor.fetchone()
-            if not fileinfo_first_event:
-                raise HTTPException(404)
-            sha256 = json.loads(fileinfo_first_event["extra_data"]).get("sha256")
+                (flow_id, tx_id),
+            ) as cursor:
+                fileinfo_first_event = await cursor.fetchone()
+                if not fileinfo_first_event:
+                    raise HTTPException(404)
+                sha256 = json.loads(fileinfo_first_event["extra_data"]).get("sha256")
             if not sha256:
                 raise HTTPException(500)
 
             # Load filedata
-            cursor = await filedata_database.execute(
+            async with filedata_database.execute(
                 "SELECT blob FROM filedata WHERE sha256 = ?",
                 (bytes.fromhex(sha256),),
-            )
-            row = await cursor.fetchone()
-            req["rq_content"] = row["blob"]
+            ) as cursor:
+                row = await cursor.fetchone()
+                req["rq_content"] = row["blob"]
         data.append(req)
 
     context = {"request": request, "data": data, "services": CTF_CONFIG["services"]}
@@ -285,30 +283,29 @@ async def api_replay_raw(request):
     flow_id = request.path_params["flow_id"]
 
     # Get flow event
-    cursor = await eve_database.execute(
-        "SELECT dest_ipport, proto FROM flow WHERE id = ?",
-        [flow_id],
-    )
-    flow_event = await cursor.fetchone()
-    if not flow_event:
-        raise HTTPException(404)
-    ip, port = flow_event["dest_ipport"].rsplit(":", 1)
-    data = {
-        "flow_id": flow_id,
-        "ip": ip,
-        "port": port,
-        "dest_ipport": flow_event["dest_ipport"],
-        "proto": flow_event["proto"],
-    }
+    async with eve_db.execute(
+        "SELECT dest_ipport, proto FROM flow WHERE id = ?", (flow_id,)
+    ) as cursor:
+        flow_event = await cursor.fetchone()
+        if not flow_event:
+            raise HTTPException(404)
+        ip, port = flow_event["dest_ipport"].rsplit(":", 1)
+        data = {
+            "flow_id": flow_id,
+            "ip": ip,
+            "port": port,
+            "dest_ipport": flow_event["dest_ipport"],
+            "proto": flow_event["proto"],
+        }
 
     # Get associated raw data
-    cursor = await payload_database.execute(
+    async with payload_db.execute(
         "SELECT server_to_client, blob FROM raw WHERE flow_id = ?1 ORDER BY count",
-        [flow_id],
-    )
-    rows = await cursor.fetchall()
-    if not rows:
-        raise HTTPException(404)
+        (flow_id,),
+    ) as cursor:
+        rows = await cursor.fetchall()
+        if not rows:
+            raise HTTPException(404)
 
     # Load files
     data["raw_data"] = []
@@ -346,14 +343,14 @@ async def lifespan(app):
     Open databases on startup.
     Close databases on exit.
     """
-    global eve_database, payload_database, filedata_database
-    eve_database = await open_database(EVE_DB_URI)
-    payload_database = await open_database(PAYLOAD_DB_URI, bytes)
-    filedata_database = await open_database(FILEDATA_DB_URI, bytes)
+    global eve_db, payload_db, filedata_db
+    eve_db = await open_database(EVE_DB_URI)
+    payload_db = await open_database(PAYLOAD_DB_URI, bytes)
+    filedata_db = await open_database(FILEDATA_DB_URI, bytes)
     yield
-    await eve_database.close()
-    await payload_database.close()
-    await filedata_database.close()
+    await eve_db.close()
+    await payload_db.close()
+    await filedata_db.close()
 
 
 # Load configuration from environment variables, then .env file
@@ -379,9 +376,9 @@ for name in service_names:
     CTF_CONFIG["services"][name] = list(ipports)
 
 # Define web application
-eve_database = None
-payload_database = None
-filedata_database = None
+eve_db = None
+payload_db = None
+filedata_db = None
 templates = Jinja2Templates(directory="templates")
 app = Starlette(
     debug=DEBUG,
