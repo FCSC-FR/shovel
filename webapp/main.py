@@ -94,12 +94,30 @@ async def api_flow_list(request):
         """
     search_fid = []
     if search:
+        # Collect all flows id with raw payload matching search
         cursor = await payload_database.execute(
             "SELECT flow_id FROM raw WHERE blob GLOB ?1",
             (f"*{search}*",),
         )
         rows = await cursor.fetchall()
         search_fid = [r["flow_id"] for r in rows]
+
+        # Collect all flows id with filedata matching search
+        cursor = await filedata_database.execute(
+            "SELECT sha256 FROM filedata WHERE blob GLOB ?1",
+            (f"*{search}*",),
+        )
+        rows = await cursor.fetchall()
+        filedata_sha256 = [r["sha256"].hex() for r in rows]
+        cursor = await eve_database.execute(
+            "WITH fsha256 AS (SELECT value FROM json_each(?1)) "
+            "SELECT flow_id FROM 'other-event' "
+            "WHERE event_type = 'fileinfo' AND extra_data->>'sha256' IN fsha256",
+            (json.dumps(filedata_sha256),),
+        )
+        rows = await cursor.fetchall()
+        search_fid += [r["flow_id"] for r in rows]
+
         query += " AND flow.id IN fsearchfid"
     query += " ORDER BY ts_start DESC LIMIT 100"
 
