@@ -283,7 +283,7 @@ class FlowDisplay {
       alertsDiv.removeChild(alertsDiv.lastChild)
     }
     flow.alert?.forEach(data => {
-      if (data.signature !== 'tag') {
+      if (data.signature) {
         const cardEl = document.createElement('div')
         cardEl.classList.add('card', 'm-3', 'bg-body', 'font-monospace', `border-${data.color}`)
         const cardHeader = document.createElement('div')
