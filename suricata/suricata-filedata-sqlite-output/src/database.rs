@@ -64,16 +64,15 @@ impl Database {
 
             transaction.commit()?;
         }
-        Ok(())
+        self.conn.take().unwrap().close().map_err(|(_, err)| err)
     }
 
     /// Database thread entry
     pub fn run(&mut self) {
         log::debug!("Database thread started");
         if let Err(err) = self.batch_write_filedata() {
-            log::error!("Failed to write batch: {err:?}");
+            log::error!("Failed to write to database: {err:?}");
         }
-        self.conn.take().unwrap().close().unwrap();
         log::info!(
             "Database thread finished: count={} inserted={}",
             self.count,

@@ -100,8 +100,7 @@ impl Database {
 
             transaction.commit()?;
         }
-        self.conn.take().unwrap().close().map_err(|(_, err)| err)?;
-        Ok(())
+        self.conn.take().unwrap().close().map_err(|(_, err)| err)
     }
 
     /// Database thread entry
