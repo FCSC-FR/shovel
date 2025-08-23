@@ -250,19 +250,15 @@ class FlowList {
   }
 
   /**
-   * Pretty print service IP address and port
-   * @param {String} ipport
+   * Pretty print service IP address and port using Shovel configuration
+   * @param {String} destIp
+   * @param {Number} destPort
    * @returns Pretty string representation
    */
-  pprintService (ipport) {
-    // Find name using service filter dataset
+  pprintService (destIp, destPort) {
+    const ipport = destIp + (destPort ? `:${destPort}` : '')
     const name = Object.keys(this.services).find(name => this.services[name].includes(ipport))
-    const port = ipport.split(':').slice(-1)
-    if (name) {
-      return `${name} (:${port})`
-    } else {
-      return ipport
-    }
+    return name ? `${name} (:${destPort})` : ipport
   }
 
   /**
@@ -444,7 +440,7 @@ class FlowList {
       const flowInfoDiv = document.createElement('div')
       flowInfoDiv.classList.add('d-flex', 'justify-content-between', 'mb-1')
       const flowInfoDiv1 = document.createElement('small')
-      flowInfoDiv1.textContent = this.pprintService(flow.dest_ipport)
+      flowInfoDiv1.textContent = this.pprintService(flow.dest_ip, flow.dest_port)
       const flowInfoDiv2 = document.createElement('small')
       flowInfoDiv2.textContent = `${this.pprintDelay(flow.ts_end - flow.ts_start)}, ${startDate}`
       flowInfoDiv.appendChild(flowInfoDiv1)

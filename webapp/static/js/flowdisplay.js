@@ -261,14 +261,16 @@ class FlowDisplay {
     const formatedDateStart = new Intl.DateTimeFormat(undefined, dateParams).format(dateStart)
     const dateEnd = new Date(flow.flow.ts_end / 1000)
     const formatedDateEnd = new Intl.DateTimeFormat(undefined, dateParams).format(dateEnd)
+    const srcIpPort = flow.flow.src_ip + (flow.flow.src_port ? `:${flow.flow.src_port}` : '')
+    const destIpPort = flow.flow.dest_ip + (flow.flow.dest_port ? `:${flow.flow.dest_port}` : '')
 
     // Change document title
-    document.title = `${flow.flow.dest_ipport} - Shovel`
+    document.title = `${destIpPort} - Shovel`
 
     // Flow card
     document.getElementById('display-flow-time').textContent = `From ${formatedDateStart}\n  to ${formatedDateEnd}`
     document.getElementById('display-flow-time').title = `${flow.flow.ts_start} - ${flow.flow.ts_end}`
-    document.getElementById('display-flow-pkt').textContent = `${flow.flow.proto} flow from ${flow.flow.src_ipport} to ${flow.flow.dest_ipport}\n──► ${flow.flow.pkts_toserver} packets (${this.pprintSize(flow.flow.bytes_toserver)})\n◀── ${flow.flow.pkts_toclient} packets (${this.pprintSize(flow.flow.bytes_toclient)})`
+    document.getElementById('display-flow-pkt').textContent = `${flow.flow.proto} flow from ${srcIpPort} to ${destIpPort}\n──► ${flow.flow.pkts_toserver} packets (${this.pprintSize(flow.flow.bytes_toserver)})\n◀── ${flow.flow.pkts_toclient} packets (${this.pprintSize(flow.flow.bytes_toclient)})`
     document.getElementById('display-flow-pcap').href = `/api/flow/${flowId}/pcap`
     if (this.tickLength > 0) {
       document.getElementById('display-flow-tick').classList.remove('d-none')

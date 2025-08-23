@@ -2,10 +2,10 @@
   Copyright (C) 2024  ANSSI
   SPDX-License-Identifier: GPL-2.0-or-later
 #}
-{#- Get service name from dest_ipport #}
+{#- Get service name from dest_ip/port #}
 {%- set ns = namespace(service_name="unknown") %}
 {%- for name, ipaddr_ports in services.items() %}
-{%- if data.dest_ipport in ipaddr_ports %}
+{%- if (data.ip + ':' + (data.port | string)) in ipaddr_ports %}
 {%- set ns.service_name = name + "-" + (data.port | string) %}
 {%- endif %}
 {%- endfor -%}

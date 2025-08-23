@@ -31,20 +31,26 @@ fn write_event(transaction: &Transaction, buf: &str) -> Result<usize, rusqlite::
             let (src_ip, _) = src_ip_part.split_once('"').unwrap();
             let (_, dest_ip_part) = buf.split_once(r#","dest_ip":""#).expect("missing dest_ip");
             let (dest_ip, _) = dest_ip_part.split_once('"').unwrap();
+            // SQLite UNIXEPOCH currently has only millisecond precision using "subsec", which is not enough
             transaction.execute(
-                "INSERT OR IGNORE INTO flow (id, src_ip, src_port, dest_ip, dest_port, proto, app_proto, metadata, extra_data) \
-                values(?1->>'flow_id', ?2, ?1->>'src_port', ?3, ?1->>'dest_port', ?1->>'proto', ?1->>'app_proto', ?1->'metadata', ?1->'flow')",
+                "INSERT OR IGNORE INTO flow (id, ts_start, ts_end, src_ip, src_port, dest_ip, dest_port, proto, app_proto, metadata, extra_data) \
+                values(?1->>'flow_id', \
+                (UNIXEPOCH(SUBSTR(?1->>'$.flow.start', 1, 19))*1000000 + SUBSTR(?1->>'$.flow.start', 21, 6)), \
+                (UNIXEPOCH(SUBSTR(?1->>'$.flow.end', 1, 19))*1000000 + SUBSTR(?1->>'$.flow.end', 21, 6)), \
+                ?2, ?1->>'src_port', ?3, ?1->>'dest_port', ?1->>'proto', ?1->>'app_proto', jsonb_extract(?1, '$.metadata'), jsonb_extract(?1, '$.flow'))",
                 (buf, sc_ip_format(src_ip), sc_ip_format(dest_ip)),
             )
         },
         "alert" => transaction.execute(
-            "INSERT OR IGNORE INTO alert (flow_id, timestamp, extra_data) \
-            values(?1->>'flow_id', (UNIXEPOCH(SUBSTR(?1->>'timestamp', 1, 19))*1000000 + SUBSTR(?1->>'timestamp', 21, 6)), json_extract(?1, '$.' || ?2))",
+            "WITH vars AS (SELECT jsonb_extract(?1, '$.' || ?2) AS extra_data) \
+            INSERT OR IGNORE INTO alert (flow_id, tag, color, timestamp, extra_data) \
+            SELECT ?1->>'flow_id', (vars.extra_data->>'$.metadata.tag[0]'), (vars.extra_data->>'$.metadata.color[0]'), (UNIXEPOCH(SUBSTR(?1->>'timestamp', 1, 19))*1000000 + SUBSTR(?1->>'timestamp', 21, 6)), vars.extra_data \
+            FROM vars",
             (buf, event_type),
         ),
         _ => transaction.execute(
             "INSERT OR IGNORE INTO 'other-event' (flow_id, timestamp, event_type, extra_data) \
-            values(?1->>'flow_id', (UNIXEPOCH(SUBSTR(?1->>'timestamp', 1, 19))*1000000 + SUBSTR(?1->>'timestamp', 21, 6)), ?2, json_extract(?1, '$.' || ?2))",
+            values(?1->>'flow_id', (UNIXEPOCH(SUBSTR(?1->>'timestamp', 1, 19))*1000000 + SUBSTR(?1->>'timestamp', 21, 6)), ?2, jsonb_extract(?1, '$.' || ?2))",
             (buf, event_type),
         )
     }

@@ -23,9 +23,9 @@ from starlette.templating import Jinja2Templates
 
 def row_to_dict(row: aiosqlite.Row) -> dict:
     row_dict = dict(row)
-    metadata = json.loads(row_dict.pop("metadata", "{}") or "{}")
+    metadata = json.loads(row_dict.pop("json(metadata)", "{}") or "{}")
     row_dict.update(metadata)
-    extra_data = json.loads(row_dict.pop("extra_data", "{}") or "{}")
+    extra_data = json.loads(row_dict.pop("json(extra_data)", "{}") or "{}")
     row_dict.update(extra_data)
     return row_dict
 
@@ -66,16 +66,16 @@ async def api_flow_list(request):
           ftags_req AS (SELECT value FROM json_each(?2)),
           ftags_deny AS (SELECT value FROM json_each(?3)),
           fsearchfid AS (SELECT value FROM json_each(?6))
-        SELECT id, ts_start, ts_end, dest_ipport, app_proto, metadata,
+        SELECT id, ts_start, ts_end, dest_ip, dest_port, app_proto, json(metadata),
           (SELECT GROUP_CONCAT(tag) FROM alert WHERE flow_id = flow.id) AS tags
         FROM flow WHERE ts_start <= ?4 AND (?5 = app_proto OR ?5 IS NULL)
     """
     if services == ["!"]:
         # Filter flows related to no services
-        query += "AND NOT (src_ipport IN fsrvs OR dest_ipport IN fsrvs)"
+        query += "AND NOT ((src_ip||':'||src_port) IN fsrvs OR (dest_ip||':'||dest_port) IN fsrvs)"
         services = sum(CTF_CONFIG["services"].values(), [])
     elif services:
-        query += "AND (src_ipport IN fsrvs OR dest_ipport IN fsrvs)"
+        query += "AND ((src_ip||':'||src_port) IN fsrvs OR (dest_ip||':'||dest_port) IN fsrvs)"
     if tags_deny:
         # No alert with at least a denied tag exists for this flow
         query += """
@@ -149,8 +149,8 @@ async def api_flow_get(request):
     # Query flow from database
     async with eve_db.execute(
         (
-            "SELECT id, ts_start, ts_end, src_ipport, dest_ipport, dest_port, "
-            "proto, app_proto, metadata, extra_data FROM flow WHERE id = ?"
+            "SELECT id, ts_start, ts_end, src_ip, src_port, dest_ip, dest_port, "
+            "proto, app_proto, json(metadata), json(extra_data) FROM flow WHERE id = ?"
         ),
         (flow_id,),
     ) as cursor:
@@ -161,18 +161,18 @@ async def api_flow_get(request):
 
     # Get associated events
     async with eve_db.execute(
-        "SELECT event_type, extra_data FROM 'other-event' WHERE flow_id = ? ORDER BY id",
+        "SELECT event_type, json(extra_data) FROM 'other-event' WHERE flow_id = ? ORDER BY id",
         (flow_id,),
     ) as cursor:
         for row in await cursor.fetchall():
             result[row["event_type"]] = result.get(row["event_type"], []) + [
-                json.loads(row["extra_data"])
+                json.loads(row["json(extra_data)"])
             ]
 
     # Get associated alert
     if result["flow"]["alerted"]:
         async with eve_db.execute(
-            "SELECT extra_data, color FROM alert WHERE flow_id = ? ORDER BY id",
+            "SELECT json(extra_data), color FROM alert WHERE flow_id = ? ORDER BY id",
             (flow_id,),
         ) as cursor:
             rows = await cursor.fetchall()
@@ -230,7 +230,7 @@ async def api_replay_http(request):
 
     # Get HTTP events
     async with eve_db.execute(
-        "SELECT flow_id, extra_data FROM 'other-event' WHERE flow_id = ? AND event_type = 'http' ORDER BY id",
+        "SELECT flow_id, json(extra_data) FROM 'other-event' WHERE flow_id = ? AND event_type = 'http' ORDER BY id",
         (flow_id,),
     ) as cursor:
         rows = await cursor.fetchall()
@@ -243,15 +243,13 @@ async def api_replay_http(request):
         if req["http_method"] in ["POST"]:
             # First result should be the request
             async with eve_db.execute(
-                "SELECT extra_data FROM 'other-event' WHERE flow_id = ? AND event_type = 'fileinfo' AND extra_data->>'tx_id' = ? ORDER BY id",
+                "SELECT extra_data->>'sha256' AS sha256 FROM 'other-event' WHERE flow_id = ? AND event_type = 'fileinfo' AND extra_data->>'tx_id' = ? ORDER BY id",
                 (flow_id, tx_id),
             ) as cursor:
                 fileinfo_first_event = await cursor.fetchone()
                 if not fileinfo_first_event:
                     raise HTTPException(404)
-                sha256 = json.loads(fileinfo_first_event["extra_data"]).get("sha256")
-            if not sha256:
-                raise HTTPException(500)
+                sha256 = fileinfo_first_event["sha256"]
 
             # Load filedata
             async with filedata_db.execute(
@@ -272,17 +270,15 @@ async def api_replay_raw(request):
 
     # Get flow event
     async with eve_db.execute(
-        "SELECT dest_ipport, proto FROM flow WHERE id = ?", (flow_id,)
+        "SELECT dest_ip, dest_port, proto FROM flow WHERE id = ?", (flow_id,)
     ) as cursor:
         flow_event = await cursor.fetchone()
         if not flow_event:
             raise HTTPException(404)
-        ip, port = flow_event["dest_ipport"].rsplit(":", 1)
         data = {
             "flow_id": flow_id,
-            "ip": ip,
-            "port": port,
-            "dest_ipport": flow_event["dest_ipport"],
+            "ip": flow_event["dest_ip"],
+            "port": flow_event["dest_port"],
             "proto": flow_event["proto"],
         }
 
