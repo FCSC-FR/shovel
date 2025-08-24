@@ -31,7 +31,7 @@ eval "$SURICATA_CMD" \
     --set outputs.1.eve-log.types.28.mqtt.passwords=yes \
     --set outputs.1.eve-log.types.31.pgsql.enabled=yes \
     --set outputs.1.eve-log.types.31.pgsql.passwords=yes \
-    --set outputs.3.pcap-log.enabled=${PCAP_LOG:=yes} \
+    --set outputs.3.pcap-log.enabled="${PCAP_LOG:=yes}" \
     --set outputs.3.pcap-log.limit=33554432 \
     --set outputs.3.pcap-log.compression=lz4 \
     --set outputs.3.pcap-log.dir=pcaps \
@@ -51,4 +51,4 @@ eval "$SURICATA_CMD" \
     --set flow-timeouts.tcp.closed=5 \
     --set flow-timeouts.tcp.emergency-closed=5 \
     --set security.lua.allow-rules=yes \
-    "$@"
+    "$*"
