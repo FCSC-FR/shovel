@@ -226,9 +226,11 @@ class FlowList {
     const appData = document.getElementById('app').dataset
     this.startTs = Math.floor(Date.parse(appData.startDate) / 1000)
     this.tickLength = Number(appData.tickLength)
+    this.services = {}
+    this.appProto = []
     this.tags = []
-    this.updateStatus()
-    this.updateFlowsList()
+    await this.updateStatus()
+    await this.updateFlowsList()
   }
 
   /**
@@ -253,7 +255,7 @@ class FlowList {
    */
   pprintService (ipport) {
     // Find name using service filter dataset
-    const name = document.querySelector(`select#services-select optgroup[data-ipports~='${ipport}']`)?.label
+    const name = Object.keys(this.services).find(name => this.services[name].includes(ipport))
     const port = ipport.split(':').slice(-1)
     if (name) {
       return `${name} (:${port})`
@@ -286,7 +288,46 @@ class FlowList {
    * Update services in filters select
    */
   updateServiceFilter (services) {
-    // TODO
+    const serviceSelect = document.getElementById('services-select')
+
+    // Empty options
+    while (serviceSelect.lastChild) {
+      serviceSelect.removeChild(serviceSelect.lastChild)
+    }
+
+    // Fill options
+    const allFlowsOptionEl = document.createElement('option')
+    allFlowsOptionEl.value = ''
+    allFlowsOptionEl.textContent = 'All flows'
+    serviceSelect.appendChild(allFlowsOptionEl)
+
+    const unknownSrvOptionEl = document.createElement('option')
+    unknownSrvOptionEl.value = '!'
+    unknownSrvOptionEl.textContent = 'Flows from unknown services'
+    serviceSelect.appendChild(unknownSrvOptionEl)
+
+    for (const [name, ipAddrPorts] of Object.entries(services)) {
+      const optgroupEl = document.createElement('optgroup')
+      optgroupEl.label = name
+      if (ipAddrPorts.length > 1) {
+        const optionEl = document.createElement('option')
+        optionEl.value = ipAddrPorts
+        optionEl.textContent = `All (${name})`
+        optgroupEl.appendChild(optionEl)
+      }
+      ipAddrPorts.forEach(addrPort => {
+        const optionEl = document.createElement('option')
+        optionEl.value = addrPort
+        optionEl.textContent = `${addrPort} (${name})`
+        optgroupEl.appendChild(optionEl)
+      })
+      serviceSelect.appendChild(optgroupEl)
+    }
+
+    // Update service filter state
+    const url = new URL(document.location)
+    const chosenService = url.searchParams.getAll('service').join(',')
+    serviceSelect.value = chosenService
   }
 
   /**
@@ -506,9 +547,6 @@ class FlowList {
 
       // Update filter dropdown visual indicator
       document.querySelector('#dropdown-filter > button').classList.toggle('text-bg-purple', toTs || filterTagsRequire.length || filterTagsDeny.length || filterAppProto || filterSearch)
-
-      // Update service filter select state
-      document.getElementById('services-select').value = services.join(',')
 
       // Update time filter state
       if (toTs) {

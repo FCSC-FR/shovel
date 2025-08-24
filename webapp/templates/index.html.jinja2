@@ -56,35 +56,16 @@
   <div class="d-flex flex-nowrap h-100" id="app" data-start-date="{{ ctf_config.start_date }}" data-tick-length="{{ ctf_config.tick_length }}">
     <nav class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body shadow nav-flow">
       <div class="d-flex flex-nowrap border-bottom">
-        <select class="form-select form-select-sm rounded-0 border-0" id="services-select">
-          <option value="" selected>All flows</option>
-          <option value="!">Flows from unknown services</option>
-          {%- for name, ipaddr_ports in ctf_config.services.items() %}
-          <optgroup label="{{ name }}" data-ipports="{{ ipaddr_ports | join(' ') }}">
-            {%- if ipaddr_ports|length > 1 %}
-            <option value="{{ ipaddr_ports | join(',') }}">All ({{ name }})</option>
-            {%- endif %}
-            {%- for ipaddr_port in ipaddr_ports %}
-            <option value="{{ ipaddr_port }}">{{ ipaddr_port }} ({{ name }})</option>
-            {%- endfor %}
-          </optgroup>
-          {%- endfor %}
-        </select>
+        <select class="form-select form-select-sm rounded-0 border-0" id="services-select"></select>
         <div class="dropend position-static border-start" id="dropdown-filter">
           <button class="btn text-nowrap rounded-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <svg class="bi" width="16" height="16">
-              <use xlink:href="#funnel" />
-            </svg>
-            <svg class="align-baseline" width="16" height="12">
-              <use xlink:href="#chevron-right" />
-            </svg>
+            <svg class="bi" width="16" height="16"><use xlink:href="#funnel" /></svg>
+            <svg class="align-baseline" width="16" height="12"><use xlink:href="#chevron-right" /></svg>
           </button>
           <div class="dropdown-menu p-3 filter-dropdown rounded-0">
             <div class="input-group flex-nowrap mb-3">
               <span class="input-group-text">
-                <svg class="bi me-2" width="16" height="16">
-                  <use xlink:href="#clock" />
-                </svg>
+                <svg class="bi me-2" width="16" height="16"><use xlink:href="#clock" /></svg>
                 Before tick
               </span>
               <input type="number" min="0" class="form-control" placeholder="now" id="filter-time-until">
