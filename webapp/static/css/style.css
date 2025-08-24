@@ -21,6 +21,11 @@
   transition: none;
 }
 
+/* Timeline in sidebar */
+#timeline {
+  width: 20px;
+}
+
 /* Make flows list user-resizable */
 nav.nav-flow {
   width: 380px;
@@ -31,6 +36,9 @@ nav.nav-flow {
 .filter-dropdown {
   width: 300px;
   margin-left: -2px !important;
+}
+.overflow-no-scrollbar {
+  scrollbar-width: none;
 }
 
 /* Use purple background to show active elements */

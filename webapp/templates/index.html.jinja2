@@ -54,6 +54,10 @@
   <div class="position-fixed top-0 start-0 w-100" id="progressbar-tick"></div>
 
   <div class="d-flex flex-nowrap h-100" id="app" data-start-date="{{ ctf_config.start_date }}" data-tick-length="{{ ctf_config.tick_length }}">
+    <!-- Flows sidebar: timeline, filters and flows list -->
+    <div class="flex-shrink-0 position-relative" id="timeline">
+      <div class="position-absolute start-0 w-100 bg-secondary" id="timeline-indicator"></div>
+    </div>
     <nav class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body shadow nav-flow">
       <div class="d-flex flex-nowrap border-bottom">
         <select class="form-select form-select-sm rounded-0 border-0" id="services-select"></select>
@@ -102,7 +106,7 @@
           </div>
         </div>
       </div>
-      <div class="list-group list-group-flush overflow-x-none overflow-y-scroll h-100">
+      <div class="list-group list-group-flush overflow-x-none overflow-y-scroll overflow-no-scrollbar h-100">
         <div id="flow-list"></div>
         <div class="d-flex justify-content-center" id="flow-list-loading-indicator">
           <div class="spinner-border my-5" role="status">

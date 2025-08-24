@@ -80,6 +80,11 @@ class FlowList {
       }
     })
 
+    // On flows list scroll, update timeline indicator
+    document.getElementById('flow-list').parentElement.addEventListener('scroll', e => {
+      this.updateTimeline()
+    })
+
     // Infinite scroll: load more flows when loading indicator is seen
     this.observer = new window.IntersectionObserver((entries) => {
       entries.forEach(async e => {
@@ -281,6 +286,21 @@ class FlowList {
     return badge
   }
 
+  updateTimeline () {
+    const visibleFlows = [...document.querySelectorAll('#flow-list > a')].filter(e => {
+      const rect = e.getBoundingClientRect()
+      return rect.bottom >= 0 && rect.top <= window.innerHeight
+    })
+    const tsTop = visibleFlows[0]?.dataset?.ts_start
+    const tsBottom = visibleFlows[visibleFlows.length - 1]?.dataset?.ts_start
+
+    // Update indicator size and position
+    const size = Math.max((tsTop - tsBottom) / (this.timestampMax - this.timestampMin), 0.005)
+    const position = (this.timestampMax - tsTop) / (this.timestampMax - this.timestampMin)
+    document.getElementById('timeline-indicator').style.height = `${size * 100}%`
+    document.getElementById('timeline-indicator').style.top = `${position * 100}%`
+  }
+
   /**
    * Update services in filters select
    */
@@ -468,6 +488,9 @@ class FlowList {
     // Hide loading indicator if we are displaying less than 100 new flows
     document.getElementById('flow-list-loading-indicator').classList.toggle('d-none', flows.length < 99)
 
+    // Update timeline with new visible flows
+    this.updateTimeline()
+
     // Refresh observer
     // This trigger the observer again if the loading indicator is still intersecting with the viewport
     this.observer.disconnect()
@@ -506,7 +529,7 @@ class FlowList {
     if (this.timestampMin !== timestampMin || this.timestampMax !== timestampMax) {
       this.timestampMin = timestampMin
       this.timestampMax = timestampMax
-      // TODO: update a timeline with this.timestampMin, this.timestampMax
+      this.updateTimeline()
     }
 
     // Update services choice
