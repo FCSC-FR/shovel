@@ -2,6 +2,8 @@
 
 /*
  * Copyright (C) 2023-2024  ANSSI
+ * Copyright (C) 2025  A. Iooss
+ * Copyright (C) 2025  D. Mazzini
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
@@ -20,35 +22,48 @@ class FlowList {
   }
 
   async init () {
-    // On left/right arrow keys, go to previous/next flow
+    // Handle left arrow, right arrow and escape keys to navigate flows
+    // Handle CTRL-MAJ-F key to search selection
     document.addEventListener('keydown', e => {
-      if (e.target.tagName !== 'INPUT' && !e.ctrlKey && !e.altKey && !e.shiftKey) {
-        switch (e.code) {
-          case 'ArrowLeft':
-            if (this.selectedFlowId) {
-              let prevElem = document.querySelector('#flow-list a.active')?.previousElementSibling
-              if (prevElem && prevElem.tagName.toLowerCase() === 'span') {
-                prevElem = prevElem.previousElementSibling
-              }
-              prevElem?.click()
-            } else {
-              document.querySelector('#flow-list a')?.click()
-            }
-            e.preventDefault()
-            break
-          case 'ArrowRight':
-            if (this.selectedFlowId) {
-              let nextElem = document.querySelector('#flow-list a.active')?.nextElementSibling
-              if (nextElem && nextElem.tagName.toLowerCase() === 'span') {
-                nextElem = nextElem.nextElementSibling
-              }
-              nextElem?.click()
-            } else {
-              document.querySelector('#flow-list a')?.click()
-            }
-            e.preventDefault()
-            break
+      if (e.target.tagName === 'INPUT' || e.altKey) {
+        return // Don't overwrite keys on input or when pressing ALT
+      }
+      if (!e.ctrlKey && !e.shiftKey && e.code === 'ArrowLeft') {
+        if (this.selectedFlowId) {
+          let prevElem = document.querySelector('#flow-list a.active')?.previousElementSibling
+          if (prevElem && prevElem.tagName.toLowerCase() === 'span') {
+            prevElem = prevElem.previousElementSibling
+          }
+          prevElem?.click()
+        } else {
+          document.querySelector('#flow-list a')?.click()
         }
+        e.preventDefault()
+      } else if (!e.ctrlKey && !e.shiftKey && e.code === 'ArrowRight') {
+        if (this.selectedFlowId) {
+          let nextElem = document.querySelector('#flow-list a.active')?.nextElementSibling
+          if (nextElem && nextElem.tagName.toLowerCase() === 'span') {
+            nextElem = nextElem.nextElementSibling
+          }
+          nextElem?.click()
+        } else {
+          document.querySelector('#flow-list a')?.click()
+        }
+        e.preventDefault()
+      } else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape' && this.selectedFlowId !== null) {
+        this.selectedFlowId = null
+        window.history.pushState(null, '', window.location.pathname)
+        window.dispatchEvent(new Event('locationchange'))
+        e.preventDefault()
+      } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyF') {
+        const sel = window.getSelection().toString()
+        if (sel) {
+          const url = new URL(document.location)
+          url.searchParams.set('search', sel)
+          window.history.pushState(null, '', url.href)
+          this.update()
+        }
+        e.preventDefault()
       }
     })
 
@@ -154,20 +169,6 @@ class FlowList {
       }
       window.history.pushState(null, '', url.href)
       this.updateFlowsList()
-    })
-
-    // On CTRL-MAJ-F key, search selection
-    document.addEventListener('keyup', e => {
-      if (e.target.tagName !== 'INPUT' && e.ctrlKey && e.shiftKey && !e.altKey && e.code === 'KeyF') {
-        const sel = window.getSelection().toString()
-        if (sel) {
-          const url = new URL(document.location)
-          url.searchParams.set('search', sel)
-          window.history.pushState(null, '', url.href)
-          this.update()
-        }
-        e.preventDefault()
-      }
     })
 
     // On tags filter change, update URL then update flows list
