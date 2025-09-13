@@ -29,9 +29,11 @@
   background-color: rgba(var(--bs-body-color-rgb),var(--bs-bg-opacity)) !important;
 }
 #timeline:hover .tooltip {
+  display: block;
   opacity: 1;
 }
 #timeline .tooltip {
+  display: none;
   position: absolute;
   left: 25px;
 }
