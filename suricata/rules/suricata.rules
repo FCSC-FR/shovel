@@ -82,6 +82,9 @@ alert ip any any -> any any (file.data; content: "f0VMRgIBAQAAAAAAAAAAAA"; metad
 alert ip any any -> any any (file.data; content: "<html"; depth: 256; nocase; fast_pattern; filemagic: "HTML document"; metadata: tag HTML, color primary; flowint: tag_HTML,+,1; sid: 1019;)
 alert ip any any -> any any (file.data; content: "ftyp"; offset: 4; depth: 4; fast_pattern; filemagic: "ISO Media"; metadata: tag MP4, color primary; flowint: tag_MP4,+,1; sid: 1020;)
 alert ip any any -> any any (file.data; content: "RIFF"; startswith; fast_pattern; filemagic: "WAVE audio"; metadata: tag WAV, color primary; flowint: tag_WAV,+,1; sid: 1021;)
+alert ip any any -> any any (file.data; content: "ID3"; startswith; fast_pattern; filemagic: "Audio file"; metadata: tag MP3, color primary; flowint: tag_MP3,+,1; sid: 1022;)
+alert ip any any -> any any (file.data; content: "fLaC"; startswith; fast_pattern; filemagic: "FLAC audio"; metadata: tag FLAC, color primary; flowint: tag_FLAC,+,1; sid: 1023;)
+alert ip any any -> any any (file.data; content: "OggS"; startswith; fast_pattern; filemagic: "Ogg data"; metadata: tag OGG, color primary; flowint: tag_OGG,+,1; sid: 1024;)
 
 # Tag HTTP methods and status (sid 2001-3000)
 alert http any any -> any any (http.method; content: "GET"; startswith; metadata: tag GET, color info; flowint: tag_GET,+,1; sid: 2001;)

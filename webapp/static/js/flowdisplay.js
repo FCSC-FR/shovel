@@ -9,15 +9,18 @@ import Api from './api.js'
 
 // These should match defined magics in suricata.rules
 const MAGIC_EXT = {
+  'Audio file': 'mp3',
+  'FLAC audio': 'flac',
   'GIF image': 'gif',
   'HTML document': 'html',
   'ISO Media': 'mp4',
   'JPEG image': 'jpg',
+  'Ogg data': 'ogg',
   'PDF document': 'pdf',
   'PNG image': 'png',
+  'RIFF (little-endian) data, WAVE audio': 'wav',
   'SVG Scalable Vector Graphics image': 'svg',
   'VGM Video Game Music': 'vgm',
-  'RIFF (little-endian) data, WAVE audio': 'wav',
   'Web Open Font': 'woff',
   'Zip archive': 'zip'
 }
@@ -163,7 +166,7 @@ class FlowDisplay {
       videoEl.controls = true
       videoEl.src = URL.createObjectURL(blob)
       targetEl.appendChild(videoEl)
-    } else if (fileType === 'wav') {
+    } else if (['flac', 'mp3', 'ogg', 'wav'].includes(fileType)) {
       const audioEl = document.createElement('audio')
       audioEl.classList.add('audio-payload')
       audioEl.controls = true
