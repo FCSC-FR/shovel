@@ -445,7 +445,7 @@ class FlowList {
   /**
    * Fill flows list
    */
-  async fillFlowsList (flows, tags) {
+  async fillFlowsList (flows) {
     const flowList = document.getElementById('flow-list')
     flows.forEach((flow) => {
       const date = new Date(flow.ts_start / 1000)
@@ -496,7 +496,7 @@ class FlowList {
       flowEl.appendChild(badge)
 
       const flowTags = flow.tags?.split(',')
-      tags.forEach(t => {
+      this.tags.forEach(t => {
         const { tag, color } = t
         if (flowTags?.includes(tag)) {
           const tagId = 'tag_' + tag.replace(/[^A-Za-z0-9]/g, '_')
@@ -546,7 +546,7 @@ class FlowList {
     if (apiStatus === null) {
       return
     }
-    const { timestampMin, timestampMax, config, appProto } = apiStatus
+    const { timestampMin, timestampMax, config, appProto, tags } = apiStatus
 
     // Update timeline min/max
     if (this.timestampMin !== timestampMin || this.timestampMax !== timestampMax) {
@@ -565,6 +565,15 @@ class FlowList {
     if (JSON.stringify(this.appProto) !== JSON.stringify(appProto)) {
       this.appProto = appProto
       this.updateProtocolFilter(appProto)
+    }
+
+    // Update tags choice
+    if (JSON.stringify(this.tags) !== JSON.stringify(tags)) {
+      this.tags = tags
+      const url = new URL(document.location)
+      const filterTagsRequire = url.searchParams.getAll('tag_require')
+      const filterTagsDeny = url.searchParams.getAll('tag_deny')
+      this.updateTagFilter(tags, filterTagsRequire, filterTagsDeny)
     }
   }
 
@@ -614,7 +623,7 @@ class FlowList {
     }
 
     // Fetch API and update
-    const { flows, tags } = await this.apiClient.listFlows(
+    const { flows } = await this.apiClient.listFlows(
       fromTs ? Number(fromTs) : null,
       toTs ? Number(toTs) : null,
       services,
@@ -623,9 +632,7 @@ class FlowList {
       filterTagsRequire,
       filterTagsDeny
     )
-    this.tags = tags
-    this.updateTagFilter(tags, filterTagsRequire, filterTagsDeny)
-    await this.fillFlowsList(flows, tags)
+    await this.fillFlowsList(flows)
     this.updateActiveFlow(!fillTo)
   }
 }

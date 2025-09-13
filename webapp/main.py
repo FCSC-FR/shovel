@@ -133,14 +133,7 @@ async def api_flow_list(request):
         rows = await cursor.fetchall()
         flows = [row_to_dict(row) for row in rows]
 
-    # Fetch tags
-    async with eve_db.execute(
-        "SELECT tag, color FROM alert GROUP BY tag ORDER BY color"
-    ) as cursor:
-        rows = await cursor.fetchall()
-        tags = [dict(row) for row in rows]
-
-    return JSONResponse({"flows": flows, "tags": tags})
+    return JSONResponse({"flows": flows})
 
 
 async def api_flow_get(request):
@@ -320,11 +313,19 @@ async def api_status(request):
         rows = await cursor.fetchall()
         prs = [r["app_proto"] for r in rows if r["app_proto"] not in [None, "failed"]]
 
+    # Fetch tags
+    async with eve_db.execute(
+        "SELECT tag, color FROM alert GROUP BY tag ORDER BY color"
+    ) as cursor:
+        rows = await cursor.fetchall()
+        tags = [dict(row) for row in rows]
+
     result = {
         "timestampMin": ts_min,
         "timestampMax": ts_max,
         "config": CTF_CONFIG,
         "appProto": prs,
+        "tags": tags,
     }
     return JSONResponse(result, headers={"Cache-Control": "max-age=1"})
 

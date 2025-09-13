@@ -11,7 +11,7 @@
  */
 export default class Api {
   /**
-   * Call API to get flows, application protocols list and tags
+   * Call API to get flows, application protocols list
    *
    * API limits results to 100 entries.
    *
