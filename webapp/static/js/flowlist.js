@@ -9,6 +9,8 @@
 
 import Api from './api.js'
 
+const DATE_PARAMS = { hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 1 }
+
 /**
  * Flow list sidebar
  *
@@ -223,10 +225,25 @@ class FlowList {
     document.getElementById('timeline').addEventListener('click', e => {
       const position = (e.layerY / e.target.clientHeight)
       const tsTop = Math.floor(this.timestampMax - position * (this.timestampMax - this.timestampMin))
-      const url = new URL(document.location)
-      url.searchParams.set('to', tsTop)
-      window.history.pushState(null, '', url.href)
-      this.updateFlowsList()
+      if (tsTop) {
+        const url = new URL(document.location)
+        url.searchParams.set('to', tsTop)
+        window.history.pushState(null, '', url.href)
+        this.updateFlowsList()
+      }
+    })
+
+    document.getElementById('timeline').addEventListener('mousemove', e => {
+      const tooltip = document.querySelector('#timeline .tooltip')
+      tooltip.style.top = (e.pageY - 5) + 'px'
+      const position = (e.layerY / e.target.clientHeight)
+      const tsTop = Math.floor(this.timestampMax - position * (this.timestampMax - this.timestampMin))
+      if (tsTop) {
+        const dateStart = new Date(tsTop / 1000)
+        let text = (this.tickLength > 0) ? `Tick ${Math.floor((tsTop / 1000000 - this.startTs) / this.tickLength)}, ` : ''
+        text += new Intl.DateTimeFormat(undefined, DATE_PARAMS).format(dateStart)
+        tooltip.querySelector('.tooltip-inner').textContent = text
+      }
     })
 
     // Apply current flow tick as time filter on click
@@ -432,10 +449,7 @@ class FlowList {
     const flowList = document.getElementById('flow-list')
     flows.forEach((flow) => {
       const date = new Date(flow.ts_start / 1000)
-      const startDate = new Intl.DateTimeFormat(
-        undefined,
-        { hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 1 }
-      ).format(date)
+      const startDate = new Intl.DateTimeFormat(undefined, DATE_PARAMS).format(date)
 
       // Don't insert flow already in list
       // This happens when adding flows during infinite scroll
