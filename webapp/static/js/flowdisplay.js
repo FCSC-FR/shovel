@@ -36,6 +36,7 @@ const HTTP_HEADER_BL = [
   'content-type',
   'cross-origin-opener-policy',
   'date',
+  'etag',
   'host',
   'last-modified',
   'location',
