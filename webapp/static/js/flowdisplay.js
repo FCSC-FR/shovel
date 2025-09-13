@@ -262,22 +262,25 @@ class FlowDisplay {
     const formatedDateStart = new Intl.DateTimeFormat(undefined, dateParams).format(dateStart)
     const dateEnd = new Date(flow.flow.ts_end / 1000)
     const formatedDateEnd = new Intl.DateTimeFormat(undefined, dateParams).format(dateEnd)
-    const srcIpPort = flow.flow.src_ip + (flow.flow.src_port ? `:${flow.flow.src_port}` : '')
-    const destIpPort = flow.flow.dest_ip + (flow.flow.dest_port ? `:${flow.flow.dest_port}` : '')
-
-    // Change document title
-    document.title = `${destIpPort} - Shovel`
 
     // Flow card
     document.getElementById('display-flow-time').textContent = `From ${formatedDateStart}\n  to ${formatedDateEnd}`
     document.getElementById('display-flow-time').title = `${flow.flow.ts_start} - ${flow.flow.ts_end}`
-    document.getElementById('display-flow-pkt').textContent = `${flow.flow.proto} flow from ${srcIpPort} to ${destIpPort}\n──► ${flow.flow.pkts_toserver} packets (${this.pprintSize(flow.flow.bytes_toserver)})\n◀── ${flow.flow.pkts_toclient} packets (${this.pprintSize(flow.flow.bytes_toclient)})`
+    if (flow.flow.proto === 'TCP') {
+      document.getElementById('display-flow-pkt').textContent = `tcp and ip.src == ${flow.flow.src_ip} and tcp.srcport == ${flow.flow.src_port}\nand ip.dst == ${flow.flow.dest_ip} and tcp.dstport == ${flow.flow.dest_port}`
+    } else if (flow.flow.proto === 'UDP') {
+      document.getElementById('display-flow-pkt').textContent = `udp and ip.src == ${flow.flow.src_ip} and udp.srcport == ${flow.flow.src_port}\nand ip.dst == ${flow.flow.dest_ip} and udp.dstport == ${flow.flow.dest_port}`
+    } else {
+      document.getElementById('display-flow-pkt').textContent = `${flow.flow.proto.toLowerCase()} and ip.src == ${flow.flow.src_ip} and ip.dst == ${flow.flow.dest_ip}`
+    }
+    document.getElementById('display-flow-pkt').textContent += `\n──► ${flow.flow.pkts_toserver} packets (${this.pprintSize(flow.flow.bytes_toserver)})\n◀── ${flow.flow.pkts_toclient} packets (${this.pprintSize(flow.flow.bytes_toclient)})`
     document.getElementById('display-flow-pcap').href = `/api/flow/${flowId}/pcap`
     if (this.tickLength > 0) {
       document.getElementById('display-flow-tick').classList.remove('d-none')
       const tick = ((flow.flow.ts_start / 1000000 - this.startTs) / this.tickLength).toFixed(3)
       document.querySelector('#display-flow-tick > a > span').textContent = tick
       document.querySelector('#display-flow-tick > a').dataset.ts = flow.flow.ts_start
+      document.title = `Shovel - Tick ${tick}`
     }
 
     // Alert and anomaly cards
