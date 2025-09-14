@@ -140,7 +140,7 @@ class FlowList {
       const untilTick = Number(e.target.value)
       const url = new URL(document.location)
       if (untilTick) {
-        url.searchParams.set('to', Math.floor(((untilTick + 1) * (this.tickLength || 1) + this.timestampStart)) * 1000000)
+        url.searchParams.set('to', Math.floor(((untilTick + 1) * (this.tickLength || 1) + this.timestampStart / 1000000)) * 1000000)
       } else {
         url.searchParams.delete('to')
         e.target.value = null
@@ -234,15 +234,17 @@ class FlowList {
     })
 
     document.getElementById('timeline').addEventListener('mousemove', e => {
-      const tooltip = document.querySelector('#timeline .tooltip')
-      tooltip.style.top = (e.pageY - 5) + 'px'
-      const position = (e.layerY / e.target.clientHeight)
+      // Bottom margin of 30px and offset of 5px
+      const mousePosition = e.pageY - 5
+      const tooltipTop = Math.min(e.pageY - 5, document.getElementById('timeline').clientHeight - 30)
+      document.querySelector('#timeline .tooltip').style.top = `${tooltipTop}px`
+      const position = (mousePosition / document.getElementById('timeline').clientHeight)
       const tsTop = Math.floor(this.timestampMax - position * (this.timestampMax - this.timestampMin))
       if (tsTop) {
         const dateStart = new Date(tsTop / 1000)
-        let text = (this.tickLength > 0) ? `Tick ${Math.floor((tsTop / 1000000 - this.timestampStart) / this.tickLength)}, ` : ''
+        let text = (this.tickLength > 0) ? `Tick ${Math.floor((tsTop - this.timestampStart) / 1000000 / this.tickLength)}, ` : ''
         text += new Intl.DateTimeFormat(undefined, DATE_PARAMS).format(dateStart)
-        tooltip.querySelector('.tooltip-inner').textContent = text
+        document.querySelector('#timeline .tooltip .tooltip-inner').textContent = text
       }
     })
 
@@ -328,6 +330,14 @@ class FlowList {
     const position = (this.timestampMax - tsTop) / (this.timestampMax - this.timestampMin)
     document.getElementById('timeline-indicator').style.height = `${size * 100}%`
     document.getElementById('timeline-indicator').style.top = `${position * 100}%`
+
+    // Update game start bar
+    if (this.timestampMin < this.timestampStart && this.timestampStart < this.timestampMax) {
+      const positionGameStart = (this.timestampMax - this.timestampStart) / (this.timestampMax - this.timestampMin)
+      document.getElementById('timeline-game-start').classList.toggle('d-none', this.timestampStart === 0)
+      document.getElementById('timeline-game-start').style.height = `3px`
+      document.getElementById('timeline-game-start').style.top = `${positionGameStart * 100}%`
+    }
   }
 
   /**
@@ -462,7 +472,7 @@ class FlowList {
 
       // Create tick element on new tick
       if (this.tickLength > 0) {
-        const tick = Math.floor((flow.ts_start / 1000000 - this.timestampStart) / this.tickLength)
+        const tick = Math.floor((flow.ts_start - this.timestampStart) / 1000000 / this.tickLength)
         if (tick !== this.lastTick) {
           const tickEl = document.createElement('span')
           tickEl.classList.add('list-group-item', 'sticky-top', 'pt-3', 'pb-1', 'px-2', 'border-0', 'border-bottom', 'bg-light-subtle', 'text-center', 'fw-semibold')
@@ -552,7 +562,7 @@ class FlowList {
     const { timestampMin, timestampMax, config, appProto, tags } = apiStatus
 
     // Update game timestamps
-    const timestampStart = Math.floor(Date.parse(config.start_date) / 1000)
+    const timestampStart = Math.floor(Date.parse(config.start_date) * 1000)
     if (this.timestampMin !== timestampMin || this.timestampMax !== timestampMax || this.timestampStart !== timestampStart) {
       this.timestampMin = timestampMin
       this.timestampMax = timestampMax
@@ -613,7 +623,7 @@ class FlowList {
 
       // Update time filter state
       if (toTs) {
-        const toTick = (Number(toTs) / 1000000 - this.timestampStart) / (this.tickLength || 1) - 1
+        const toTick = (Number(toTs) - this.timestampStart) / 1000000 / (this.tickLength || 1) - 1
         document.getElementById('filter-time-until').value = toTick
       }
       document.getElementById('filter-time-until').classList.toggle('is-active', toTs)
