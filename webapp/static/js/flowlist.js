@@ -26,7 +26,7 @@ class FlowList {
   async init () {
     // Handle left arrow, right arrow and escape keys to navigate flows
     // Handle CTRL-MAJ-F key to search selection
-    document.addEventListener('keydown', e => {
+    document.addEventListener('keydown', async e => {
       if (e.target.tagName === 'INPUT' || e.altKey) {
         return // Don't overwrite keys on input or when pressing ALT
       }
@@ -63,7 +63,7 @@ class FlowList {
           const url = new URL(document.location)
           url.searchParams.set('search', sel)
           window.history.pushState(null, '', url.href)
-          this.updateFlowsList()
+          await this.updateFlowsList()
         }
         e.preventDefault()
       }
@@ -102,14 +102,14 @@ class FlowList {
     this.observer.observe(document.getElementById('flow-list-loading-indicator'))
 
     // On browser history pop, dispatch 'locationchange' event, then update flows list
-    window.addEventListener('popstate', e => {
+    window.addEventListener('popstate', async () => {
       const url = new URL(document.location)
       const newFlowId = url.searchParams.get('flow')
       if (this.selectedFlowId !== newFlowId) {
         this.selectedFlowId = newFlowId
         window.dispatchEvent(new Event('locationchange'))
       }
-      this.updateFlowsList()
+      await this.updateFlowsList()
     })
 
     // On 'locationchange' event, update active flow
@@ -118,7 +118,7 @@ class FlowList {
     })
 
     // On services filter change, update URL then update flows list
-    document.getElementById('services-select').addEventListener('change', e => {
+    document.getElementById('services-select').addEventListener('change', async e => {
       const url = new URL(document.location)
       url.searchParams.delete('service')
       e.target.value.split(',').forEach(s => {
@@ -127,7 +127,7 @@ class FlowList {
         }
       })
       window.history.pushState(null, '', url.href)
-      this.updateFlowsList()
+      await this.updateFlowsList()
     })
 
     // Don't close filter dropdown on click inside
@@ -136,21 +136,21 @@ class FlowList {
     })
 
     // On time filter change, update URL then update flows list
-    document.getElementById('filter-time-until').addEventListener('change', e => {
+    document.getElementById('filter-time-until').addEventListener('change', async e => {
       const untilTick = Number(e.target.value)
       const url = new URL(document.location)
       if (untilTick) {
-        url.searchParams.set('to', Math.floor(((untilTick + 1) * (this.tickLength || 1) + this.startTs)) * 1000000)
+        url.searchParams.set('to', Math.floor(((untilTick + 1) * (this.tickLength || 1) + this.timestampStart)) * 1000000)
       } else {
         url.searchParams.delete('to')
         e.target.value = null
       }
       window.history.pushState(null, '', url.href)
-      this.updateFlowsList()
+      await this.updateFlowsList()
     })
 
     // On protocol filter change, update URL then update flows list
-    document.getElementById('filter-protocol').addEventListener('change', e => {
+    document.getElementById('filter-protocol').addEventListener('change', async e => {
       const appProto = e.target.value
       const url = new URL(document.location)
       if (appProto) {
@@ -159,11 +159,11 @@ class FlowList {
         url.searchParams.delete('app_proto')
       }
       window.history.pushState(null, '', url.href)
-      this.updateFlowsList()
+      await this.updateFlowsList()
     })
 
     // On glob search filter submit, update URL then update flows list
-    document.getElementById('filter-search').addEventListener('keyup', e => {
+    document.getElementById('filter-search').addEventListener('keyup', async e => {
       if (e.key !== 'Enter') {
         return
       }
@@ -175,11 +175,11 @@ class FlowList {
         url.searchParams.delete('search')
       }
       window.history.pushState(null, '', url.href)
-      this.updateFlowsList()
+      await this.updateFlowsList()
     })
 
     // On tags filter change, update URL then update flows list
-    document.getElementById('filter-tag').addEventListener('click', e => {
+    document.getElementById('filter-tag').addEventListener('click', async e => {
       const tag = e.target.closest('a')?.dataset.tag
       if (tag) {
         const url = new URL(document.location)
@@ -217,19 +217,19 @@ class FlowList {
           url.searchParams.append('tag_require', tag)
         }
         window.history.pushState(null, '', url.href)
-        this.updateFlowsList()
+        await this.updateFlowsList()
         e.preventDefault()
       }
     })
 
-    document.getElementById('timeline').addEventListener('click', e => {
+    document.getElementById('timeline').addEventListener('click', async e => {
       const position = (e.layerY / e.target.clientHeight)
       const tsTop = Math.floor(this.timestampMax - position * (this.timestampMax - this.timestampMin))
       if (tsTop) {
         const url = new URL(document.location)
         url.searchParams.set('to', tsTop)
         window.history.pushState(null, '', url.href)
-        this.updateFlowsList()
+        await this.updateFlowsList()
       }
     })
 
@@ -240,27 +240,30 @@ class FlowList {
       const tsTop = Math.floor(this.timestampMax - position * (this.timestampMax - this.timestampMin))
       if (tsTop) {
         const dateStart = new Date(tsTop / 1000)
-        let text = (this.tickLength > 0) ? `Tick ${Math.floor((tsTop / 1000000 - this.startTs) / this.tickLength)}, ` : ''
+        let text = (this.tickLength > 0) ? `Tick ${Math.floor((tsTop / 1000000 - this.timestampStart) / this.tickLength)}, ` : ''
         text += new Intl.DateTimeFormat(undefined, DATE_PARAMS).format(dateStart)
         tooltip.querySelector('.tooltip-inner').textContent = text
       }
     })
 
     // Apply current flow tick as time filter on click
-    document.querySelector('#display-flow-tick > a').addEventListener('click', e => {
+    document.querySelector('#display-flow-tick > a').addEventListener('click', async e => {
       const url = new URL(document.location)
       url.searchParams.set('to', e.currentTarget.dataset.ts)
       window.history.pushState(null, '', url.href)
-      this.updateFlowsList()
+      await this.updateFlowsList()
     })
 
-    // Trigger initial flows list update
-    const appData = document.getElementById('app').dataset
-    this.startTs = Math.floor(Date.parse(appData.startDate) / 1000)
-    this.tickLength = Number(appData.tickLength)
+    // State updated using API status endpoint
+    this.timestampMin = 0  // first flow in database
+    this.timestampMax = 0  // last flow in database
+    this.timestampStart = 0  // game start
+    this.tickLength = 0
     this.services = {}
     this.appProto = []
     this.tags = []
+
+    this.updateServiceFilter()
     await this.updateStatus()
     await this.updateFlowsList()
   }
@@ -330,7 +333,7 @@ class FlowList {
   /**
    * Update services in filters select
    */
-  updateServiceFilter (services) {
+  updateServiceFilter () {
     const serviceSelect = document.getElementById('services-select')
 
     // Empty options
@@ -349,7 +352,7 @@ class FlowList {
     unknownSrvOptionEl.textContent = 'Flows from unknown services'
     serviceSelect.appendChild(unknownSrvOptionEl)
 
-    for (const [name, ipAddrPorts] of Object.entries(services)) {
+    for (const [name, ipAddrPorts] of Object.entries(this.services)) {
       const optgroupEl = document.createElement('optgroup')
       optgroupEl.label = name
       if (ipAddrPorts.length > 1) {
@@ -443,9 +446,9 @@ class FlowList {
   }
 
   /**
-   * Fill flows list
+   * Fill flows list using given flows
    */
-  async fillFlowsList (flows) {
+  fillFlowsList (flows) {
     const flowList = document.getElementById('flow-list')
     flows.forEach((flow) => {
       const date = new Date(flow.ts_start / 1000)
@@ -459,7 +462,7 @@ class FlowList {
 
       // Create tick element on new tick
       if (this.tickLength > 0) {
-        const tick = Math.floor((flow.ts_start / 1000000 - this.startTs) / this.tickLength)
+        const tick = Math.floor((flow.ts_start / 1000000 - this.timestampStart) / this.tickLength)
         if (tick !== this.lastTick) {
           const tickEl = document.createElement('span')
           tickEl.classList.add('list-group-item', 'sticky-top', 'pt-3', 'pb-1', 'px-2', 'border-0', 'border-bottom', 'bg-light-subtle', 'text-center', 'fw-semibold')
@@ -548,11 +551,19 @@ class FlowList {
     }
     const { timestampMin, timestampMax, config, appProto, tags } = apiStatus
 
-    // Update timeline min/max
-    if (this.timestampMin !== timestampMin || this.timestampMax !== timestampMax) {
+    // Update game timestamps
+    const timestampStart = Math.floor(Date.parse(config.start_date) / 1000)
+    if (this.timestampMin !== timestampMin || this.timestampMax !== timestampMax || this.timestampStart !== timestampStart) {
       this.timestampMin = timestampMin
       this.timestampMax = timestampMax
+      this.timestampStart = timestampStart
       this.updateTimeline()
+    }
+
+    // Update tick length
+    if (this.tickLength !== config.tick_length) {
+      this.tickLength = config.tick_length
+      await this.updateFlowsList()
     }
 
     // Update services choice
@@ -602,7 +613,7 @@ class FlowList {
 
       // Update time filter state
       if (toTs) {
-        const toTick = (Number(toTs) / 1000000 - this.startTs) / (this.tickLength || 1) - 1
+        const toTick = (Number(toTs) / 1000000 - this.timestampStart) / (this.tickLength || 1) - 1
         document.getElementById('filter-time-until').value = toTick
       }
       document.getElementById('filter-time-until').classList.toggle('is-active', toTs)
@@ -632,7 +643,7 @@ class FlowList {
       filterTagsRequire,
       filterTagsDeny
     )
-    await this.fillFlowsList(flows)
+    this.fillFlowsList(flows)
     this.updateActiveFlow(!fillTo)
   }
 }
