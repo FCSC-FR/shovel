@@ -46,6 +46,7 @@ eval "$SURICATA_CMD" \
     --set app-layer.protocols.enip.enabled=yes \
     --set app-layer.protocols.http.libhtp.default-config.request-body-limit=52428800 \
     --set app-layer.protocols.http.libhtp.default-config.response-body-limit=0 \
+    --set app-layer.protocols.sip.enabled=no \
     --set stream.reassembly.depth=50mb \
     --set flow-timeouts.tcp.established=60 \
     --set flow-timeouts.tcp.emergency-established=60 \
