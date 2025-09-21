@@ -217,7 +217,8 @@ alert ip any any -> any any (msg: "Found path '/tmp/' (URL encoded)"; flow:to_se
 alert ip any any -> any any (msg: "Found path traversal '../../'"; flow:to_server; content: "../../"; metadata: tag ../../, color warning; sid: 5109;)
 alert ip any any -> any any (msg: "Found Unicode escape '\\u00..'"; flow:to_server; content: "|5C|u00"; pcre: "/[0-9a-fA-F]{2}/"; distance: 0; metadata: tag Unicode, color warning; sid: 5201;)
 alert ip any any -> any any (msg: "Found empty comment '/**/'"; flow:to_server; content: "/**/"; metadata: tag Comment, color warning; sid: 5202;)
-alert tls any any -> any any (msg:"tag"; tls.alpn; content:"h2"; metadata: tag HTTP2, color info; sid:5301;)
+alert tls any any -> any any (tls.alpn; content:"h2"; metadata: tag HTTP2, color info; sid:5301;)
+alert udp any any -> any any (metadata: tag UDP, color info; sid: 5401;)
 
 # Dissection anomalies
 alert http any any -> any any (msg:"HTTP missing Host header"; flow:established,to_server; app-layer-event:http.missing_host_header; metadata: tag HTTP No Host, color warning; sid:6001;)
