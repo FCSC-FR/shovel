@@ -63,7 +63,7 @@ class FlowList {
           const url = new URL(document.location)
           url.searchParams.set('search', sel)
           window.history.pushState(null, '', url.href)
-          this.update()
+          this.updateFlowsList()
         }
         e.preventDefault()
       }
