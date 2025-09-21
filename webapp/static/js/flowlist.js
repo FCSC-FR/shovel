@@ -26,7 +26,7 @@ class FlowList {
   async init () {
     // Handle left arrow, right arrow and escape keys to navigate flows
     // Handle CTRL-MAJ-F key to search selection
-    document.addEventListener('keydown', async e => {
+    document.addEventListener('keydown', e => {
       if (e.target.tagName === 'INPUT' || e.altKey) {
         return // Don't overwrite keys on input or when pressing ALT
       }
@@ -63,7 +63,7 @@ class FlowList {
           const url = new URL(document.location)
           url.searchParams.set('search', sel)
           window.history.pushState(null, '', url.href)
-          await this.updateFlowsList()
+          this.updateFlowsList()
         }
         e.preventDefault()
       }
@@ -118,7 +118,7 @@ class FlowList {
     })
 
     // On services filter change, update URL then update flows list
-    document.getElementById('services-select').addEventListener('change', async e => {
+    document.getElementById('services-select').addEventListener('change', e => {
       const url = new URL(document.location)
       url.searchParams.delete('service')
       e.target.value.split(',').forEach(s => {
@@ -127,7 +127,7 @@ class FlowList {
         }
       })
       window.history.pushState(null, '', url.href)
-      await this.updateFlowsList()
+      this.updateFlowsList()
     })
 
     // Don't close filter dropdown on click inside
@@ -136,7 +136,7 @@ class FlowList {
     })
 
     // On time filter change, update URL then update flows list
-    document.getElementById('filter-time-until').addEventListener('change', async e => {
+    document.getElementById('filter-time-until').addEventListener('change', e => {
       const untilTick = Number(e.target.value)
       const url = new URL(document.location)
       if (untilTick) {
@@ -146,11 +146,11 @@ class FlowList {
         e.target.value = null
       }
       window.history.pushState(null, '', url.href)
-      await this.updateFlowsList()
+      this.updateFlowsList()
     })
 
     // On protocol filter change, update URL then update flows list
-    document.getElementById('filter-protocol').addEventListener('change', async e => {
+    document.getElementById('filter-protocol').addEventListener('change', e => {
       const appProto = e.target.value
       const url = new URL(document.location)
       if (appProto) {
@@ -159,11 +159,11 @@ class FlowList {
         url.searchParams.delete('app_proto')
       }
       window.history.pushState(null, '', url.href)
-      await this.updateFlowsList()
+      this.updateFlowsList()
     })
 
     // On glob search filter submit, update URL then update flows list
-    document.getElementById('filter-search').addEventListener('keyup', async e => {
+    document.getElementById('filter-search').addEventListener('keyup', e => {
       if (e.key !== 'Enter') {
         return
       }
@@ -175,11 +175,11 @@ class FlowList {
         url.searchParams.delete('search')
       }
       window.history.pushState(null, '', url.href)
-      await this.updateFlowsList()
+      this.updateFlowsList()
     })
 
     // On tags filter change, update URL then update flows list
-    document.getElementById('filter-tag').addEventListener('click', async e => {
+    document.getElementById('filter-tag').addEventListener('click', e => {
       const tag = e.target.closest('a')?.dataset.tag
       if (tag) {
         const url = new URL(document.location)
@@ -217,19 +217,19 @@ class FlowList {
           url.searchParams.append('tag_require', tag)
         }
         window.history.pushState(null, '', url.href)
-        await this.updateFlowsList()
+        this.updateFlowsList()
         e.preventDefault()
       }
     })
 
-    document.getElementById('timeline').addEventListener('click', async e => {
+    document.getElementById('timeline').addEventListener('click', e => {
       const position = (e.layerY / e.target.clientHeight)
       const tsTop = Math.floor(this.timestampMax - position * (this.timestampMax - this.timestampMin))
       if (tsTop) {
         const url = new URL(document.location)
         url.searchParams.set('to', tsTop)
         window.history.pushState(null, '', url.href)
-        await this.updateFlowsList()
+        this.updateFlowsList()
       }
     })
 
@@ -249,11 +249,11 @@ class FlowList {
     })
 
     // Apply current flow tick as time filter on click
-    document.querySelector('#display-flow-tick > a').addEventListener('click', async e => {
+    document.querySelector('#display-flow-tick > a').addEventListener('click', e => {
       const url = new URL(document.location)
       url.searchParams.set('to', e.currentTarget.dataset.ts)
       window.history.pushState(null, '', url.href)
-      await this.updateFlowsList()
+      this.updateFlowsList()
     })
 
     // State updated using API status endpoint
