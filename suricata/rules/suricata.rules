@@ -201,6 +201,8 @@ alert ip any any -> any any (msg: "Found XML '<!ENTITY' (URL encoded variant)"; 
 alert ip any any -> any any (msg: "Found XML '<!ENTITY' (base64)"; flow:to_server; content: "PCFFTlRJVF"; nocase; metadata: tag <!ENTITY, color warning; sid: 4504;)
 alert ip any any -> any any (msg: "Found XML '<!ENTITY' (base64)"; flow:to_server; content: "whRU5USVR"; nocase; metadata: tag <!ENTITY, color warning; sid: 4505;)
 alert ip any any -> any any (msg: "Found XML '<!ENTITY' (base64)"; flow:to_server; content: "8IUVOVElUW"; nocase; metadata: tag <!ENTITY, color warning; sid: 4506;)
+alert http any any -> any any (msg: "HTTP GET spamming"; http.method; content: "GET"; startswith; flowint: tag_GET,>,50; metadata: tag GET SPAM, color warning; sid: 4601;)
+alert http any any -> any any (msg: "HTTP POST spamming"; http.method; content: "POST"; startswith; flowint: tag_POST,>,50; metadata: tag POST SPAM, color warning; sid: 4602;)
 
 # Common indicators, but might cause false positives
 alert ip any any -> any any (flow:established; flow.age:>10; flowbits: isnotset, slowflow; flowbits: set, slowflow; metadata: tag Slow, color warning; sid: 5001;)
