@@ -3,6 +3,7 @@
 # Copyright (C) 2025  A. Iooss
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import asyncio
 import base64
 import contextlib
 import glob
@@ -15,7 +16,7 @@ from starlette.applications import Starlette
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings
 from starlette.exceptions import HTTPException
-from starlette.responses import FileResponse, JSONResponse, Response
+from starlette.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
@@ -304,34 +305,50 @@ async def api_replay_raw(request):
     )
 
 
-async def api_status(request):
-    # Get first and last flow timestamp from Eve flow events
-    async with eve_db.execute(
-        "SELECT MIN(ts_start) as min, MAX(ts_start) as max FROM flow", ()
-    ) as cursor:
-        row = await cursor.fetchone()
-        ts_min, ts_max = row["min"], row["max"]
+async def stream_events():
+    last_ts_minmax, last_prs, last_tags = (-1, -1), [], []
+    yield f"event: config\ndata: {json.dumps(CTF_CONFIG)}\n\n"
+    try:
+        while True:
+            # Get first and last flow timestamp, application protocols and tags
+            async with eve_db.execute(
+                "SELECT MIN(ts_start) as min, MAX(ts_start) as max FROM flow", ()
+            ) as cursor:
+                row = await cursor.fetchone()
+                ts_minmax = row["min"], row["max"]
+            async with eve_db.execute("SELECT DISTINCT app_proto FROM flow") as cursor:
+                rows = await cursor.fetchall()
+                prs = [
+                    r["app_proto"]
+                    for r in rows
+                    if r["app_proto"] not in [None, "failed"]
+                ]
+            async with eve_db.execute(
+                "SELECT tag, color FROM alert GROUP BY tag ORDER BY color"
+            ) as cursor:
+                rows = await cursor.fetchall()
+                tags = [dict(row) for row in rows]
 
-    # Fetch application protocols
-    async with eve_db.execute("SELECT DISTINCT app_proto FROM flow") as cursor:
-        rows = await cursor.fetchall()
-        prs = [r["app_proto"] for r in rows if r["app_proto"] not in [None, "failed"]]
+            # Send delta to client
+            if ts_minmax != last_ts_minmax:
+                yield f"event: timestampMinMax\ndata: {json.dumps(ts_minmax)}\n\n"
+            if prs != last_prs:
+                yield f"event: appProto\ndata: {json.dumps(prs)}\n\n"
+            if tags != last_tags:
+                yield f"event: tags\ndata: {json.dumps(tags)}\n\n"
+            last_ts_minmax, last_prs, last_tags = ts_minmax, prs, tags
+            await asyncio.sleep(1)
+    except asyncio.CancelledError:
+        yield "event: close\n\n"
 
-    # Fetch tags
-    async with eve_db.execute(
-        "SELECT tag, color FROM alert GROUP BY tag ORDER BY color"
-    ) as cursor:
-        rows = await cursor.fetchall()
-        tags = [dict(row) for row in rows]
 
-    result = {
-        "timestampMin": ts_min,
-        "timestampMax": ts_max,
-        "config": CTF_CONFIG,
-        "appProto": prs,
-        "tags": tags,
-    }
-    return JSONResponse(result, headers={"Cache-Control": "max-age=1"})
+async def api_events(request):
+    return StreamingResponse(
+        stream_events(),
+        media_type="text/event-stream",
+        # Prevent buffering in reverse-proxy
+        headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"},
+    )
 
 
 async def open_database(database_uri: str, text_factory=str) -> aiosqlite.Connection:
@@ -395,6 +412,7 @@ app = Starlette(
     debug=DEBUG,
     routes=[
         Route("/", index),
+        Route("/api/events", api_events),
         Route("/api/filedata/{sha256:str}", api_filedata_get),
         Route("/api/flow", api_flow_list),
         Route("/api/flow/{flow_id:int}", api_flow_get),
@@ -402,7 +420,6 @@ app = Starlette(
         Route("/api/flow/{flow_id:int}/raw", api_flow_raw_get),
         Route("/api/replay-http/{flow_id:int}", api_replay_http),
         Route("/api/replay-raw/{flow_id:int}", api_replay_raw),
-        Route("/api/status", api_status),
         Mount("/static", StaticFiles(directory="static")),
     ],
     lifespan=lifespan,

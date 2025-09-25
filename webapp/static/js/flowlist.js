@@ -84,7 +84,7 @@ class FlowList {
 
     // On flows list scroll, update timeline indicator
     document.getElementById('flow-list').parentElement.addEventListener('scroll', e => {
-      this.updateTimeline()
+      this.redrawTimeline()
     })
 
     // Infinite scroll: load more flows when loading indicator is seen
@@ -261,12 +261,19 @@ class FlowList {
     this.timestampMax = 0 // last flow in database
     this.timestampStart = 0 // game start
     this.tickLength = 0
-    this.services = {}
-    this.appProto = []
-    this.tags = []
+    this.services = {} // used by pprintService
+    this.tags = [] // used by fillFlowsList
 
-    this.updateServiceFilter()
-    await this.updateStatus()
+    this.apiClient.subscribeEvents(
+      isOffline => document.getElementById('toast-offline').classList.toggle('show', isOffline),
+      this.updateConfig.bind(this),
+      d => {
+        [this.timestampMin, this.timestampMax] = d
+        this.redrawTimeline()
+      },
+      this.updateAppProto.bind(this),
+      this.updateTags.bind(this)
+    )
     await this.updateFlowsList()
   }
 
@@ -317,7 +324,22 @@ class FlowList {
     return badge
   }
 
-  updateTimeline () {
+  /**
+   * Update game start, tick length and services from new backend configuration
+   * @param {Object} config Backend configuration
+   */
+  updateConfig (config) {
+    this.timestampStart = Math.floor(Date.parse(config.start_date) * 1000)
+    this.tickLength = config.tick_length
+    this.redrawTimeline()
+    this.updateServices(config.services)
+    this.updateFlowsList()
+  }
+
+  /**
+   * Redraw timeline element
+   */
+  redrawTimeline () {
     const visibleFlows = [...document.querySelectorAll('#flow-list > a')].filter(e => {
       const rect = e.getBoundingClientRect()
       return rect.bottom >= 0 && rect.top <= window.innerHeight
@@ -342,8 +364,10 @@ class FlowList {
 
   /**
    * Update services in filters select
+   * @param {Object} services Services name and ip-port mapping
    */
-  updateServiceFilter () {
+  updateServices (services) {
+    this.services = services
     const serviceSelect = document.getElementById('services-select')
 
     // Empty options
@@ -362,7 +386,7 @@ class FlowList {
     unknownSrvOptionEl.textContent = 'Flows from unknown services'
     serviceSelect.appendChild(unknownSrvOptionEl)
 
-    for (const [name, ipAddrPorts] of Object.entries(this.services)) {
+    for (const [name, ipAddrPorts] of Object.entries(services)) {
       const optgroupEl = document.createElement('optgroup')
       optgroupEl.label = name
       if (ipAddrPorts.length > 1) {
@@ -388,8 +412,9 @@ class FlowList {
 
   /**
    * Update protocols in filters dropdown
+   * @param {Array} appProto Available application protocols
    */
-  updateProtocolFilter (appProto) {
+  updateAppProto (appProto) {
     const protocolSelect = document.getElementById('filter-protocol')
 
     // Empty select options
@@ -423,12 +448,18 @@ class FlowList {
   /**
    * Update tags in filters dropdown
    * @param {Array} tags All available tags
-   * @param {Array} requiredTags Required tags in filter
-   * @param {Array} deniedTags Denied tags in filter
    */
-  updateTagFilter (tags, requiredTags, deniedTags) {
+  updateTags (tags) {
+    this.tags = tags
+
+    // Get required and denied tags in filter
+    const url = new URL(document.location)
+    const requiredTags = url.searchParams.getAll('tag_require')
+    const deniedTags = url.searchParams.getAll('tag_deny')
+
     // Empty dropdown content
-    ['filter-tag-available', 'filter-tag-require', 'filter-tag-deny'].forEach(id => {
+    const ids = ['filter-tag-available', 'filter-tag-require', 'filter-tag-deny']
+    ids.forEach(id => {
       const el = document.getElementById(id)
       el.parentElement.classList.add('d-none')
       while (el.lastChild) {
@@ -525,7 +556,7 @@ class FlowList {
     document.getElementById('flow-list-loading-indicator').classList.toggle('d-none', flows.length < 99)
 
     // Update timeline with new visible flows
-    this.updateTimeline()
+    this.redrawTimeline()
 
     // Refresh observer
     // This trigger the observer again if the loading indicator is still intersecting with the viewport
@@ -542,59 +573,6 @@ class FlowList {
     linkElement?.classList.add('active')
     if (scrollInto) {
       linkElement?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
-    }
-  }
-
-  /**
-   * Query API status endpoint and update timeline
-   */
-  async updateStatus () {
-    // Fetch API and show toast notification if cannot be reached
-    let apiStatus = null
-    try {
-      apiStatus = await this.apiClient.getStatus()
-    } catch (error) {}
-    setTimeout(this.updateStatus.bind(this), 1000)
-    document.getElementById('toast-offline').classList.toggle('show', apiStatus === null)
-    if (apiStatus === null) {
-      return
-    }
-    const { timestampMin, timestampMax, config, appProto, tags } = apiStatus
-
-    // Update game timestamps
-    const timestampStart = Math.floor(Date.parse(config.start_date) * 1000)
-    if (this.timestampMin !== timestampMin || this.timestampMax !== timestampMax || this.timestampStart !== timestampStart) {
-      this.timestampMin = timestampMin
-      this.timestampMax = timestampMax
-      this.timestampStart = timestampStart
-      this.updateTimeline()
-    }
-
-    // Update tick length
-    if (this.tickLength !== config.tick_length) {
-      this.tickLength = config.tick_length
-      await this.updateFlowsList()
-    }
-
-    // Update services choice
-    if (JSON.stringify(this.services) !== JSON.stringify(config.services)) {
-      this.services = config.services
-      this.updateServiceFilter(config.services)
-    }
-
-    // Update application protocols choice
-    if (JSON.stringify(this.appProto) !== JSON.stringify(appProto)) {
-      this.appProto = appProto
-      this.updateProtocolFilter(appProto)
-    }
-
-    // Update tags choice
-    if (JSON.stringify(this.tags) !== JSON.stringify(tags)) {
-      this.tags = tags
-      const url = new URL(document.location)
-      const filterTagsRequire = url.searchParams.getAll('tag_require')
-      const filterTagsDeny = url.searchParams.getAll('tag_deny')
-      this.updateTagFilter(tags, filterTagsRequire, filterTagsDeny)
     }
   }
 
@@ -629,7 +607,7 @@ class FlowList {
       document.getElementById('filter-time-until').classList.toggle('is-active', toTs)
 
       // Update tags filter before API response
-      this.updateTagFilter(this.tags, filterTagsRequire, filterTagsDeny)
+      this.updateTags(this.tags)
 
       // Empty flow list
       const flowList = document.getElementById('flow-list')

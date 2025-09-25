@@ -1,5 +1,5 @@
 'use strict'
-/* global location */
+/* global location, EventSource */
 
 /*
  * Copyright (C) 2023-2024  ANSSI
@@ -86,16 +86,23 @@ export default class Api {
   }
 
   /**
-   * Call API to get current backend configuration, protocols, and min/max
-   * timestamps
+   * Setup server-sent events handler
+   *
+   * @param {CallableFunction} offlineCallback Function called to indicate backend status
+   * @param {CallableFunction} configCallback Function called on new server config
+   * @param {CallableFunction} timestampMinMaxCallback Function called on new timestamps
+   * @param {CallableFunction} appProtoCallback Function called on new app protocols
+   * @param {CallableFunction} tagsCallback Function called on new tags
    */
-  async getStatus () {
-    const response = await fetch('api/status', {})
-    if (!response.ok) {
-      return null
-    }
-
-    const data = await response.json()
-    return data
+  subscribeEvents (offlineCallback, configCallback, timestampMinMaxCallback, appProtoCallback, tagsCallback) {
+    const evtSource = new EventSource('api/events')
+    evtSource.addEventListener('config', e => {
+      offlineCallback(false)
+      configCallback(JSON.parse(e.data))
+    })
+    evtSource.addEventListener('timestampMinMax', e => timestampMinMaxCallback(JSON.parse(e.data)))
+    evtSource.addEventListener('appProto', e => appProtoCallback(JSON.parse(e.data)))
+    evtSource.addEventListener('tags', e => tagsCallback(JSON.parse(e.data)))
+    evtSource.onerror = () => offlineCallback(true)
   }
 }
