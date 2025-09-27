@@ -269,10 +269,11 @@ class FlowDisplay {
     // Flow card
     document.getElementById('display-flow-time').textContent = `From ${formatedDateStart}\n  to ${formatedDateEnd}`
     document.getElementById('display-flow-time').title = `${flow.flow.ts_start} - ${flow.flow.ts_end}`
+    const ipName = flow.flow.src_ip.startsWith('[') ? 'ipv6' : 'ip'
     if (flow.flow.proto === 'TCP') {
-      document.getElementById('display-flow-pkt').textContent = `tcp and ip.src == ${flow.flow.src_ip} and tcp.srcport == ${flow.flow.src_port}\nand ip.dst == ${flow.flow.dest_ip} and tcp.dstport == ${flow.flow.dest_port}`
+      document.getElementById('display-flow-pkt').textContent = `tcp and ${ipName}.src == ${flow.flow.src_ip} and tcp.srcport == ${flow.flow.src_port}\nand ${ipName}.dst == ${flow.flow.dest_ip} and tcp.dstport == ${flow.flow.dest_port}`
     } else if (flow.flow.proto === 'UDP') {
-      document.getElementById('display-flow-pkt').textContent = `udp and ip.src == ${flow.flow.src_ip} and udp.srcport == ${flow.flow.src_port}\nand ip.dst == ${flow.flow.dest_ip} and udp.dstport == ${flow.flow.dest_port}`
+      document.getElementById('display-flow-pkt').textContent = `udp and ${ipName}.src == ${flow.flow.src_ip} and udp.srcport == ${flow.flow.src_port}\nand ${ipName}.dst == ${flow.flow.dest_ip} and udp.dstport == ${flow.flow.dest_port}`
     } else {
       document.getElementById('display-flow-pkt').textContent = `${flow.flow.proto.toLowerCase()} and ip.src == ${flow.flow.src_ip} and ip.dst == ${flow.flow.dest_ip}`
     }
