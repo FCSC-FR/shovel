@@ -6,7 +6,6 @@
 import asyncio
 import base64
 import contextlib
-import glob
 import json
 import time
 from pathlib import Path
@@ -16,7 +15,7 @@ from starlette.applications import Starlette
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings
 from starlette.exceptions import HTTPException
-from starlette.responses import FileResponse, JSONResponse, Response, StreamingResponse
+from starlette.responses import JSONResponse, Response, StreamingResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
@@ -190,17 +189,17 @@ async def api_flow_pcap_get(request):
         flow_us = flow["ts_start"] // 1000
 
     # Serve corresponding pcap, found using timestamp
-    flow_pcap_path = ""
-    for pcap_path in sorted(glob.glob("../suricata/output/pcaps/*.*")):
-        pcap_us = int(pcap_path.replace(".lz4", "").rsplit(".", 1)[-1])
-        if pcap_us > flow_us:
+    path = None
+    for pcap_path in sorted(Path("../suricata/output/pcaps/").glob("*.*")):
+        pcap_us = int(pcap_path.name.replace(".lz4", "").rsplit(".", 1)[-1])
+        if pcap_us * 1000 > flow_us:
             break  # take previous one
-        flow_pcap_path = pcap_path
-    if not flow_pcap_path:
+        path = pcap_path
+    if path is None:
         raise HTTPException(404)
-    filename = f"{flow_id}_" + Path(flow_pcap_path).name
-    return FileResponse(
-        flow_pcap_path, content_disposition_type="attachment", filename=filename
+    return Response(
+        path.open("rb").read(),  # cache before sending as file might change
+        headers={"Content-Disposition": f'attachment; filename="{path.name}"'},
     )
 
 
