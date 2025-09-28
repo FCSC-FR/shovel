@@ -222,4 +222,6 @@ rules using:
 
 ```bash
 pkill -USR2 suricata
+# or if using Docker,
+sudo docker compose exec suricata pkill -USR2 suricata
 ```
