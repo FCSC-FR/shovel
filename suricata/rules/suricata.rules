@@ -79,7 +79,7 @@ alert ip any any -> any any (file.data; content: "Vgm|20|"; startswith; fast_pat
 alert ip any any -> any any (file.data; content: "wOF"; startswith; fast_pattern; filemagic: "Web Open Font"; metadata: tag WOFF, color primary; flowint: tag_WOFF,+,1; sid: 1016;)
 alert ip any any -> any any (file.data; content: "|7F|ELF|02 01 01 00 00 00 00 00 00 00 00 00|"; startswith; fast_pattern; filemagic: "ELF"; metadata: tag ELF, color primary; flowint: tag_ELF,+,1; sid: 1017;)
 alert ip any any -> any any (file.data; content: "f0VMRgIBAQAAAAAAAAAAAA"; metadata: tag ELF B64, color primary; flowint: tag_ELF_B64,+,1; sid: 1018;)
-alert ip any any -> any any (file.data; content: "<html"; depth: 256; nocase; fast_pattern; filemagic: "HTML document"; metadata: tag HTML, color primary; flowint: tag_HTML,+,1; sid: 1019;)
+alert ip any any -> any any (file.data; content: "html"; depth: 256; nocase; fast_pattern; filemagic: "HTML document"; metadata: tag HTML, color primary; flowint: tag_HTML,+,1; sid: 1019;)
 alert ip any any -> any any (file.data; content: "ftyp"; offset: 4; depth: 4; fast_pattern; filemagic: "ISO Media"; metadata: tag MP4, color primary; flowint: tag_MP4,+,1; sid: 1020;)
 alert ip any any -> any any (file.data; content: "RIFF"; startswith; fast_pattern; filemagic: "WAVE audio"; metadata: tag WAV, color primary; flowint: tag_WAV,+,1; sid: 1021;)
 alert ip any any -> any any (file.data; content: "ID3"; startswith; fast_pattern; filemagic: "Audio file"; metadata: tag MP3, color primary; flowint: tag_MP3,+,1; sid: 1022;)
