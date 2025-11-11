@@ -27,6 +27,10 @@
     <symbol id="download" viewBox="0 0 16 16">
       <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1m-1 4v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 11.293V7.5a.5.5 0 0 1 1 0"/>
     </symbol>
+    <symbol id="chevron-double-up" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708z"/>
+      <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
+    </symbol>
     <symbol id="chevron-down" viewBox="0 0 16 16">
       <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m2 5 6 6 6-6"/>
     </symbol>
@@ -62,6 +66,8 @@
     </div>
     <nav class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body shadow nav-flow">
       <div class="d-flex flex-nowrap border-bottom">
+        <input type="checkbox" class="btn-check" id="scroll-to-top" autocomplete="off">
+        <label class="btn btn-purple rounded-0 border-0 border-end" for="scroll-to-top" title="Keep scrolling to top"><svg class="bi" width="16" height="16"><use xlink:href="#chevron-double-up" /></svg></label>
         <select class="form-select form-select-sm rounded-0 border-0" id="services-select"></select>
         <div class="dropend position-static border-start" id="dropdown-filter">
           <button class="btn text-nowrap rounded-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">

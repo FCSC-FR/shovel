@@ -55,7 +55,8 @@ nav.nav-flow {
 
 /* Use purple background to show active elements */
 .text-bg-purple,
-#flow-list a.active {
+#flow-list a.active,
+input[type="checkbox"]:checked + label.btn-purple {
   color: #fff !important;
   background-color: #59359a !important;
 }

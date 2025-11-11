@@ -117,6 +117,21 @@ class FlowList {
       this.updateActiveFlow(true)
     })
 
+    document.getElementById('scroll-to-top').addEventListener('change', async e => {
+      const url = new URL(document.location)
+      const state = document.getElementById('scroll-to-top').checked
+      if (state) {
+        if (url.searchParams.has('to')) {
+          // Remove time filter when activating auto-refresh
+          url.searchParams.delete('to')
+          window.history.pushState(null, '', url.href)
+        }
+        await this.updateFlowsList()
+      }
+      // TODO: add auto-refresh
+      document.getElementById('scroll-to-top').checked = false
+    })
+
     // On services filter change, update URL then update flows list
     document.getElementById('services-select').addEventListener('change', e => {
       const url = new URL(document.location)
