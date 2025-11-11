@@ -44,7 +44,7 @@ Shovel is batteries-included with some useful Suricata alert rules for most CTF.
 ```plaintext
 device  ┌───────────────────────┐             ┌────────┐
 or pcap │ Suricata with:        │   SQL DB    │        │
-───────►│  Eve SQL plugin       ├────────────►│ Webapp │
+───────>│  Eve SQL plugin       ├────────────>│ Webapp │
         │  Payloads SQL plugins │             │        │
         └───────────────────────┘             └──▲─────┘
                                            .env  │

@@ -1,7 +1,6 @@
 # Copyright (C) 2024  ANSSI
 # SPDX-License-Identifier: CC0-1.0
 input_pcaps/*
-suricata/output/filestore
 suricata/output/pcaps
 suricata/output/*.log
 suricata/output/*.db

@@ -45,6 +45,20 @@ services:
     env_file:
       - .env
 
+  # Grafana default credentials are admin:admin
+  grafana:
+    build: ./grafana
+    image: anssi/shovel-grafana:dev
+    restart: always
+    volumes:
+      - "./suricata/output:/suricata/output:rw"
+      # Uncomment the following line if you want persistence
+      #- "grafana-storage:/var/lib/grafana"
+    ports:
+      - 127.0.0.1:8001:3000
+    env_file:
+      - .env
+
   #pcap-broker:
   #  container_name: pcap-broker
   #  build:
@@ -62,3 +76,6 @@ services:
   #        ssh root@vulnbox -oStrictHostKeyChecking=no
   #        tcpdump -U --immediate-mode -ni game -s 65535 -w - not tcp port 22
   #    LISTEN_ADDRESS: 0.0.0.0:4242
+
+volumes:
+  grafana-storage: {}

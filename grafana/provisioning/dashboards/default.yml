@@ -1,0 +1,10 @@
+# Copyright (C) 2025  A. Iooss
+# SPDX-License-Identifier: CC0-1.0
+apiVersion: 1
+
+providers:
+  - name: dashboards
+    type: file
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
