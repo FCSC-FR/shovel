@@ -29,12 +29,13 @@ function setup (args)
             flow_id INTEGER NOT NULL,
             count INTEGER,
             server_to_client INTEGER,
-            blob BLOB,
+            sz INT,
+            data BLOB,
             UNIQUE(flow_id, count)
         );
         CREATE INDEX IF NOT EXISTS "raw_flow_id_idx" ON raw(flow_id);
     ]]) == sqlite3.OK)
-    stmt = database:prepare("INSERT OR IGNORE INTO raw (flow_id, count, server_to_client, blob) values(?, ?, ?, ?);")
+    stmt = database:prepare("INSERT OR IGNORE INTO raw (flow_id, count, server_to_client, sz, data) values(?, ?, ?, ?, ?);")
 
     -- packer counter for each flow
     flow_pkt_count = {}
@@ -73,7 +74,7 @@ function log (args)
         return
     end
     assert(stmt:reset() == sqlite3.OK)
-    assert(stmt:bind_values(flow_id, count, direction, data) == sqlite3.OK)
+    assert(stmt:bind_values(flow_id, count, direction, #data, data) == sqlite3.OK)
     assert(stmt:step() == sqlite3.DONE)
 end
 

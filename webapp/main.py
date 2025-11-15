@@ -97,7 +97,7 @@ async def api_flow_list(request):
     if search:
         # Collect all flows id with raw payload matching search
         async with payload_db.execute(
-            "SELECT flow_id FROM raw WHERE blob GLOB ?1", (f"*{search}*",)
+            "SELECT flow_id FROM raw WHERE data GLOB ?1", (f"*{search}*",)
         ) as cursor:
             rows = await cursor.fetchall()
             search_fid = [r["flow_id"] for r in rows]
@@ -208,13 +208,13 @@ async def api_flow_raw_get(request):
 
     # Get associated raw data
     async with payload_db.execute(
-        "SELECT server_to_client, blob FROM raw WHERE flow_id = ?1 ORDER BY count",
+        "SELECT server_to_client, data FROM raw WHERE flow_id = ?1 ORDER BY count",
         (flow_id,),
     ) as cursor:
         rows = await cursor.fetchall()
         result = []
         for r in rows:
-            data = base64.b64encode(r["blob"]).decode()
+            data = base64.b64encode(r["data"]).decode()
             result.append({"server_to_client": r["server_to_client"], "data": data})
 
     return JSONResponse(result, headers={"Cache-Control": "max-age=86400"})
@@ -281,7 +281,7 @@ async def api_replay_raw(request):
 
     # Get associated raw data
     async with payload_db.execute(
-        "SELECT server_to_client, blob FROM raw WHERE flow_id = ?1 ORDER BY count",
+        "SELECT server_to_client, data FROM raw WHERE flow_id = ?1 ORDER BY count",
         (flow_id,),
     ) as cursor:
         rows = await cursor.fetchall()
@@ -291,7 +291,7 @@ async def api_replay_raw(request):
     # Load files
     data["raw_data"] = []
     for row in rows:
-        sc, raw_data = row["server_to_client"], row["blob"]
+        sc, raw_data = row["server_to_client"], row["data"]
         if data["raw_data"] and data["raw_data"][-1][1] == sc and sc == 1:
             # Concat servers messages together
             data["raw_data"][-1][0] += raw_data
