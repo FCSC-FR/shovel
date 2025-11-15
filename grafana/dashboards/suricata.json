@@ -1,0 +1,1888 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": 2,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.decoder.bytes\" as bytes\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763208193090 / 1000 and time < 1763211608903 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.decoder.bytes\" as bytes\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Total traffic captured",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.uptime\" as uptime\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763191770277 / 1000 and time < 1763234970277 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.uptime\" as uptime\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Uptime",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 13,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.tcp.memuse\" as TCP,\n  extra_data->>\"$.tcp.reassembly_memuse\" as \"TCP reassembly\",\n  extra_data->>\"$.flow.memuse\" as Flow,\n  extra_data->>\"$.defrag.memuse\" as Defragmentation,\n  extra_data->>\"$.http.memuse\" as HTTP,\n  extra_data->>\"$.http.byterange.memuse\" as \"HTTP byterange\",\n  extra_data->>\"$.ippair.memuse\" as \"IP pair\",\n  extra_data->>\"$.host.memuse\" as Host\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.tcp.memuse\" as TCP,\n  extra_data->>\"$.tcp.reassembly_memuse\" as \"TCP reassembly\",\n  extra_data->>\"$.flow.memuse\" as Flow,\n  extra_data->>\"$.defrag.memuse\" as Defragmentation,\n  extra_data->>\"$.http.memuse\" as HTTP,\n  extra_data->>\"$.http.byterange.memuse\" as \"HTTP byterange\",\n  extra_data->>\"$.ippair.memuse\" as \"IP pair\",\n  extra_data->>\"$.host.memuse\" as Host\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Memory usage",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 6,
+      "panels": [],
+      "title": "Decoder",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 7
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.decoder.tcp\" as TCP,\n  extra_data->>\"$.decoder.udp\" as UDP,\n  extra_data->>\"$.decoder.icmpv4\" as ICMPv4,\n  extra_data->>\"$.decoder.icmpv6\" as ICMPv6\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.decoder.tcp\" as TCP,\n  extra_data->>\"$.decoder.udp\" as UDP,\n  extra_data->>\"$.decoder.icmpv4\" as ICMPv4,\n  extra_data->>\"$.decoder.icmpv6\" as ICMPv6\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Packets count",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Maximum packet size"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Average packet size"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 7
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.decoder.max_pkt_size\" as \"Maximum packet size\",\n  extra_data->>\"$.decoder.avg_pkt_size\" as \"Average packet size\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.decoder.max_pkt_size\" as \"Maximum packet size\",\n  extra_data->>\"$.decoder.avg_pkt_size\" as \"Average packet size\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Packet size",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 7
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull"],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.decoder.event.afpacket.trunc_pkt\" as \"afpacket.trunc_pkt\",\n  extra_data->>\"$.decoder.event.ipv4.pkt_too_small\" as \"ipv4.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ipv4.hlen_too_small\" as \"ipv4.hlen_too_small\",\n  extra_data->>\"$.decoder.event.ipv4.iplen_smaller_than_hlen\" as \"ipv4.iplen_smaller_than_hlen\",\n  extra_data->>\"$.decoder.event.ipv4.trunc_pkt\" as \"ipv4.trunc_pkt\",\n  extra_data->>\"$.decoder.event.ipv4.opt_invalid\" as \"ipv4.opt_invalid\",\n  extra_data->>\"$.decoder.event.ipv4.opt_invalid_len\" as \"ipv4.opt_invalid_len\",\n  extra_data->>\"$.decoder.event.ipv4.opt_malformed\" as \"ipv4.opt_malformed\",\n  extra_data->>\"$.decoder.event.ipv4.opt_pad_required\" as \"ipv4.opt_pad_required\",\n  extra_data->>\"$.decoder.event.ipv4.opt_eol_required\" as \"ipv4.opt_eol_required\",\n  extra_data->>\"$.decoder.event.ipv4.opt_duplicate\" as \"ipv4.opt_duplicate\",\n  extra_data->>\"$.decoder.event.ipv4.opt_unknown\" as \"ipv4.opt_unknown\",\n  extra_data->>\"$.decoder.event.ipv4.wrong_ip_version\" as \"ipv4.wrong_ip_version\",\n  extra_data->>\"$.decoder.event.ipv4.icmpv6\" as \"ipv4.icmpv6\",\n  extra_data->>\"$.decoder.event.ipv4.frag_pkt_too_large\" as \"ipv4.frag_pkt_too_large\",\n  extra_data->>\"$.decoder.event.ipv4.frag_overlap\" as \"ipv4.frag_overlap\",\n  extra_data->>\"$.decoder.event.ipv4.frag_ignored\" as \"ipv4.frag_ignored\",\n  extra_data->>\"$.decoder.event.icmpv4.pkt_too_small\" as \"icmpv4.pkt_too_small\",\n  extra_data->>\"$.decoder.event.icmpv4.unknown_type\" as \"icmpv4.unknown_type\",\n  extra_data->>\"$.decoder.event.icmpv4.unknown_code\" as \"icmpv4.unknown_code\",\n  extra_data->>\"$.decoder.event.icmpv4.ipv4_trunc_pkt\" as \"icmpv4.ipv4_trunc_pkt\",\n  extra_data->>\"$.decoder.event.icmpv4.ipv4_unknown_ver\" as \"icmpv4.ipv4_unknown_ver\",\n  extra_data->>\"$.decoder.event.icmpv6.unknown_type\" as \"icmpv6.unknown_type\",\n  extra_data->>\"$.decoder.event.icmpv6.unknown_code\" as \"icmpv6.unknown_code\",\n  extra_data->>\"$.decoder.event.icmpv6.pkt_too_small\" as \"icmpv6.pkt_too_small\",\n  extra_data->>\"$.decoder.event.icmpv6.ipv6_unknown_version\" as \"icmpv6.ipv6_unknown_version\",\n  extra_data->>\"$.decoder.event.icmpv6.ipv6_trunc_pkt\" as \"icmpv6.ipv6_trunc_pkt\",\n  extra_data->>\"$.decoder.event.icmpv6.mld_message_with_invalid_hl\" as \"icmpv6.mld_message_with_invalid_hl\",\n  extra_data->>\"$.decoder.event.icmpv6.unassigned_type\" as \"icmpv6.unassigned_type\",\n  extra_data->>\"$.decoder.event.icmpv6.experimentation_type\" as \"icmpv6.experimentation_type\",\n  extra_data->>\"$.decoder.event.ipv6.pkt_too_small\" as \"ipv6.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ipv6.trunc_pkt\" as \"ipv6.trunc_pkt\",\n  extra_data->>\"$.decoder.event.ipv6.trunc_exthdr\" as \"ipv6.trunc_exthdr\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_fh\" as \"ipv6.exthdr_dupl_fh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_useless_fh\" as \"ipv6.exthdr_useless_fh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_rh\" as \"ipv6.exthdr_dupl_rh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_hh\" as \"ipv6.exthdr_dupl_hh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_dh\" as \"ipv6.exthdr_dupl_dh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_ah\" as \"ipv6.exthdr_dupl_ah\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_eh\" as \"ipv6.exthdr_dupl_eh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_invalid_optlen\" as \"ipv6.exthdr_invalid_optlen\",\n  extra_data->>\"$.decoder.event.ipv6.wrong_ip_version\" as \"ipv6.wrong_ip_version\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_ah_res_not_null\" as \"ipv6.exthdr_ah_res_not_null\",\n  extra_data->>\"$.decoder.event.ipv6.hopopts_unknown_opt\" as \"ipv6.hopopts_unknown_opt\",\n  extra_data->>\"$.decoder.event.ipv6.hopopts_only_padding\" as \"ipv6.hopopts_only_padding\",\n  extra_data->>\"$.decoder.event.ipv6.dstopts_unknown_opt\" as \"ipv6.dstopts_unknown_opt\",\n  extra_data->>\"$.decoder.event.ipv6.dstopts_only_padding\" as \"ipv6.dstopts_only_padding\",\n  extra_data->>\"$.decoder.event.ipv6.rh_type_0\" as \"ipv6.rh_type_0\",\n  extra_data->>\"$.decoder.event.ipv6.zero_len_padn\" as \"ipv6.zero_len_padn\",\n  extra_data->>\"$.decoder.event.ipv6.fh_non_zero_reserved_field\" as \"ipv6.fh_non_zero_reserved_field\",\n  extra_data->>\"$.decoder.event.ipv6.data_after_none_header\" as \"ipv6.data_after_none_header\",\n  extra_data->>\"$.decoder.event.ipv6.unknown_next_header\" as \"ipv6.unknown_next_header\",\n  extra_data->>\"$.decoder.event.ipv6.icmpv4\" as \"ipv6.icmpv4\",\n  extra_data->>\"$.decoder.event.ipv6.frag_pkt_too_large\" as \"ipv6.frag_pkt_too_large\",\n  extra_data->>\"$.decoder.event.ipv6.frag_overlap\" as \"ipv6.frag_overlap\",\n  extra_data->>\"$.decoder.event.ipv6.frag_invalid_length\" as \"ipv6.frag_invalid_length\",\n  extra_data->>\"$.decoder.event.ipv6.frag_ignored\" as \"ipv6.frag_ignored\",\n  extra_data->>\"$.decoder.event.ipv6.ipv4_in_ipv6_too_small\" as \"ipv6.ipv4_in_ipv6_too_small\",\n  extra_data->>\"$.decoder.event.ipv6.ipv4_in_ipv6_wrong_version\" as \"ipv6.ipv4_in_ipv6_wrong_version\",\n  extra_data->>\"$.decoder.event.ipv6.ipv6_in_ipv6_too_small\" as \"ipv6.ipv6_in_ipv6_too_small\",\n  extra_data->>\"$.decoder.event.ipv6.ipv6_in_ipv6_wrong_version\" as \"ipv6.ipv6_in_ipv6_wrong_version\",\n  extra_data->>\"$.decoder.event.tcp.pkt_too_small\" as \"tcp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.tcp.hlen_too_small\" as \"tcp.hlen_too_small\",\n  extra_data->>\"$.decoder.event.tcp.invalid_optlen\" as \"tcp.invalid_optlen\",\n  extra_data->>\"$.decoder.event.tcp.opt_invalid_len\" as \"tcp.opt_invalid_len\",\n  extra_data->>\"$.decoder.event.tcp.opt_duplicate\" as \"tcp.opt_duplicate\",\n  extra_data->>\"$.decoder.event.udp.pkt_too_small\" as \"udp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.udp.hlen_too_small\" as \"udp.hlen_too_small\",\n  extra_data->>\"$.decoder.event.udp.hlen_invalid\" as \"udp.hlen_invalid\",\n  extra_data->>\"$.decoder.event.udp.len_invalid\" as \"udp.len_invalid\",\n  extra_data->>\"$.decoder.event.sll.pkt_too_small\" as \"sll.pkt_too_small\",\n  extra_data->>\"$.decoder.event.sll2.pkt_too_small\" as \"sll2.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ethernet.pkt_too_small\" as \"ethernet.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ethernet.unknown_ethertype\" as \"ethernet.unknown_ethertype\",\n  extra_data->>\"$.decoder.event.ppp.pkt_too_small\" as \"ppp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ppp.vju_pkt_too_small\" as \"ppp.vju_pkt_too_small\",\n  extra_data->>\"$.decoder.event.ppp.ip4_pkt_too_small\" as \"ppp.ip4_pkt_too_small\",\n  extra_data->>\"$.decoder.event.ppp.ip6_pkt_too_small\" as \"ppp.ip6_pkt_too_small\",\n  extra_data->>\"$.decoder.event.ppp.wrong_type\" as \"ppp.wrong_type\",\n  extra_data->>\"$.decoder.event.ppp.unsup_proto\" as \"ppp.unsup_proto\",\n  extra_data->>\"$.decoder.event.pppoe.pkt_too_small\" as \"pppoe.pkt_too_small\",\n  extra_data->>\"$.decoder.event.pppoe.wrong_code\" as \"pppoe.wrong_code\",\n  extra_data->>\"$.decoder.event.pppoe.malformed_tags\" as \"pppoe.malformed_tags\",\n  extra_data->>\"$.decoder.event.gre.pkt_too_small\" as \"gre.pkt_too_small\",\n  extra_data->>\"$.decoder.event.gre.wrong_version\" as \"gre.wrong_version\",\n  extra_data->>\"$.decoder.event.gre.version0_recur\" as \"gre.version0_recur\",\n  extra_data->>\"$.decoder.event.gre.version0_flags\" as \"gre.version0_flags\",\n  extra_data->>\"$.decoder.event.gre.version0_hdr_too_big\" as \"gre.version0_hdr_too_big\",\n  extra_data->>\"$.decoder.event.gre.version0_malformed_sre_hdr\" as \"gre.version0_malformed_sre_hdr\",\n  extra_data->>\"$.decoder.event.gre.version1_chksum\" as \"gre.version1_chksum\",\n  extra_data->>\"$.decoder.event.gre.version1_route\" as \"gre.version1_route\",\n  extra_data->>\"$.decoder.event.gre.version1_ssr\" as \"gre.version1_ssr\",\n  extra_data->>\"$.decoder.event.gre.version1_recur\" as \"gre.version1_recur\",\n  extra_data->>\"$.decoder.event.gre.version1_flags\" as \"gre.version1_flags\",\n  extra_data->>\"$.decoder.event.gre.version1_no_key\" as \"gre.version1_no_key\",\n  extra_data->>\"$.decoder.event.gre.version1_wrong_protocol\" as \"gre.version1_wrong_protocol\",\n  extra_data->>\"$.decoder.event.gre.version1_malformed_sre_hdr\" as \"gre.version1_malformed_sre_hdr\",\n  extra_data->>\"$.decoder.event.gre.version1_hdr_too_big\" as \"gre.version1_hdr_too_big\",\n  extra_data->>\"$.decoder.event.vlan.header_too_small\" as \"vlan.header_too_small\",\n  extra_data->>\"$.decoder.event.vlan.unknown_type\" as \"vlan.unknown_type\",\n  extra_data->>\"$.decoder.event.vlan.too_many_layers\" as \"vlan.too_many_layers\",\n  extra_data->>\"$.decoder.event.ieee8021ah.header_too_small\" as \"ieee8021ah.header_too_small\",\n  extra_data->>\"$.decoder.event.vntag.header_too_small\" as \"vntag.header_too_small\",\n  extra_data->>\"$.decoder.event.vntag.unknown_type\" as \"vntag.unknown_type\",\n  extra_data->>\"$.decoder.event.ipraw.invalid_ip_version\" as \"ipraw.invalid_ip_version\",\n  extra_data->>\"$.decoder.event.ltnull.pkt_too_small\" as \"ltnull.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ltnull.unsupported_type\" as \"ltnull.unsupported_type\",\n  extra_data->>\"$.decoder.event.sctp.pkt_too_small\" as \"sctp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.esp.pkt_too_small\" as \"esp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.mpls.header_too_small\" as \"mpls.header_too_small\",\n  extra_data->>\"$.decoder.event.mpls.pkt_too_small\" as \"mpls.pkt_too_small\",\n  extra_data->>\"$.decoder.event.mpls.bad_label_router_alert\" as \"mpls.bad_label_router_alert\",\n  extra_data->>\"$.decoder.event.mpls.bad_label_implicit_null\" as \"mpls.bad_label_implicit_null\",\n  extra_data->>\"$.decoder.event.mpls.bad_label_reserved\" as \"mpls.bad_label_reserved\",\n  extra_data->>\"$.decoder.event.mpls.unknown_payload_type\" as \"mpls.unknown_payload_type\",\n  extra_data->>\"$.decoder.event.vxlan.unknown_payload_type\" as \"vxlan.unknown_payload_type\",\n  extra_data->>\"$.decoder.event.geneve.unknown_payload_type\" as \"geneve.unknown_payload_type\",\n  extra_data->>\"$.decoder.event.erspan.header_too_small\" as \"erspan.header_too_small\",\n  extra_data->>\"$.decoder.event.erspan.unsupported_version\" as \"erspan.unsupported_version\",\n  extra_data->>\"$.decoder.event.erspan.too_many_vlan_layers\" as \"erspan.too_many_vlan_layers\",\n  extra_data->>\"$.decoder.event.dce.pkt_too_small\" as \"dce.pkt_too_small\",\n  extra_data->>\"$.decoder.event.chdlc.pkt_too_small\" as \"chdlc.pkt_too_small\",\n  extra_data->>\"$.decoder.event.nsh.header_too_small\" as \"nsh.header_too_small\",\n  extra_data->>\"$.decoder.event.nsh.unsupported_version\" as \"nsh.unsupported_version\",\n  extra_data->>\"$.decoder.event.nsh.bad_header_length\" as \"nsh.bad_header_length\",\n  extra_data->>\"$.decoder.event.nsh.reserved_type\" as \"nsh.reserved_type\",\n  extra_data->>\"$.decoder.event.nsh.unsupported_type\" as \"nsh.unsupported_type\",\n  extra_data->>\"$.decoder.event.nsh.unknown_payload\" as \"nsh.unknown_payload\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763208193090 / 1000 and time < 1763211608903 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.decoder.event.afpacket.trunc_pkt\" as \"afpacket.trunc_pkt\",\n  extra_data->>\"$.decoder.event.ipv4.pkt_too_small\" as \"ipv4.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ipv4.hlen_too_small\" as \"ipv4.hlen_too_small\",\n  extra_data->>\"$.decoder.event.ipv4.iplen_smaller_than_hlen\" as \"ipv4.iplen_smaller_than_hlen\",\n  extra_data->>\"$.decoder.event.ipv4.trunc_pkt\" as \"ipv4.trunc_pkt\",\n  extra_data->>\"$.decoder.event.ipv4.opt_invalid\" as \"ipv4.opt_invalid\",\n  extra_data->>\"$.decoder.event.ipv4.opt_invalid_len\" as \"ipv4.opt_invalid_len\",\n  extra_data->>\"$.decoder.event.ipv4.opt_malformed\" as \"ipv4.opt_malformed\",\n  extra_data->>\"$.decoder.event.ipv4.opt_pad_required\" as \"ipv4.opt_pad_required\",\n  extra_data->>\"$.decoder.event.ipv4.opt_eol_required\" as \"ipv4.opt_eol_required\",\n  extra_data->>\"$.decoder.event.ipv4.opt_duplicate\" as \"ipv4.opt_duplicate\",\n  extra_data->>\"$.decoder.event.ipv4.opt_unknown\" as \"ipv4.opt_unknown\",\n  extra_data->>\"$.decoder.event.ipv4.wrong_ip_version\" as \"ipv4.wrong_ip_version\",\n  extra_data->>\"$.decoder.event.ipv4.icmpv6\" as \"ipv4.icmpv6\",\n  extra_data->>\"$.decoder.event.ipv4.frag_pkt_too_large\" as \"ipv4.frag_pkt_too_large\",\n  extra_data->>\"$.decoder.event.ipv4.frag_overlap\" as \"ipv4.frag_overlap\",\n  extra_data->>\"$.decoder.event.ipv4.frag_ignored\" as \"ipv4.frag_ignored\",\n  extra_data->>\"$.decoder.event.icmpv4.pkt_too_small\" as \"icmpv4.pkt_too_small\",\n  extra_data->>\"$.decoder.event.icmpv4.unknown_type\" as \"icmpv4.unknown_type\",\n  extra_data->>\"$.decoder.event.icmpv4.unknown_code\" as \"icmpv4.unknown_code\",\n  extra_data->>\"$.decoder.event.icmpv4.ipv4_trunc_pkt\" as \"icmpv4.ipv4_trunc_pkt\",\n  extra_data->>\"$.decoder.event.icmpv4.ipv4_unknown_ver\" as \"icmpv4.ipv4_unknown_ver\",\n  extra_data->>\"$.decoder.event.icmpv6.unknown_type\" as \"icmpv6.unknown_type\",\n  extra_data->>\"$.decoder.event.icmpv6.unknown_code\" as \"icmpv6.unknown_code\",\n  extra_data->>\"$.decoder.event.icmpv6.pkt_too_small\" as \"icmpv6.pkt_too_small\",\n  extra_data->>\"$.decoder.event.icmpv6.ipv6_unknown_version\" as \"icmpv6.ipv6_unknown_version\",\n  extra_data->>\"$.decoder.event.icmpv6.ipv6_trunc_pkt\" as \"icmpv6.ipv6_trunc_pkt\",\n  extra_data->>\"$.decoder.event.icmpv6.mld_message_with_invalid_hl\" as \"icmpv6.mld_message_with_invalid_hl\",\n  extra_data->>\"$.decoder.event.icmpv6.unassigned_type\" as \"icmpv6.unassigned_type\",\n  extra_data->>\"$.decoder.event.icmpv6.experimentation_type\" as \"icmpv6.experimentation_type\",\n  extra_data->>\"$.decoder.event.ipv6.pkt_too_small\" as \"ipv6.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ipv6.trunc_pkt\" as \"ipv6.trunc_pkt\",\n  extra_data->>\"$.decoder.event.ipv6.trunc_exthdr\" as \"ipv6.trunc_exthdr\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_fh\" as \"ipv6.exthdr_dupl_fh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_useless_fh\" as \"ipv6.exthdr_useless_fh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_rh\" as \"ipv6.exthdr_dupl_rh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_hh\" as \"ipv6.exthdr_dupl_hh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_dh\" as \"ipv6.exthdr_dupl_dh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_ah\" as \"ipv6.exthdr_dupl_ah\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_dupl_eh\" as \"ipv6.exthdr_dupl_eh\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_invalid_optlen\" as \"ipv6.exthdr_invalid_optlen\",\n  extra_data->>\"$.decoder.event.ipv6.wrong_ip_version\" as \"ipv6.wrong_ip_version\",\n  extra_data->>\"$.decoder.event.ipv6.exthdr_ah_res_not_null\" as \"ipv6.exthdr_ah_res_not_null\",\n  extra_data->>\"$.decoder.event.ipv6.hopopts_unknown_opt\" as \"ipv6.hopopts_unknown_opt\",\n  extra_data->>\"$.decoder.event.ipv6.hopopts_only_padding\" as \"ipv6.hopopts_only_padding\",\n  extra_data->>\"$.decoder.event.ipv6.dstopts_unknown_opt\" as \"ipv6.dstopts_unknown_opt\",\n  extra_data->>\"$.decoder.event.ipv6.dstopts_only_padding\" as \"ipv6.dstopts_only_padding\",\n  extra_data->>\"$.decoder.event.ipv6.rh_type_0\" as \"ipv6.rh_type_0\",\n  extra_data->>\"$.decoder.event.ipv6.zero_len_padn\" as \"ipv6.zero_len_padn\",\n  extra_data->>\"$.decoder.event.ipv6.fh_non_zero_reserved_field\" as \"ipv6.fh_non_zero_reserved_field\",\n  extra_data->>\"$.decoder.event.ipv6.data_after_none_header\" as \"ipv6.data_after_none_header\",\n  extra_data->>\"$.decoder.event.ipv6.unknown_next_header\" as \"ipv6.unknown_next_header\",\n  extra_data->>\"$.decoder.event.ipv6.icmpv4\" as \"ipv6.icmpv4\",\n  extra_data->>\"$.decoder.event.ipv6.frag_pkt_too_large\" as \"ipv6.frag_pkt_too_large\",\n  extra_data->>\"$.decoder.event.ipv6.frag_overlap\" as \"ipv6.frag_overlap\",\n  extra_data->>\"$.decoder.event.ipv6.frag_invalid_length\" as \"ipv6.frag_invalid_length\",\n  extra_data->>\"$.decoder.event.ipv6.frag_ignored\" as \"ipv6.frag_ignored\",\n  extra_data->>\"$.decoder.event.ipv6.ipv4_in_ipv6_too_small\" as \"ipv6.ipv4_in_ipv6_too_small\",\n  extra_data->>\"$.decoder.event.ipv6.ipv4_in_ipv6_wrong_version\" as \"ipv6.ipv4_in_ipv6_wrong_version\",\n  extra_data->>\"$.decoder.event.ipv6.ipv6_in_ipv6_too_small\" as \"ipv6.ipv6_in_ipv6_too_small\",\n  extra_data->>\"$.decoder.event.ipv6.ipv6_in_ipv6_wrong_version\" as \"ipv6.ipv6_in_ipv6_wrong_version\",\n  extra_data->>\"$.decoder.event.tcp.pkt_too_small\" as \"tcp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.tcp.hlen_too_small\" as \"tcp.hlen_too_small\",\n  extra_data->>\"$.decoder.event.tcp.invalid_optlen\" as \"tcp.invalid_optlen\",\n  extra_data->>\"$.decoder.event.tcp.opt_invalid_len\" as \"tcp.opt_invalid_len\",\n  extra_data->>\"$.decoder.event.tcp.opt_duplicate\" as \"tcp.opt_duplicate\",\n  extra_data->>\"$.decoder.event.udp.pkt_too_small\" as \"udp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.udp.hlen_too_small\" as \"udp.hlen_too_small\",\n  extra_data->>\"$.decoder.event.udp.hlen_invalid\" as \"udp.hlen_invalid\",\n  extra_data->>\"$.decoder.event.udp.len_invalid\" as \"udp.len_invalid\",\n  extra_data->>\"$.decoder.event.sll.pkt_too_small\" as \"sll.pkt_too_small\",\n  extra_data->>\"$.decoder.event.sll2.pkt_too_small\" as \"sll2.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ethernet.pkt_too_small\" as \"ethernet.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ethernet.unknown_ethertype\" as \"ethernet.unknown_ethertype\",\n  extra_data->>\"$.decoder.event.ppp.pkt_too_small\" as \"ppp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ppp.vju_pkt_too_small\" as \"ppp.vju_pkt_too_small\",\n  extra_data->>\"$.decoder.event.ppp.ip4_pkt_too_small\" as \"ppp.ip4_pkt_too_small\",\n  extra_data->>\"$.decoder.event.ppp.ip6_pkt_too_small\" as \"ppp.ip6_pkt_too_small\",\n  extra_data->>\"$.decoder.event.ppp.wrong_type\" as \"ppp.wrong_type\",\n  extra_data->>\"$.decoder.event.ppp.unsup_proto\" as \"ppp.unsup_proto\",\n  extra_data->>\"$.decoder.event.pppoe.pkt_too_small\" as \"pppoe.pkt_too_small\",\n  extra_data->>\"$.decoder.event.pppoe.wrong_code\" as \"pppoe.wrong_code\",\n  extra_data->>\"$.decoder.event.pppoe.malformed_tags\" as \"pppoe.malformed_tags\",\n  extra_data->>\"$.decoder.event.gre.pkt_too_small\" as \"gre.pkt_too_small\",\n  extra_data->>\"$.decoder.event.gre.wrong_version\" as \"gre.wrong_version\",\n  extra_data->>\"$.decoder.event.gre.version0_recur\" as \"gre.version0_recur\",\n  extra_data->>\"$.decoder.event.gre.version0_flags\" as \"gre.version0_flags\",\n  extra_data->>\"$.decoder.event.gre.version0_hdr_too_big\" as \"gre.version0_hdr_too_big\",\n  extra_data->>\"$.decoder.event.gre.version0_malformed_sre_hdr\" as \"gre.version0_malformed_sre_hdr\",\n  extra_data->>\"$.decoder.event.gre.version1_chksum\" as \"gre.version1_chksum\",\n  extra_data->>\"$.decoder.event.gre.version1_route\" as \"gre.version1_route\",\n  extra_data->>\"$.decoder.event.gre.version1_ssr\" as \"gre.version1_ssr\",\n  extra_data->>\"$.decoder.event.gre.version1_recur\" as \"gre.version1_recur\",\n  extra_data->>\"$.decoder.event.gre.version1_flags\" as \"gre.version1_flags\",\n  extra_data->>\"$.decoder.event.gre.version1_no_key\" as \"gre.version1_no_key\",\n  extra_data->>\"$.decoder.event.gre.version1_wrong_protocol\" as \"gre.version1_wrong_protocol\",\n  extra_data->>\"$.decoder.event.gre.version1_malformed_sre_hdr\" as \"gre.version1_malformed_sre_hdr\",\n  extra_data->>\"$.decoder.event.gre.version1_hdr_too_big\" as \"gre.version1_hdr_too_big\",\n  extra_data->>\"$.decoder.event.vlan.header_too_small\" as \"vlan.header_too_small\",\n  extra_data->>\"$.decoder.event.vlan.unknown_type\" as \"vlan.unknown_type\",\n  extra_data->>\"$.decoder.event.vlan.too_many_layers\" as \"vlan.too_many_layers\",\n  extra_data->>\"$.decoder.event.ieee8021ah.header_too_small\" as \"ieee8021ah.header_too_small\",\n  extra_data->>\"$.decoder.event.vntag.header_too_small\" as \"vntag.header_too_small\",\n  extra_data->>\"$.decoder.event.vntag.unknown_type\" as \"vntag.unknown_type\",\n  extra_data->>\"$.decoder.event.ipraw.invalid_ip_version\" as \"ipraw.invalid_ip_version\",\n  extra_data->>\"$.decoder.event.ltnull.pkt_too_small\" as \"ltnull.pkt_too_small\",\n  extra_data->>\"$.decoder.event.ltnull.unsupported_type\" as \"ltnull.unsupported_type\",\n  extra_data->>\"$.decoder.event.sctp.pkt_too_small\" as \"sctp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.esp.pkt_too_small\" as \"esp.pkt_too_small\",\n  extra_data->>\"$.decoder.event.mpls.header_too_small\" as \"mpls.header_too_small\",\n  extra_data->>\"$.decoder.event.mpls.pkt_too_small\" as \"mpls.pkt_too_small\",\n  extra_data->>\"$.decoder.event.mpls.bad_label_router_alert\" as \"mpls.bad_label_router_alert\",\n  extra_data->>\"$.decoder.event.mpls.bad_label_implicit_null\" as \"mpls.bad_label_implicit_null\",\n  extra_data->>\"$.decoder.event.mpls.bad_label_reserved\" as \"mpls.bad_label_reserved\",\n  extra_data->>\"$.decoder.event.mpls.unknown_payload_type\" as \"mpls.unknown_payload_type\",\n  extra_data->>\"$.decoder.event.vxlan.unknown_payload_type\" as \"vxlan.unknown_payload_type\",\n  extra_data->>\"$.decoder.event.geneve.unknown_payload_type\" as \"geneve.unknown_payload_type\",\n  extra_data->>\"$.decoder.event.erspan.header_too_small\" as \"erspan.header_too_small\",\n  extra_data->>\"$.decoder.event.erspan.unsupported_version\" as \"erspan.unsupported_version\",\n  extra_data->>\"$.decoder.event.erspan.too_many_vlan_layers\" as \"erspan.too_many_vlan_layers\",\n  extra_data->>\"$.decoder.event.dce.pkt_too_small\" as \"dce.pkt_too_small\",\n  extra_data->>\"$.decoder.event.chdlc.pkt_too_small\" as \"chdlc.pkt_too_small\",\n  extra_data->>\"$.decoder.event.nsh.header_too_small\" as \"nsh.header_too_small\",\n  extra_data->>\"$.decoder.event.nsh.unsupported_version\" as \"nsh.unsupported_version\",\n  extra_data->>\"$.decoder.event.nsh.bad_header_length\" as \"nsh.bad_header_length\",\n  extra_data->>\"$.decoder.event.nsh.reserved_type\" as \"nsh.reserved_type\",\n  extra_data->>\"$.decoder.event.nsh.unsupported_type\" as \"nsh.unsupported_type\",\n  extra_data->>\"$.decoder.event.nsh.unknown_payload\" as \"nsh.unknown_payload\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Decoder issues",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 7,
+      "panels": [],
+      "title": "TCP",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 15
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.tcp.syn\" as SYN,\n  extra_data->>\"$.tcp.synack\" as SYNACK,\n  extra_data->>\"$.tcp.rst\" as RST,\n  extra_data->>\"$.tcp.urg\" as URG\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763206840643 / 1000 and time < 1763213121949 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.tcp.syn\" as SYN,\n  extra_data->>\"$.tcp.synack\" as SYNACK,\n  extra_data->>\"$.tcp.rst\" as RST,\n  extra_data->>\"$.tcp.urg\" as URG\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "TCP packets count",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 15
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.tcp.active_sessions\" as \"Active sessions\"\n\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763206840643 / 1000 and time < 1763213121949 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.tcp.active_sessions\" as \"Active sessions\"\n\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "TCP active sessions",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 15
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull"],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.tcp.ssn_memcap_drop\" as ssn_memcap_drop,\n  extra_data->>\"$.tcp.invalid_checksum\" as invalid_checksum,\n  extra_data->>\"$.tcp.midstream_pickups\" as midstream_pickups,\n  extra_data->>\"$.tcp.pkt_on_wrong_thread\" as pkt_on_wrong_thread,\n  extra_data->>\"$.tcp.ack_unseen_data\" as ack_unseen_data,\n  extra_data->>\"$.tcp.segment_memcap_drop\" as segment_memcap_drop,\n  extra_data->>\"$.tcp.stream_depth_reached\" as stream_depth_reached,\n  extra_data->>\"$.tcp.reassembly_gap\" as reassembly_gap,\n  extra_data->>\"$.tcp.overlap_diff_data\" as overlap_diff_data,\n  extra_data->>\"$.tcp.insert_data_normal_fail\" as insert_data_normal_fail,\n  extra_data->>\"$.tcp.insert_data_overlap_fail\" as insert_data_overlap_fail,\n  extra_data->>\"$.tcp.urgent_oob_data\" as urgent_oob_data\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763206840643 / 1000 and time < 1763213121949 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.tcp.ssn_memcap_drop\" as ssn_memcap_drop,\n  extra_data->>\"$.tcp.invalid_checksum\" as invalid_checksum,\n  extra_data->>\"$.tcp.midstream_pickups\" as midstream_pickups,\n  extra_data->>\"$.tcp.pkt_on_wrong_thread\" as pkt_on_wrong_thread,\n  extra_data->>\"$.tcp.ack_unseen_data\" as ack_unseen_data,\n  extra_data->>\"$.tcp.segment_memcap_drop\" as segment_memcap_drop,\n  extra_data->>\"$.tcp.stream_depth_reached\" as stream_depth_reached,\n  extra_data->>\"$.tcp.reassembly_gap\" as reassembly_gap,\n  extra_data->>\"$.tcp.overlap_diff_data\" as overlap_diff_data,\n  extra_data->>\"$.tcp.insert_data_normal_fail\" as insert_data_normal_fail,\n  extra_data->>\"$.tcp.insert_data_overlap_fail\" as insert_data_overlap_fail,\n  extra_data->>\"$.tcp.urgent_oob_data\" as urgent_oob_data\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "TCP issues",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 20,
+      "panels": [],
+      "title": "Flow",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 23
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.flow.end.state.new\" as New,\n  extra_data->>\"$.flow.end.state.established\" as Established,\n  extra_data->>\"$.flow.end.state.closed\" as Closed\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.flow.end.state.new\" as New,\n  extra_data->>\"$.flow.end.state.established\" as Established,\n  extra_data->>\"$.flow.end.state.closed\" as Closed\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Flow end state",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 23
+      },
+      "id": 19,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.flow.active\" as \"Active flows\"\n\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763206840643 / 1000 and time < 1763213121949 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.flow.active\" as \"Active flows\"\n\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Active flows",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 23
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.flow.wrk.spare_sync_avg\" as \"spare_sync_avg\",\n  extra_data->>\"$.flow.wrk.spare_sync\" as \"spare_sync\",\n  extra_data->>\"$.flow.wrk.spare_sync_incomplete\" as \"spare_sync_incomplete\",\n  extra_data->>\"$.flow.wrk.spare_sync_empty\" as \"spare_sync_empty\",\n  extra_data->>\"$.flow.wrk.flows_evicted_needs_work\" as \"flows_evicted_needs_work\",\n  extra_data->>\"$.flow.wrk.flows_evicted_pkt_inject\" as \"flows_evicted_pkt_inject\",\n  extra_data->>\"$.flow.wrk.flows_evicted\" as \"flows_evicted\",\n  extra_data->>\"$.flow.wrk.flows_injected\" as \"flows_injected\",\n  extra_data->>\"$.flow.wrk.flows_injected_max\" as \"flows_injected_max\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763206840643 / 1000 and time < 1763213121949 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.flow.wrk.spare_sync_avg\" as \"spare_sync_avg\",\n  extra_data->>\"$.flow.wrk.spare_sync\" as \"spare_sync\",\n  extra_data->>\"$.flow.wrk.spare_sync_incomplete\" as \"spare_sync_incomplete\",\n  extra_data->>\"$.flow.wrk.spare_sync_empty\" as \"spare_sync_empty\",\n  extra_data->>\"$.flow.wrk.flows_evicted_needs_work\" as \"flows_evicted_needs_work\",\n  extra_data->>\"$.flow.wrk.flows_evicted_pkt_inject\" as \"flows_evicted_pkt_inject\",\n  extra_data->>\"$.flow.wrk.flows_evicted\" as \"flows_evicted\",\n  extra_data->>\"$.flow.wrk.flows_injected\" as \"flows_injected\",\n  extra_data->>\"$.flow.wrk.flows_injected_max\" as \"flows_injected_max\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Flow worker",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 23
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.flow.mgr.full_hash_pass\" as \"full_hash_pass\",\n  extra_data->>\"$.flow.mgr.rows_per_sec\" as \"rows_per_sec\",\n  extra_data->>\"$.flow.mgr.rows_maxlen\" as \"rows_maxlen\",\n  extra_data->>\"$.flow.mgr.flows_checked\" as \"flows_checked\",\n  extra_data->>\"$.flow.mgr.flows_notimeout\" as \"flows_notimeout\",\n  extra_data->>\"$.flow.mgr.flows_timeout\" as \"flows_timeout\",\n  extra_data->>\"$.flow.mgr.flows_evicted\" as \"flows_evicted\",\n  extra_data->>\"$.flow.mgr.flows_evicted_needs_work\" as \"flows_evicted_needs_work\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.flow.mgr.full_hash_pass\" as \"full_hash_pass\",\n  extra_data->>\"$.flow.mgr.rows_per_sec\" as \"rows_per_sec\",\n  extra_data->>\"$.flow.mgr.rows_maxlen\" as \"rows_maxlen\",\n  extra_data->>\"$.flow.mgr.flows_checked\" as \"flows_checked\",\n  extra_data->>\"$.flow.mgr.flows_notimeout\" as \"flows_notimeout\",\n  extra_data->>\"$.flow.mgr.flows_timeout\" as \"flows_timeout\",\n  extra_data->>\"$.flow.mgr.flows_evicted\" as \"flows_evicted\",\n  extra_data->>\"$.flow.mgr.flows_evicted_needs_work\" as \"flows_evicted_needs_work\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Flow manager",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 30
+      },
+      "id": 12,
+      "panels": [],
+      "title": "Detection engine",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Skipped"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 31
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.detect.engines[0].rules_loaded\" as Loaded,\n  extra_data->>\"$.detect.engines[0].rules_skipped\" as Skipped,\n  extra_data->>\"$.detect.engines[0].rules_failed\" as Failed\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763191970614 / 1000 and time < 1763235170614 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.detect.engines[0].rules_loaded\" as Loaded,\n  extra_data->>\"$.detect.engines[0].rules_skipped\" as Skipped,\n  extra_data->>\"$.detect.engines[0].rules_failed\" as Failed\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Rules count",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Skipped"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 31
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.detect.alert\" as alert,\n  extra_data->>\"$.detect.alerts_suppressed\" as alerts_suppressed\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.detect.alert\" as alert,\n  extra_data->>\"$.detect.alerts_suppressed\" as alerts_suppressed\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Alerts count",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 31
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull"],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.detect.alert_queue_overflow\" as \"Alert queue overflow\",\n  extra_data->>\"$.detect.lua.errors\" as \"LUA general errors\",\n  extra_data->>\"$.detect.lua.blocked_function_errors\" as \"LUA blocked function errors\",\n  extra_data->>\"$.detect.lua.instruction_limit_errors\" as \"LUA instruction limit errors\",\n  extra_data->>\"$.detect.lua.memory_limit_errors\" as \"LUA memory limit errors\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763206840643 / 1000 and time < 1763213121949 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.detect.alert_queue_overflow\" as \"Alert queue overflow\",\n  extra_data->>\"$.detect.lua.errors\" as \"LUA general errors\",\n  extra_data->>\"$.detect.lua.blocked_function_errors\" as \"LUA blocked function errors\",\n  extra_data->>\"$.detect.lua.instruction_limit_errors\" as \"LUA instruction limit errors\",\n  extra_data->>\"$.detect.lua.memory_limit_errors\" as \"LUA memory limit errors\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Detection issues",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 38
+      },
+      "id": 17,
+      "panels": [],
+      "title": "Application layer",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 39
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull"],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.app_layer.flow.failed_tcp\" as \"Raw / Failed TCP\",\n  extra_data->>\"$.app_layer.flow.http\" as HTTP,\n  extra_data->>\"$.app_layer.flow.ftp\" as FTP,\n  extra_data->>\"$.app_layer.flow.smtp\" as SMTP,\n  extra_data->>\"$.app_layer.flow.tls\" as TLS,\n  extra_data->>\"$.app_layer.flow.ssh\" as SSH,\n  extra_data->>\"$.app_layer.flow.imap\" as IMAP,\n  extra_data->>\"$.app_layer.flow.smb\" as Samba,\n  extra_data->>\"$.app_layer.flow.dcerpc_tcp\" as \"DCERPC TCP\",\n  extra_data->>\"$.app_layer.flow.dns_tcp\" as \"DNS TCP\",\n  extra_data->>\"$.app_layer.flow.modbus\" as \"Modbus\",\n  extra_data->>\"$.app_layer.flow.enip_tcp\" as enip_tcp,\n  extra_data->>\"$.app_layer.flow.dnp3\" as dnp3,\n  extra_data->>\"$.app_layer.flow.nfs_tcp\" as nfs_tcp,\n  extra_data->>\"$.app_layer.flow.ntp\" as \"NTP\",\n  extra_data->>\"$.app_layer.flow.ftp-data\" as \"ftp-data\",\n  extra_data->>\"$.app_layer.flow.tftp\" as tftp,\n  extra_data->>\"$.app_layer.flow.ike\" as ike,\n  extra_data->>\"$.app_layer.flow.krb5_tcp\" as krb5_tcp,\n  extra_data->>\"$.app_layer.flow.quic\" as \"QUIC\",\n  extra_data->>\"$.app_layer.flow.dhcp\" as dhcp,\n  extra_data->>\"$.app_layer.flow.rfb\" as rfb,\n  extra_data->>\"$.app_layer.flow.mqtt\" as MQTT,\n  extra_data->>\"$.app_layer.flow.pgsql\" as PostgreSQL,\n  extra_data->>\"$.app_layer.flow.telnet\" as Telnet,\n  extra_data->>\"$.app_layer.flow.websocket\" as WebSocket,\n  extra_data->>\"$.app_layer.flow.ldap_tcp\" as \"LDAP TCP\",\n  extra_data->>\"$.app_layer.flow.doh2\" as DoH2,\n  extra_data->>\"$.app_layer.flow.rdp\" as RDP,\n  extra_data->>\"$.app_layer.flow.http2\" as \"HTTP 2\",\n  extra_data->>\"$.app_layer.flow.bittorrent-dht\" as \"BitTorrent DHT\",\n  extra_data->>\"$.app_layer.flow.pop3\" as POP3,\n  extra_data->>\"$.app_layer.flow.mdns\" as mDNS,\n  extra_data->>\"$.app_layer.flow.snmp\" as SNMP,\n  extra_data->>\"$.app_layer.flow.failed_udp\" as \"Raw / Failed UDP\",\n  extra_data->>\"$.app_layer.flow.dcerpc_udp\" as dcerpc_udp,\n  extra_data->>\"$.app_layer.flow.dns_udp\" as \"DNS\",\n  extra_data->>\"$.app_layer.flow.enip_udp\" as enip_udp,\n  extra_data->>\"$.app_layer.flow.nfs_udp\" as \"NFS UDP\",\n  extra_data->>\"$.app_layer.flow.krb5_udp\" as krb5_udp,\n  extra_data->>\"$.app_layer.flow.ldap_udp\" as \"LDAP UDP\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= 1763206840643 / 1000 and time < 1763213121949 / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.app_layer.flow.failed_tcp\" as \"Raw / Failed TCP\",\n  extra_data->>\"$.app_layer.flow.http\" as HTTP,\n  extra_data->>\"$.app_layer.flow.ftp\" as FTP,\n  extra_data->>\"$.app_layer.flow.smtp\" as SMTP,\n  extra_data->>\"$.app_layer.flow.tls\" as TLS,\n  extra_data->>\"$.app_layer.flow.ssh\" as SSH,\n  extra_data->>\"$.app_layer.flow.imap\" as IMAP,\n  extra_data->>\"$.app_layer.flow.smb\" as Samba,\n  extra_data->>\"$.app_layer.flow.dcerpc_tcp\" as \"DCERPC TCP\",\n  extra_data->>\"$.app_layer.flow.dns_tcp\" as \"DNS TCP\",\n  extra_data->>\"$.app_layer.flow.modbus\" as \"Modbus\",\n  extra_data->>\"$.app_layer.flow.enip_tcp\" as enip_tcp,\n  extra_data->>\"$.app_layer.flow.dnp3\" as dnp3,\n  extra_data->>\"$.app_layer.flow.nfs_tcp\" as nfs_tcp,\n  extra_data->>\"$.app_layer.flow.ntp\" as \"NTP\",\n  extra_data->>\"$.app_layer.flow.ftp-data\" as \"ftp-data\",\n  extra_data->>\"$.app_layer.flow.tftp\" as tftp,\n  extra_data->>\"$.app_layer.flow.ike\" as ike,\n  extra_data->>\"$.app_layer.flow.krb5_tcp\" as krb5_tcp,\n  extra_data->>\"$.app_layer.flow.quic\" as \"QUIC\",\n  extra_data->>\"$.app_layer.flow.dhcp\" as dhcp,\n  extra_data->>\"$.app_layer.flow.rfb\" as rfb,\n  extra_data->>\"$.app_layer.flow.mqtt\" as MQTT,\n  extra_data->>\"$.app_layer.flow.pgsql\" as PostgreSQL,\n  extra_data->>\"$.app_layer.flow.telnet\" as Telnet,\n  extra_data->>\"$.app_layer.flow.websocket\" as WebSocket,\n  extra_data->>\"$.app_layer.flow.ldap_tcp\" as \"LDAP TCP\",\n  extra_data->>\"$.app_layer.flow.doh2\" as DoH2,\n  extra_data->>\"$.app_layer.flow.rdp\" as RDP,\n  extra_data->>\"$.app_layer.flow.http2\" as \"HTTP 2\",\n  extra_data->>\"$.app_layer.flow.bittorrent-dht\" as \"BitTorrent DHT\",\n  extra_data->>\"$.app_layer.flow.pop3\" as POP3,\n  extra_data->>\"$.app_layer.flow.mdns\" as mDNS,\n  extra_data->>\"$.app_layer.flow.snmp\" as SNMP,\n  extra_data->>\"$.app_layer.flow.failed_udp\" as \"Raw / Failed UDP\",\n  extra_data->>\"$.app_layer.flow.dcerpc_udp\" as dcerpc_udp,\n  extra_data->>\"$.app_layer.flow.dns_udp\" as \"DNS\",\n  extra_data->>\"$.app_layer.flow.enip_udp\" as enip_udp,\n  extra_data->>\"$.app_layer.flow.nfs_udp\" as \"NFS UDP\",\n  extra_data->>\"$.app_layer.flow.krb5_udp\" as krb5_udp,\n  extra_data->>\"$.app_layer.flow.ldap_udp\" as \"LDAP UDP\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Application layer count",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "PA850873C8E526CF4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 39
+      },
+      "id": 18,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull"],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "PA850873C8E526CF4"
+          },
+          "queryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.app_layer.error.failed_tcp.gap\" as \"failed_tcp.gap\",\n  extra_data->>\"$.app_layer.error.http.gap\" as \"http.gap\",\n  extra_data->>\"$.app_layer.error.http.alloc\" as \"http.alloc\",\n  extra_data->>\"$.app_layer.error.http.parser\" as \"http.parser\",\n  extra_data->>\"$.app_layer.error.http.internal\" as \"http.internal\",\n  extra_data->>\"$.app_layer.error.ftp.gap\" as \"ftp.gap\",\n  extra_data->>\"$.app_layer.error.ftp.alloc\" as \"ftp.alloc\",\n  extra_data->>\"$.app_layer.error.ftp.parser\" as \"ftp.parser\",\n  extra_data->>\"$.app_layer.error.ftp.internal\" as \"ftp.internal\",\n  extra_data->>\"$.app_layer.error.smtp.gap\" as \"smtp.gap\",\n  extra_data->>\"$.app_layer.error.smtp.alloc\" as \"smtp.alloc\",\n  extra_data->>\"$.app_layer.error.smtp.parser\" as \"smtp.parser\",\n  extra_data->>\"$.app_layer.error.smtp.internal\" as \"smtp.internal\",\n  extra_data->>\"$.app_layer.error.tls.gap\" as \"tls.gap\",\n  extra_data->>\"$.app_layer.error.tls.alloc\" as \"tls.alloc\",\n  extra_data->>\"$.app_layer.error.tls.parser\" as \"tls.parser\",\n  extra_data->>\"$.app_layer.error.tls.internal\" as \"tls.internal\",\n  extra_data->>\"$.app_layer.error.ssh.gap\" as \"ssh.gap\",\n  extra_data->>\"$.app_layer.error.ssh.alloc\" as \"ssh.alloc\",\n  extra_data->>\"$.app_layer.error.ssh.parser\" as \"ssh.parser\",\n  extra_data->>\"$.app_layer.error.ssh.internal\" as \"ssh.internal\",\n  extra_data->>\"$.app_layer.error.imap.gap\" as \"imap.gap\",\n  extra_data->>\"$.app_layer.error.imap.alloc\" as \"imap.alloc\",\n  extra_data->>\"$.app_layer.error.imap.parser\" as \"imap.parser\",\n  extra_data->>\"$.app_layer.error.imap.internal\" as \"imap.internal\",\n  extra_data->>\"$.app_layer.error.smb.gap\" as \"smb.gap\",\n  extra_data->>\"$.app_layer.error.smb.alloc\" as \"smb.alloc\",\n  extra_data->>\"$.app_layer.error.smb.parser\" as \"smb.parser\",\n  extra_data->>\"$.app_layer.error.smb.internal\" as \"smb.internal\",\n  extra_data->>\"$.app_layer.error.dcerpc_tcp.gap\" as \"dcerpc_tcp.gap\",\n  extra_data->>\"$.app_layer.error.dcerpc_tcp.alloc\" as \"dcerpc_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.dcerpc_tcp.parser\" as \"dcerpc_tcp.parser\",\n  extra_data->>\"$.app_layer.error.dcerpc_tcp.internal\" as \"dcerpc_tcp.internal\",\n  extra_data->>\"$.app_layer.error.dns_tcp.gap\" as \"dns_tcp.gap\",\n  extra_data->>\"$.app_layer.error.dns_tcp.alloc\" as \"dns_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.dns_tcp.parser\" as \"dns_tcp.parser\",\n  extra_data->>\"$.app_layer.error.dns_tcp.internal\" as \"dns_tcp.internal\",\n  extra_data->>\"$.app_layer.error.modbus.gap\" as \"modbus.gap\",\n  extra_data->>\"$.app_layer.error.modbus.alloc\" as \"modbus.alloc\",\n  extra_data->>\"$.app_layer.error.modbus.parser\" as \"modbus.parser\",\n  extra_data->>\"$.app_layer.error.modbus.internal\" as \"modbus.internal\",\n  extra_data->>\"$.app_layer.error.enip_tcp.gap\" as \"enip_tcp.gap\",\n  extra_data->>\"$.app_layer.error.enip_tcp.alloc\" as \"enip_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.enip_tcp.parser\" as \"enip_tcp.parser\",\n  extra_data->>\"$.app_layer.error.enip_tcp.internal\" as \"enip_tcp.internal\",\n  extra_data->>\"$.app_layer.error.dnp3.gap\" as \"dnp3.gap\",\n  extra_data->>\"$.app_layer.error.dnp3.alloc\" as \"dnp3.alloc\",\n  extra_data->>\"$.app_layer.error.dnp3.parser\" as \"dnp3.parser\",\n  extra_data->>\"$.app_layer.error.dnp3.internal\" as \"dnp3.internal\",\n  extra_data->>\"$.app_layer.error.nfs_tcp.gap\" as \"nfs_tcp.gap\",\n  extra_data->>\"$.app_layer.error.nfs_tcp.alloc\" as \"nfs_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.nfs_tcp.parser\" as \"nfs_tcp.parser\",\n  extra_data->>\"$.app_layer.error.nfs_tcp.internal\" as \"nfs_tcp.internal\",\n  extra_data->>\"$.app_layer.error.ntp.gap\" as \"ntp.gap\",\n  extra_data->>\"$.app_layer.error.ntp.alloc\" as \"ntp.alloc\",\n  extra_data->>\"$.app_layer.error.ntp.parser\" as \"ntp.parser\",\n  extra_data->>\"$.app_layer.error.ntp.internal\" as \"ntp.internal\",\n  extra_data->>\"$.app_layer.error.ftp-data.gap\" as \"data.gap\",\n  extra_data->>\"$.app_layer.error.ftp-data.alloc\" as \"data.alloc\",\n  extra_data->>\"$.app_layer.error.ftp-data.parser\" as \"data.parser\",\n  extra_data->>\"$.app_layer.error.ftp-data.internal\" as \"data.internal\",\n  extra_data->>\"$.app_layer.error.tftp.gap\" as \"tftp.gap\",\n  extra_data->>\"$.app_layer.error.tftp.alloc\" as \"tftp.alloc\",\n  extra_data->>\"$.app_layer.error.tftp.parser\" as \"tftp.parser\",\n  extra_data->>\"$.app_layer.error.tftp.internal\" as \"tftp.internal\",\n  extra_data->>\"$.app_layer.error.ike.gap\" as \"ike.gap\",\n  extra_data->>\"$.app_layer.error.ike.alloc\" as \"ike.alloc\",\n  extra_data->>\"$.app_layer.error.ike.parser\" as \"ike.parser\",\n  extra_data->>\"$.app_layer.error.ike.internal\" as \"ike.internal\",\n  extra_data->>\"$.app_layer.error.krb5_tcp.gap\" as \"krb5_tcp.gap\",\n  extra_data->>\"$.app_layer.error.krb5_tcp.alloc\" as \"krb5_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.krb5_tcp.parser\" as \"krb5_tcp.parser\",\n  extra_data->>\"$.app_layer.error.krb5_tcp.internal\" as \"krb5_tcp.internal\",\n  extra_data->>\"$.app_layer.error.quic.gap\" as \"quic.gap\",\n  extra_data->>\"$.app_layer.error.quic.alloc\" as \"quic.alloc\",\n  extra_data->>\"$.app_layer.error.quic.parser\" as \"quic.parser\",\n  extra_data->>\"$.app_layer.error.quic.internal\" as \"quic.internal\",\n  extra_data->>\"$.app_layer.error.dhcp.gap\" as \"dhcp.gap\",\n  extra_data->>\"$.app_layer.error.dhcp.alloc\" as \"dhcp.alloc\",\n  extra_data->>\"$.app_layer.error.dhcp.parser\" as \"dhcp.parser\",\n  extra_data->>\"$.app_layer.error.dhcp.internal\" as \"dhcp.internal\",\n  extra_data->>\"$.app_layer.error.rfb.gap\" as \"rfb.gap\",\n  extra_data->>\"$.app_layer.error.rfb.alloc\" as \"rfb.alloc\",\n  extra_data->>\"$.app_layer.error.rfb.parser\" as \"rfb.parser\",\n  extra_data->>\"$.app_layer.error.rfb.internal\" as \"rfb.internal\",\n  extra_data->>\"$.app_layer.error.mqtt.gap\" as \"mqtt.gap\",\n  extra_data->>\"$.app_layer.error.mqtt.alloc\" as \"mqtt.alloc\",\n  extra_data->>\"$.app_layer.error.mqtt.parser\" as \"mqtt.parser\",\n  extra_data->>\"$.app_layer.error.mqtt.internal\" as \"mqtt.internal\",\n  extra_data->>\"$.app_layer.error.pgsql.gap\" as \"pgsql.gap\",\n  extra_data->>\"$.app_layer.error.pgsql.alloc\" as \"pgsql.alloc\",\n  extra_data->>\"$.app_layer.error.pgsql.parser\" as \"pgsql.parser\",\n  extra_data->>\"$.app_layer.error.pgsql.internal\" as \"pgsql.internal\",\n  extra_data->>\"$.app_layer.error.telnet.gap\" as \"telnet.gap\",\n  extra_data->>\"$.app_layer.error.telnet.alloc\" as \"telnet.alloc\",\n  extra_data->>\"$.app_layer.error.telnet.parser\" as \"telnet.parser\",\n  extra_data->>\"$.app_layer.error.telnet.internal\" as \"telnet.internal\",\n  extra_data->>\"$.app_layer.error.websocket.gap\" as \"websocket.gap\",\n  extra_data->>\"$.app_layer.error.websocket.alloc\" as \"websocket.alloc\",\n  extra_data->>\"$.app_layer.error.websocket.parser\" as \"websocket.parser\",\n  extra_data->>\"$.app_layer.error.websocket.internal\" as \"websocket.internal\",\n  extra_data->>\"$.app_layer.error.ldap_tcp.gap\" as \"ldap_tcp.gap\",\n  extra_data->>\"$.app_layer.error.ldap_tcp.alloc\" as \"ldap_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.ldap_tcp.parser\" as \"ldap_tcp.parser\",\n  extra_data->>\"$.app_layer.error.ldap_tcp.internal\" as \"ldap_tcp.internal\",\n  extra_data->>\"$.app_layer.error.doh2.gap\" as \"doh2.gap\",\n  extra_data->>\"$.app_layer.error.doh2.alloc\" as \"doh2.alloc\",\n  extra_data->>\"$.app_layer.error.doh2.parser\" as \"doh2.parser\",\n  extra_data->>\"$.app_layer.error.doh2.internal\" as \"doh2.internal\",\n  extra_data->>\"$.app_layer.error.rdp.gap\" as \"rdp.gap\",\n  extra_data->>\"$.app_layer.error.rdp.alloc\" as \"rdp.alloc\",\n  extra_data->>\"$.app_layer.error.rdp.parser\" as \"rdp.parser\",\n  extra_data->>\"$.app_layer.error.rdp.internal\" as \"rdp.internal\",\n  extra_data->>\"$.app_layer.error.http2.gap\" as \"http2.gap\",\n  extra_data->>\"$.app_layer.error.http2.alloc\" as \"http2.alloc\",\n  extra_data->>\"$.app_layer.error.http2.parser\" as \"http2.parser\",\n  extra_data->>\"$.app_layer.error.http2.internal\" as \"http2.internal\",\n  extra_data->>\"$.app_layer.error.bittorrent-dht.gap\" as \"dht.gap\",\n  extra_data->>\"$.app_layer.error.bittorrent-dht.alloc\" as \"dht.alloc\",\n  extra_data->>\"$.app_layer.error.bittorrent-dht.parser\" as \"dht.parser\",\n  extra_data->>\"$.app_layer.error.bittorrent-dht.internal\" as \"dht.internal\",\n  extra_data->>\"$.app_layer.error.pop3.gap\" as \"pop3.gap\",\n  extra_data->>\"$.app_layer.error.pop3.alloc\" as \"pop3.alloc\",\n  extra_data->>\"$.app_layer.error.pop3.parser\" as \"pop3.parser\",\n  extra_data->>\"$.app_layer.error.pop3.internal\" as \"pop3.internal\",\n  extra_data->>\"$.app_layer.error.mdns.gap\" as \"mdns.gap\",\n  extra_data->>\"$.app_layer.error.mdns.alloc\" as \"mdns.alloc\",\n  extra_data->>\"$.app_layer.error.mdns.parser\" as \"mdns.parser\",\n  extra_data->>\"$.app_layer.error.mdns.internal\" as \"mdns.internal\",\n  extra_data->>\"$.app_layer.error.snmp.gap\" as \"snmp.gap\",\n  extra_data->>\"$.app_layer.error.snmp.alloc\" as \"snmp.alloc\",\n  extra_data->>\"$.app_layer.error.snmp.parser\" as \"snmp.parser\",\n  extra_data->>\"$.app_layer.error.snmp.internal\" as \"snmp.internal\",\n  extra_data->>\"$.app_layer.error.dcerpc_udp.alloc\" as \"dcerpc_udp.alloc\",\n  extra_data->>\"$.app_layer.error.dcerpc_udp.parser\" as \"dcerpc_udp.parser\",\n  extra_data->>\"$.app_layer.error.dcerpc_udp.internal\" as \"dcerpc_udp.internal\",\n  extra_data->>\"$.app_layer.error.dns_udp.alloc\" as \"dns_udp.alloc\",\n  extra_data->>\"$.app_layer.error.dns_udp.parser\" as \"dns_udp.parser\",\n  extra_data->>\"$.app_layer.error.dns_udp.internal\" as \"dns_udp.internal\",\n  extra_data->>\"$.app_layer.error.enip_udp.alloc\" as \"enip_udp.alloc\",\n  extra_data->>\"$.app_layer.error.enip_udp.parser\" as \"enip_udp.parser\",\n  extra_data->>\"$.app_layer.error.enip_udp.internal\" as \"enip_udp.internal\",\n  extra_data->>\"$.app_layer.error.nfs_udp.alloc\" as \"nfs_udp.alloc\",\n  extra_data->>\"$.app_layer.error.nfs_udp.parser\" as \"nfs_udp.parser\",\n  extra_data->>\"$.app_layer.error.nfs_udp.internal\" as \"nfs_udp.internal\",\n  extra_data->>\"$.app_layer.error.krb5_udp.alloc\" as \"krb5_udp.alloc\",\n  extra_data->>\"$.app_layer.error.krb5_udp.parser\" as \"krb5_udp.parser\",\n  extra_data->>\"$.app_layer.error.krb5_udp.internal\" as \"krb5_udp.internal\",\n  extra_data->>\"$.app_layer.error.ldap_udp.alloc\" as \"ldap_udp.alloc\",\n  extra_data->>\"$.app_layer.error.ldap_udp.parser\" as \"ldap_udp.parser\",\n  extra_data->>\"$.app_layer.error.ldap_udp.internal\" as \"ldap_udp.internal\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp / 1000000 as time,\n  extra_data->>\"$.app_layer.error.failed_tcp.gap\" as \"failed_tcp.gap\",\n  extra_data->>\"$.app_layer.error.http.gap\" as \"http.gap\",\n  extra_data->>\"$.app_layer.error.http.alloc\" as \"http.alloc\",\n  extra_data->>\"$.app_layer.error.http.parser\" as \"http.parser\",\n  extra_data->>\"$.app_layer.error.http.internal\" as \"http.internal\",\n  extra_data->>\"$.app_layer.error.ftp.gap\" as \"ftp.gap\",\n  extra_data->>\"$.app_layer.error.ftp.alloc\" as \"ftp.alloc\",\n  extra_data->>\"$.app_layer.error.ftp.parser\" as \"ftp.parser\",\n  extra_data->>\"$.app_layer.error.ftp.internal\" as \"ftp.internal\",\n  extra_data->>\"$.app_layer.error.smtp.gap\" as \"smtp.gap\",\n  extra_data->>\"$.app_layer.error.smtp.alloc\" as \"smtp.alloc\",\n  extra_data->>\"$.app_layer.error.smtp.parser\" as \"smtp.parser\",\n  extra_data->>\"$.app_layer.error.smtp.internal\" as \"smtp.internal\",\n  extra_data->>\"$.app_layer.error.tls.gap\" as \"tls.gap\",\n  extra_data->>\"$.app_layer.error.tls.alloc\" as \"tls.alloc\",\n  extra_data->>\"$.app_layer.error.tls.parser\" as \"tls.parser\",\n  extra_data->>\"$.app_layer.error.tls.internal\" as \"tls.internal\",\n  extra_data->>\"$.app_layer.error.ssh.gap\" as \"ssh.gap\",\n  extra_data->>\"$.app_layer.error.ssh.alloc\" as \"ssh.alloc\",\n  extra_data->>\"$.app_layer.error.ssh.parser\" as \"ssh.parser\",\n  extra_data->>\"$.app_layer.error.ssh.internal\" as \"ssh.internal\",\n  extra_data->>\"$.app_layer.error.imap.gap\" as \"imap.gap\",\n  extra_data->>\"$.app_layer.error.imap.alloc\" as \"imap.alloc\",\n  extra_data->>\"$.app_layer.error.imap.parser\" as \"imap.parser\",\n  extra_data->>\"$.app_layer.error.imap.internal\" as \"imap.internal\",\n  extra_data->>\"$.app_layer.error.smb.gap\" as \"smb.gap\",\n  extra_data->>\"$.app_layer.error.smb.alloc\" as \"smb.alloc\",\n  extra_data->>\"$.app_layer.error.smb.parser\" as \"smb.parser\",\n  extra_data->>\"$.app_layer.error.smb.internal\" as \"smb.internal\",\n  extra_data->>\"$.app_layer.error.dcerpc_tcp.gap\" as \"dcerpc_tcp.gap\",\n  extra_data->>\"$.app_layer.error.dcerpc_tcp.alloc\" as \"dcerpc_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.dcerpc_tcp.parser\" as \"dcerpc_tcp.parser\",\n  extra_data->>\"$.app_layer.error.dcerpc_tcp.internal\" as \"dcerpc_tcp.internal\",\n  extra_data->>\"$.app_layer.error.dns_tcp.gap\" as \"dns_tcp.gap\",\n  extra_data->>\"$.app_layer.error.dns_tcp.alloc\" as \"dns_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.dns_tcp.parser\" as \"dns_tcp.parser\",\n  extra_data->>\"$.app_layer.error.dns_tcp.internal\" as \"dns_tcp.internal\",\n  extra_data->>\"$.app_layer.error.modbus.gap\" as \"modbus.gap\",\n  extra_data->>\"$.app_layer.error.modbus.alloc\" as \"modbus.alloc\",\n  extra_data->>\"$.app_layer.error.modbus.parser\" as \"modbus.parser\",\n  extra_data->>\"$.app_layer.error.modbus.internal\" as \"modbus.internal\",\n  extra_data->>\"$.app_layer.error.enip_tcp.gap\" as \"enip_tcp.gap\",\n  extra_data->>\"$.app_layer.error.enip_tcp.alloc\" as \"enip_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.enip_tcp.parser\" as \"enip_tcp.parser\",\n  extra_data->>\"$.app_layer.error.enip_tcp.internal\" as \"enip_tcp.internal\",\n  extra_data->>\"$.app_layer.error.dnp3.gap\" as \"dnp3.gap\",\n  extra_data->>\"$.app_layer.error.dnp3.alloc\" as \"dnp3.alloc\",\n  extra_data->>\"$.app_layer.error.dnp3.parser\" as \"dnp3.parser\",\n  extra_data->>\"$.app_layer.error.dnp3.internal\" as \"dnp3.internal\",\n  extra_data->>\"$.app_layer.error.nfs_tcp.gap\" as \"nfs_tcp.gap\",\n  extra_data->>\"$.app_layer.error.nfs_tcp.alloc\" as \"nfs_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.nfs_tcp.parser\" as \"nfs_tcp.parser\",\n  extra_data->>\"$.app_layer.error.nfs_tcp.internal\" as \"nfs_tcp.internal\",\n  extra_data->>\"$.app_layer.error.ntp.gap\" as \"ntp.gap\",\n  extra_data->>\"$.app_layer.error.ntp.alloc\" as \"ntp.alloc\",\n  extra_data->>\"$.app_layer.error.ntp.parser\" as \"ntp.parser\",\n  extra_data->>\"$.app_layer.error.ntp.internal\" as \"ntp.internal\",\n  extra_data->>\"$.app_layer.error.ftp-data.gap\" as \"data.gap\",\n  extra_data->>\"$.app_layer.error.ftp-data.alloc\" as \"data.alloc\",\n  extra_data->>\"$.app_layer.error.ftp-data.parser\" as \"data.parser\",\n  extra_data->>\"$.app_layer.error.ftp-data.internal\" as \"data.internal\",\n  extra_data->>\"$.app_layer.error.tftp.gap\" as \"tftp.gap\",\n  extra_data->>\"$.app_layer.error.tftp.alloc\" as \"tftp.alloc\",\n  extra_data->>\"$.app_layer.error.tftp.parser\" as \"tftp.parser\",\n  extra_data->>\"$.app_layer.error.tftp.internal\" as \"tftp.internal\",\n  extra_data->>\"$.app_layer.error.ike.gap\" as \"ike.gap\",\n  extra_data->>\"$.app_layer.error.ike.alloc\" as \"ike.alloc\",\n  extra_data->>\"$.app_layer.error.ike.parser\" as \"ike.parser\",\n  extra_data->>\"$.app_layer.error.ike.internal\" as \"ike.internal\",\n  extra_data->>\"$.app_layer.error.krb5_tcp.gap\" as \"krb5_tcp.gap\",\n  extra_data->>\"$.app_layer.error.krb5_tcp.alloc\" as \"krb5_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.krb5_tcp.parser\" as \"krb5_tcp.parser\",\n  extra_data->>\"$.app_layer.error.krb5_tcp.internal\" as \"krb5_tcp.internal\",\n  extra_data->>\"$.app_layer.error.quic.gap\" as \"quic.gap\",\n  extra_data->>\"$.app_layer.error.quic.alloc\" as \"quic.alloc\",\n  extra_data->>\"$.app_layer.error.quic.parser\" as \"quic.parser\",\n  extra_data->>\"$.app_layer.error.quic.internal\" as \"quic.internal\",\n  extra_data->>\"$.app_layer.error.dhcp.gap\" as \"dhcp.gap\",\n  extra_data->>\"$.app_layer.error.dhcp.alloc\" as \"dhcp.alloc\",\n  extra_data->>\"$.app_layer.error.dhcp.parser\" as \"dhcp.parser\",\n  extra_data->>\"$.app_layer.error.dhcp.internal\" as \"dhcp.internal\",\n  extra_data->>\"$.app_layer.error.rfb.gap\" as \"rfb.gap\",\n  extra_data->>\"$.app_layer.error.rfb.alloc\" as \"rfb.alloc\",\n  extra_data->>\"$.app_layer.error.rfb.parser\" as \"rfb.parser\",\n  extra_data->>\"$.app_layer.error.rfb.internal\" as \"rfb.internal\",\n  extra_data->>\"$.app_layer.error.mqtt.gap\" as \"mqtt.gap\",\n  extra_data->>\"$.app_layer.error.mqtt.alloc\" as \"mqtt.alloc\",\n  extra_data->>\"$.app_layer.error.mqtt.parser\" as \"mqtt.parser\",\n  extra_data->>\"$.app_layer.error.mqtt.internal\" as \"mqtt.internal\",\n  extra_data->>\"$.app_layer.error.pgsql.gap\" as \"pgsql.gap\",\n  extra_data->>\"$.app_layer.error.pgsql.alloc\" as \"pgsql.alloc\",\n  extra_data->>\"$.app_layer.error.pgsql.parser\" as \"pgsql.parser\",\n  extra_data->>\"$.app_layer.error.pgsql.internal\" as \"pgsql.internal\",\n  extra_data->>\"$.app_layer.error.telnet.gap\" as \"telnet.gap\",\n  extra_data->>\"$.app_layer.error.telnet.alloc\" as \"telnet.alloc\",\n  extra_data->>\"$.app_layer.error.telnet.parser\" as \"telnet.parser\",\n  extra_data->>\"$.app_layer.error.telnet.internal\" as \"telnet.internal\",\n  extra_data->>\"$.app_layer.error.websocket.gap\" as \"websocket.gap\",\n  extra_data->>\"$.app_layer.error.websocket.alloc\" as \"websocket.alloc\",\n  extra_data->>\"$.app_layer.error.websocket.parser\" as \"websocket.parser\",\n  extra_data->>\"$.app_layer.error.websocket.internal\" as \"websocket.internal\",\n  extra_data->>\"$.app_layer.error.ldap_tcp.gap\" as \"ldap_tcp.gap\",\n  extra_data->>\"$.app_layer.error.ldap_tcp.alloc\" as \"ldap_tcp.alloc\",\n  extra_data->>\"$.app_layer.error.ldap_tcp.parser\" as \"ldap_tcp.parser\",\n  extra_data->>\"$.app_layer.error.ldap_tcp.internal\" as \"ldap_tcp.internal\",\n  extra_data->>\"$.app_layer.error.doh2.gap\" as \"doh2.gap\",\n  extra_data->>\"$.app_layer.error.doh2.alloc\" as \"doh2.alloc\",\n  extra_data->>\"$.app_layer.error.doh2.parser\" as \"doh2.parser\",\n  extra_data->>\"$.app_layer.error.doh2.internal\" as \"doh2.internal\",\n  extra_data->>\"$.app_layer.error.rdp.gap\" as \"rdp.gap\",\n  extra_data->>\"$.app_layer.error.rdp.alloc\" as \"rdp.alloc\",\n  extra_data->>\"$.app_layer.error.rdp.parser\" as \"rdp.parser\",\n  extra_data->>\"$.app_layer.error.rdp.internal\" as \"rdp.internal\",\n  extra_data->>\"$.app_layer.error.http2.gap\" as \"http2.gap\",\n  extra_data->>\"$.app_layer.error.http2.alloc\" as \"http2.alloc\",\n  extra_data->>\"$.app_layer.error.http2.parser\" as \"http2.parser\",\n  extra_data->>\"$.app_layer.error.http2.internal\" as \"http2.internal\",\n  extra_data->>\"$.app_layer.error.bittorrent-dht.gap\" as \"dht.gap\",\n  extra_data->>\"$.app_layer.error.bittorrent-dht.alloc\" as \"dht.alloc\",\n  extra_data->>\"$.app_layer.error.bittorrent-dht.parser\" as \"dht.parser\",\n  extra_data->>\"$.app_layer.error.bittorrent-dht.internal\" as \"dht.internal\",\n  extra_data->>\"$.app_layer.error.pop3.gap\" as \"pop3.gap\",\n  extra_data->>\"$.app_layer.error.pop3.alloc\" as \"pop3.alloc\",\n  extra_data->>\"$.app_layer.error.pop3.parser\" as \"pop3.parser\",\n  extra_data->>\"$.app_layer.error.pop3.internal\" as \"pop3.internal\",\n  extra_data->>\"$.app_layer.error.mdns.gap\" as \"mdns.gap\",\n  extra_data->>\"$.app_layer.error.mdns.alloc\" as \"mdns.alloc\",\n  extra_data->>\"$.app_layer.error.mdns.parser\" as \"mdns.parser\",\n  extra_data->>\"$.app_layer.error.mdns.internal\" as \"mdns.internal\",\n  extra_data->>\"$.app_layer.error.snmp.gap\" as \"snmp.gap\",\n  extra_data->>\"$.app_layer.error.snmp.alloc\" as \"snmp.alloc\",\n  extra_data->>\"$.app_layer.error.snmp.parser\" as \"snmp.parser\",\n  extra_data->>\"$.app_layer.error.snmp.internal\" as \"snmp.internal\",\n  extra_data->>\"$.app_layer.error.dcerpc_udp.alloc\" as \"dcerpc_udp.alloc\",\n  extra_data->>\"$.app_layer.error.dcerpc_udp.parser\" as \"dcerpc_udp.parser\",\n  extra_data->>\"$.app_layer.error.dcerpc_udp.internal\" as \"dcerpc_udp.internal\",\n  extra_data->>\"$.app_layer.error.dns_udp.alloc\" as \"dns_udp.alloc\",\n  extra_data->>\"$.app_layer.error.dns_udp.parser\" as \"dns_udp.parser\",\n  extra_data->>\"$.app_layer.error.dns_udp.internal\" as \"dns_udp.internal\",\n  extra_data->>\"$.app_layer.error.enip_udp.alloc\" as \"enip_udp.alloc\",\n  extra_data->>\"$.app_layer.error.enip_udp.parser\" as \"enip_udp.parser\",\n  extra_data->>\"$.app_layer.error.enip_udp.internal\" as \"enip_udp.internal\",\n  extra_data->>\"$.app_layer.error.nfs_udp.alloc\" as \"nfs_udp.alloc\",\n  extra_data->>\"$.app_layer.error.nfs_udp.parser\" as \"nfs_udp.parser\",\n  extra_data->>\"$.app_layer.error.nfs_udp.internal\" as \"nfs_udp.internal\",\n  extra_data->>\"$.app_layer.error.krb5_udp.alloc\" as \"krb5_udp.alloc\",\n  extra_data->>\"$.app_layer.error.krb5_udp.parser\" as \"krb5_udp.parser\",\n  extra_data->>\"$.app_layer.error.krb5_udp.internal\" as \"krb5_udp.internal\",\n  extra_data->>\"$.app_layer.error.ldap_udp.alloc\" as \"ldap_udp.alloc\",\n  extra_data->>\"$.app_layer.error.ldap_udp.parser\" as \"ldap_udp.parser\",\n  extra_data->>\"$.app_layer.error.ldap_udp.internal\" as \"ldap_udp.internal\"\nFROM \"other-event\"\nWHERE\n  event_type = \"stats\"\n  AND time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "title": "Application layer issues",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-12h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Suricata Stats",
+  "uid": "9c54374f-aefe-4994-ae46-92b4d2eccd42",
+  "version": 21
+}
