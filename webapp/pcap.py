@@ -1,7 +1,9 @@
+#!/usr/bin/env python3
+# Copyright (C) 2025  Yun Zheng Hu
+# SPDX-License-Identifier: GPL-2.0-or-later
 import asyncio
 import io
 import logging
-import sys
 from pathlib import Path
 from typing import AsyncIterable, BinaryIO, Iterable
 
@@ -43,7 +45,7 @@ async def stream_pcaps(pcaps: Iterable[str | Path], fout: BinaryIO) -> None:
         )
         skip = PCAP_HEADER_SIZE if i > 0 else 0
         async with asyncio.TaskGroup() as tg:
-            stdout_task = tg.create_task(pipe_data(process.stdout, fout, skip=skip))
+            tg.create_task(pipe_data(process.stdout, fout, skip=skip))
 
         log.debug("finished stream_pcaps")
 
