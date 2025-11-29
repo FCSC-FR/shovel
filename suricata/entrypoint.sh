@@ -32,7 +32,7 @@ eval "$SURICATA_CMD" \
     --set outputs.1.eve-log.types.31.pgsql.enabled=yes \
     --set outputs.1.eve-log.types.31.pgsql.passwords=yes \
     --set "outputs.3.pcap-log.enabled=${PCAP_LOG:=yes}" \
-    --set outputs.3.pcap-log.limit=33554432 \
+    --set outputs.3.pcap-log.limit=32MiB \
     --set outputs.3.pcap-log.compression=lz4 \
     --set outputs.3.pcap-log.dir=pcaps \
     --set outputs.5.stats.enabled=no \
@@ -44,11 +44,11 @@ eval "$SURICATA_CMD" \
     --set app-layer.protocols.modbus.enabled=yes \
     --set app-layer.protocols.dnp3.enabled=yes \
     --set app-layer.protocols.enip.enabled=yes \
-    --set app-layer.protocols.http.libhtp.default-config.request-body-limit=52428800 \
+    --set app-layer.protocols.http.libhtp.default-config.request-body-limit=50MiB \
     --set app-layer.protocols.http.libhtp.default-config.response-body-limit=0 \
     --set app-layer.protocols.sip.enabled=no \
-    --set stream.reassembly.memcap=4294967296 \
-    --set stream.reassembly.depth=52428800 \
+    --set stream.reassembly.memcap=4GiB \
+    --set stream.reassembly.depth=50MiB \
     --set flow-timeouts.tcp.established=60 \
     --set flow-timeouts.tcp.emergency-established=60 \
     --set flow-timeouts.tcp.closed=5 \
