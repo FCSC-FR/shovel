@@ -8,6 +8,7 @@ mod ffi;
 use std::fmt::Debug;
 use std::os::raw::{c_char, c_int, c_void};
 use std::sync::mpsc;
+use suricata_sys::sys::{SCPlugin, SC_API_VERSION, SC_PACKAGE_VERSION};
 
 // Default configuration values.
 const DEFAULT_DATABASE_URI: &str = "file:suricata/output/eve.db";
@@ -128,15 +129,15 @@ extern "C" fn plugin_init() {
 
 /// Plugin entrypoint, registers [`plugin_init`] function in Suricata
 #[no_mangle]
-extern "C" fn SCPluginRegister() -> *const ffi::SCPlugin {
-    let plugin = ffi::SCPlugin {
-        version: ffi::SC_API_VERSION,
-        suricata_version: ffi::SC_PACKAGE_VERSION.as_ptr(),
+extern "C" fn SCPluginRegister() -> *const SCPlugin {
+    let plugin = SCPlugin {
+        version: SC_API_VERSION,
+        suricata_version: SC_PACKAGE_VERSION.as_ptr() as *const i8,
         name: c"Eve SQLite Output".as_ptr(),
         plugin_version: c"0.1.0".as_ptr(),
         license: c"GPL-2.0".as_ptr(),
         author: c"ECSC TeamFrance".as_ptr(),
-        Init: plugin_init,
+        Init: Some(plugin_init),
     };
     Box::into_raw(Box::new(plugin))
 }

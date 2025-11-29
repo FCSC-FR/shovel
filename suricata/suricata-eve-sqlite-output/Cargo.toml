@@ -14,3 +14,4 @@ name = "eve_sqlite_output"
 env_logger = { version = "0.11.5", default-features = false }
 log = "0.4.22"
 rusqlite = { version = "0.37.0", features = ["bundled"] }
+suricata-sys = "8.0.0"
