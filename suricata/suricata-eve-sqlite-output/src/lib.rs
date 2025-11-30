@@ -132,7 +132,7 @@ extern "C" fn plugin_init() {
 extern "C" fn SCPluginRegister() -> *const SCPlugin {
     let plugin = SCPlugin {
         version: SC_API_VERSION,
-        suricata_version: SC_PACKAGE_VERSION.as_ptr() as *const i8,
+        suricata_version: SC_PACKAGE_VERSION.as_ptr() as *const ::std::os::raw::c_char,
         name: c"Eve SQLite Output".as_ptr(),
         plugin_version: c"0.1.0".as_ptr(),
         license: c"GPL-2.0".as_ptr(),
