@@ -6,6 +6,7 @@
 import asyncio
 import base64
 import contextlib
+import itertools
 import json
 import time
 from pathlib import Path
@@ -19,6 +20,8 @@ from starlette.responses import JSONResponse, Response, StreamingResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
+
+from pcap import stream_pcaps_with_bpf
 
 
 def row_to_dict(row: aiosqlite.Row) -> dict:
@@ -181,25 +184,59 @@ async def api_flow_pcap_get(request):
 
     # Query flow start timestamp from database
     async with eve_db.execute(
-        "SELECT ts_start FROM flow WHERE id = ?", (flow_id,)
+        "SELECT ts_start, ts_end, src_ip, src_port, dest_ip, dest_port FROM flow WHERE id = ?",
+        (flow_id,),
     ) as cursor:
         flow = await cursor.fetchone()
         if not flow:
             raise HTTPException(404)
-        flow_us = flow["ts_start"] // 1000
+
+    # convert μs to seconds
+    flow_start_secs = flow["ts_start"] // 1000_000
+    flow_end_secs = flow["ts_end"] // 1000_000
+
+    # Build the BPF filter for this flow
+    src_ip = flow["src_ip"].strip("[]")
+    src_port = flow["src_port"]
+    dst_ip = flow["dest_ip"].strip("[]")
+    dst_port = flow["dest_port"]
+    bpf_filter = (
+        f"host {src_ip} and host {dst_ip} and " f"port {src_port} and port {dst_port}"
+    )
 
     # Serve corresponding pcap, found using timestamp
-    path = None
-    for pcap_path in sorted(Path("../suricata/output/pcaps/").glob("*.*")):
-        pcap_us = int(pcap_path.name.replace(".lz4", "").rsplit(".", 1)[-1])
-        if pcap_us * 1000 > flow_us:
-            break  # take previous one
-        path = pcap_path
-    if path is None:
+    pcaps = []
+    pcap_paths = list(sorted(Path("../suricata/output/pcaps/").glob("*.*")))
+    timestamps = [
+        int(str(pcap_path).replace(".lz4", "").rsplit(".", 1)[-1])
+        for pcap_path in pcap_paths
+    ]
+
+    # create pairs of (start, end) timestamps for each pcap
+    start_end_stamps = list(itertools.zip_longest(timestamps, timestamps[1:]))
+
+    # Find pcaps overlapping with the flow's time range
+    for pcap_path, pcap_start_end in zip(pcap_paths, start_end_stamps):
+        pcap_start, pcap_end = pcap_start_end
+        # Check if flow overlaps with this PCAP's time range
+        # For the last PCAP (pcap_end is None), only check if flow ends after pcap starts
+        if pcap_end is None:
+            # Last PCAP: include if flow hasn't ended before this PCAP started
+            if flow_end_secs > pcap_start:
+                pcaps.append(pcap_path)
+        else:
+            # Normal overlap check for PCAPs with known end time
+            if flow_start_secs < pcap_end and flow_end_secs > pcap_start:
+                pcaps.append(pcap_path)
+
+    if not pcaps:
         raise HTTPException(404)
-    return Response(
-        path.open("rb").read(),  # cache before sending as file might change
-        headers={"Content-Disposition": f'attachment; filename="{path.name}"'},
+
+    filename = f"flow-{flow_id}.pcap"
+    return StreamingResponse(
+        stream_pcaps_with_bpf(pcaps, bpf_filter),
+        media_type="application/vnd.tcpdump.pcap",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
 
 
