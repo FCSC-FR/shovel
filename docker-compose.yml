@@ -3,7 +3,7 @@
 services:
   suricata:
     build: ./suricata
-    image: anssi/shovel-suricata:dev
+    image: ghcr.io/FCSC-FR/shovel/suricata:dev
     volumes:
       - "./input_pcaps:/input_pcaps:ro"
       - "./suricata/rules:/suricata/rules:ro"
@@ -34,7 +34,7 @@ services:
 
   webapp:
     build: ./webapp
-    image: anssi/shovel-webapp:dev
+    image: ghcr.io/FCSC-FR/shovel/webapp:dev
     restart: always
     volumes:
       # Write access is required in SQLite `mode=ro` as readers need to record
@@ -50,7 +50,7 @@ services:
   # Grafana default credentials are admin:admin
   grafana:
     build: ./grafana
-    image: anssi/shovel-grafana:dev
+    image: ghcr.io/FCSC-FR/shovel/grafana:dev
     restart: always
     volumes:
       - "./suricata/output:/suricata/output:rw"
