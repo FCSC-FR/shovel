@@ -8,8 +8,10 @@ COPY suricata-eve-sqlite-output/ /src/suricata-eve-sqlite-output/
 COPY suricata-filedata-sqlite-output/ /src/suricata-filedata-sqlite-output/
 RUN RUSTFLAGS="-C target-feature=-crt-static" cargo build --release
 
-FROM alpine:20250108
-RUN apk add --no-cache suricata lua5.4-sqlite netcat-openbsd
+FROM alpine:3.23
+RUN apk add --no-cache lua5.4-sqlite netcat-openbsd
+# Alpine 3.23 is still on Suricata 8.0.0. Pull 8.0.3 from edge.
+RUN apk add --no-cache suricata --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
 COPY . /suricata
 COPY --from=builder /src/target/release/*.so /suricata/
 ENTRYPOINT ["/suricata/entrypoint.sh"]

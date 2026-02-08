@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: CC0-1.0
 
 # Package grafana with SQLite plugin
-FROM grafana/grafana-oss:12.1.1
+FROM grafana/grafana-oss:12.3.2
 RUN grafana cli --pluginsDir /var/lib/grafana/plugins plugins install frser-sqlite-datasource
 
 # Setup provisioning
