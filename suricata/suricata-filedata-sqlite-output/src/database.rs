@@ -26,7 +26,7 @@ fn write_filedata(
         .iter()
         .map(|byte| format!("{:02x}", byte))
         .collect();
-    let original_size = filedata.blob.len();
+    let original_size: u32 = filedata.blob.len().try_into().unwrap_or(0);
     let data = if original_size < 256 {
         // Do not compress smaller blobs
         &filedata.blob
