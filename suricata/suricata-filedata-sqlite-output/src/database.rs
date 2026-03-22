@@ -1,7 +1,8 @@
 // Copyright (C) 2025  A. Iooss
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-use std::io::Write;
+use std::fmt::Write as _;
+use std::io::Write as _;
 
 use crate::Filedata;
 use rusqlite::Transaction;
@@ -21,11 +22,10 @@ fn write_filedata(
     transaction: &Transaction,
     filedata: &Filedata,
 ) -> Result<usize, rusqlite::Error> {
-    let name: String = filedata
-        .sha256
-        .iter()
-        .map(|byte| format!("{:02x}", byte))
-        .collect();
+    let name = filedata.sha256.iter().fold(String::new(), |mut output, b| {
+        let _ = write!(output, "{b:02x}");
+        output
+    });
     let original_size: u32 = filedata.blob.len().try_into().unwrap_or(0);
     let data = if original_size < 256 {
         // Do not compress smaller blobs
@@ -33,12 +33,14 @@ fn write_filedata(
     } else {
         // Compress using deflate
         let mut e = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::fast());
-        e.write_all(&filedata.blob).unwrap();
-        &e.finish().unwrap()
+        match e.write_all(&filedata.blob) {
+            Ok(()) => &e.finish().unwrap_or_else(|_| filedata.blob.clone()),
+            Err(_) => &filedata.blob,
+        }
     };
     transaction.execute(
         "INSERT OR IGNORE INTO sqlar (name, mode, mtime, sz, data) values(?, ?, ?, ?, ?)",
-        (name, 0o100644, 0, original_size, &data),
+        (name, 0o100_644, 0, original_size, &data),
     )
 }
 
@@ -56,12 +58,9 @@ impl Database {
         rx: std::sync::mpsc::Receiver<Filedata>,
     ) -> Result<Self, rusqlite::Error> {
         let conn = rusqlite::Connection::open(filename)?;
-        conn.pragma_update(None, "journal_mode", "wal")
-            .expect("Failed to set journal_mode=wal");
-        conn.pragma_update(None, "synchronous", "off")
-            .expect("Failed to set synchronous=off");
-        conn.execute_batch(SQLAR_SCHEMA)
-            .expect("Failed to initialize database schema");
+        conn.pragma_update(None, "journal_mode", "wal")?;
+        conn.pragma_update(None, "synchronous", "off")?;
+        conn.execute_batch(SQLAR_SCHEMA)?;
         Ok(Self {
             conn: Some(conn),
             rx,
@@ -71,27 +70,31 @@ impl Database {
     }
 
     fn batch_write_filedata(&mut self) -> Result<(), rusqlite::Error> {
-        // This unwrap will never fails as conn must be initialized before this call
-        let db_conn = self.conn.as_mut().unwrap();
-        while let Ok(filedata) = self.rx.recv() {
-            let transaction = db_conn.transaction()?;
+        if let Some(mut conn) = self.conn.take() {
+            while let Ok(filedata) = self.rx.recv() {
+                let transaction = conn.transaction()?;
 
-            // Insert first filedata
-            self.count += 1;
-            self.count_inserted += write_filedata(&transaction, &filedata)?;
+                // Insert first filedata
+                self.count = self.count.saturating_add(1);
+                let inserted = write_filedata(&transaction, &filedata)?;
+                self.count_inserted = self.count_inserted.saturating_add(inserted);
 
-            // Insert remaining filedata
-            let batch = self
-                .rx
-                .try_iter()
-                .map(|filedata| write_filedata(&transaction, &filedata))
-                .collect::<Result<Vec<_>, _>>()?;
-            self.count += batch.len();
-            self.count_inserted += batch.iter().sum::<usize>();
+                // Insert remaining filedata
+                let batch = self
+                    .rx
+                    .try_iter()
+                    .map(|filedata| write_filedata(&transaction, &filedata))
+                    .collect::<Result<Vec<_>, _>>()?;
+                self.count = self.count.saturating_add(batch.len());
+                self.count_inserted = self
+                    .count_inserted
+                    .saturating_add(batch.iter().sum::<usize>());
 
-            transaction.commit()?;
+                transaction.commit()?;
+            }
+            conn.close().map_err(|(_, err)| err)?;
         }
-        self.conn.take().unwrap().close().map_err(|(_, err)| err)
+        Ok(())
     }
 
     /// Database thread entry

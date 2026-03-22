@@ -17,6 +17,6 @@ pub struct SCEveFileType {
     pub pad: [usize; 2], // Suricata internal list management pointers.
 }
 
-extern "C" {
+unsafe extern "C" {
     pub fn SCRegisterEveFileType(filetype: *const SCEveFileType) -> bool;
 }

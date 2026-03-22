@@ -16,7 +16,7 @@ pub struct File {
     fd: c_int,
     name: *mut u8,
     magic: *mut c_char,
-    next: *mut File,
+    next: *mut Self,
     md5_ctx: *mut c_void,
     md5: [u8; 16],
     sha1_ctx: *mut c_void,
@@ -51,7 +51,7 @@ pub type SCFiledataLogger = extern "C" fn(
     dir: u8,
 ) -> c_int;
 
-extern "C" {
+unsafe extern "C" {
     pub fn FileForceFilestoreEnable();
     pub fn FileForceSha256Enable();
     pub fn ProvidesFeature(feature_name: *const c_char);

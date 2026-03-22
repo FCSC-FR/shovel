@@ -8,11 +8,11 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use std::os::raw::{c_int, c_void};
 use std::sync::mpsc;
-use suricata_sys::sys::{SCPlugin, SC_API_VERSION, SC_PACKAGE_VERSION};
+use suricata_sys::sys::{SC_API_VERSION, SC_PACKAGE_VERSION, SCPlugin};
 
 // Default configuration values.
 const DEFAULT_DATABASE_URI: &str = "file:suricata/output/filedata.sqlar";
-const DEFAULT_BUFFER_SIZE: &str = "1000";
+const DEFAULT_BUFFER_SIZE: usize = 1000;
 
 #[derive(Debug, Clone)]
 struct Config {
@@ -23,11 +23,12 @@ struct Config {
 impl Config {
     fn new() -> Self {
         Self {
-            filename: std::env::var("FILEDATA_FILENAME").unwrap_or(DEFAULT_DATABASE_URI.into()),
+            filename: std::env::var("FILEDATA_FILENAME")
+                .unwrap_or_else(|_| DEFAULT_DATABASE_URI.into()),
             buffer: std::env::var("FILEDATA_BUFFER")
-                .unwrap_or(DEFAULT_BUFFER_SIZE.into())
+                .unwrap_or_else(|_| DEFAULT_BUFFER_SIZE.to_string())
                 .parse()
-                .expect("FILEDATA_BUFFER is not an integer"),
+                .unwrap_or(DEFAULT_BUFFER_SIZE),
         }
     }
 }
@@ -74,13 +75,14 @@ extern "C" fn filedata_log(
 
     if flags & ffi::OUTPUT_FILEDATA_FLAG_CLOSE != 0 {
         // Got last part of data, send filedata to database thread
-        context.count += 1;
-        let blob = context.filedata_blob.remove(&ff.file_store_id).unwrap();
-        let sha256 = ff.sha256.to_owned();
-        let filedata = Filedata { blob, sha256 };
-        if let Err(_err) = context.tx.send(filedata) {
-            log::error!("Failed to send filedata to database thread");
-            return -1;
+        context.count = context.count.saturating_add(1);
+        if let Some(blob) = context.filedata_blob.remove(&ff.file_store_id) {
+            let sha256 = ff.sha256.to_owned();
+            let filedata = Filedata { blob, sha256 };
+            if let Err(_err) = context.tx.send(filedata) {
+                log::error!("Failed to send filedata to database thread");
+                return -1;
+            }
         }
     }
     0
@@ -121,7 +123,7 @@ extern "C" fn filedata_thread_deinit(
     thread_data: *mut *mut c_void,
 ) {
     let context = unsafe { Box::from_raw(thread_data.cast::<Context>()) };
-    log::info!("SQLite output finished: count={}", context.count);
+    log::info!("SQLite filedata output finished: count={}", context.count);
     std::mem::drop(context);
 }
 
@@ -154,11 +156,11 @@ extern "C" fn plugin_init() {
 }
 
 /// Plugin entrypoint, registers [`plugin_init`] function in Suricata
-#[no_mangle]
+#[unsafe(no_mangle)]
 extern "C" fn SCPluginRegister() -> *const SCPlugin {
     let plugin = SCPlugin {
         version: SC_API_VERSION,
-        suricata_version: SC_PACKAGE_VERSION.as_ptr() as *const ::std::os::raw::c_char,
+        suricata_version: SC_PACKAGE_VERSION.as_ptr().cast::<::std::os::raw::c_char>(),
         name: c"Filedata SQLite Output".as_ptr(),
         plugin_version: c"0.1.0".as_ptr(),
         license: c"GPL-2.0".as_ptr(),

@@ -8,11 +8,11 @@ mod ffi;
 use std::fmt::Debug;
 use std::os::raw::{c_char, c_int, c_void};
 use std::sync::mpsc;
-use suricata_sys::sys::{SCPlugin, SC_API_VERSION, SC_PACKAGE_VERSION};
+use suricata_sys::sys::{SC_API_VERSION, SC_PACKAGE_VERSION, SCPlugin};
 
 // Default configuration values.
 const DEFAULT_DATABASE_URI: &str = "file:suricata/output/eve.db";
-const DEFAULT_BUFFER_SIZE: &str = "1000";
+const DEFAULT_BUFFER_SIZE: usize = 1000;
 
 #[derive(Debug, Clone)]
 struct Config {
@@ -23,11 +23,11 @@ struct Config {
 impl Config {
     fn new() -> Self {
         Self {
-            filename: std::env::var("EVE_FILENAME").unwrap_or(DEFAULT_DATABASE_URI.into()),
+            filename: std::env::var("EVE_FILENAME").unwrap_or_else(|_| DEFAULT_DATABASE_URI.into()),
             buffer: std::env::var("EVE_BUFFER")
-                .unwrap_or(DEFAULT_BUFFER_SIZE.into())
+                .unwrap_or_else(|_| DEFAULT_BUFFER_SIZE.to_string())
                 .parse()
-                .expect("EVE_BUFFER is not an integer"),
+                .unwrap_or(DEFAULT_BUFFER_SIZE),
         }
     }
 }
@@ -81,14 +81,14 @@ extern "C" fn output_write(
         str::from_utf8_unchecked(
             std::ffi::CStr::from_bytes_with_nul_unchecked(std::slice::from_raw_parts(
                 buffer.cast(),
-                buffer_len as usize + 1,
+                buffer_len.unsigned_abs().saturating_add(1) as usize,
             ))
             .to_bytes(),
         )
     };
 
     // Send text buffer to database thread
-    context.count += 1;
+    context.count = context.count.saturating_add(1);
     if let Err(_err) = context.tx.send(text.to_owned()) {
         log::error!("Failed to send Eve record to database thread");
         return -1;
@@ -96,7 +96,7 @@ extern "C" fn output_write(
     0
 }
 
-extern "C" fn output_thread_init(
+const extern "C" fn output_thread_init(
     _data: *const c_void,
     _thread_id: std::os::raw::c_int,
     _thread_data: *mut *mut c_void,
@@ -104,7 +104,7 @@ extern "C" fn output_thread_init(
     0
 }
 
-extern "C" fn output_thread_deinit(_data: *const c_void, _thread_data: *mut c_void) {}
+const extern "C" fn output_thread_deinit(_data: *const c_void, _thread_data: *mut c_void) {}
 
 extern "C" fn plugin_init() {
     // Init Rust logger
@@ -128,11 +128,11 @@ extern "C" fn plugin_init() {
 }
 
 /// Plugin entrypoint, registers [`plugin_init`] function in Suricata
-#[no_mangle]
+#[unsafe(no_mangle)]
 extern "C" fn SCPluginRegister() -> *const SCPlugin {
     let plugin = SCPlugin {
         version: SC_API_VERSION,
-        suricata_version: SC_PACKAGE_VERSION.as_ptr() as *const ::std::os::raw::c_char,
+        suricata_version: SC_PACKAGE_VERSION.as_ptr().cast::<::std::os::raw::c_char>(),
         name: c"Eve SQLite Output".as_ptr(),
         plugin_version: c"0.1.0".as_ptr(),
         license: c"GPL-2.0".as_ptr(),
