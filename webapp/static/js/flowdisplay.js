@@ -436,15 +436,15 @@ class FlowDisplay {
 
         const codeElUtf8 = document.createElement('code')
         codeElUtf8.classList.add('text-white')
-        codeElUtf8.classList.toggle('bg-danger', chunk.server_to_client === 0)
-        codeElUtf8.classList.toggle('bg-success', chunk.server_to_client === 1)
+        codeElUtf8.classList.toggle('bg-danger', chunk.direction === 0)
+        codeElUtf8.classList.toggle('bg-success', chunk.direction === 1)
         codeElUtf8.innerHTML = this.highlightPayload(utf8Decoder.decode(byteArray), flow.flow.flowvars?.map(d => d.match))
         utf8View.appendChild(codeElUtf8)
 
         const codeElHex = document.createElement('code')
         codeElHex.classList.add('text-white')
-        codeElHex.classList.toggle('bg-danger', chunk.server_to_client === 0)
-        codeElHex.classList.toggle('bg-success', chunk.server_to_client === 1)
+        codeElHex.classList.toggle('bg-danger', chunk.direction === 0)
+        codeElHex.classList.toggle('bg-success', chunk.direction === 1)
         codeElHex.textContent = this.renderHexDump(byteArray) + '\n'
         hexView.appendChild(codeElHex)
       })

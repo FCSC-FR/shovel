@@ -21,6 +21,7 @@ eval "$SURICATA_CMD" \
     --set default-rule-path=suricata/rules \
     --set plugins.0=suricata/libeve_sqlite_output.so \
     --set plugins.1=suricata/libfiledata_sqlite_output.so \
+    --set plugins.2=suricata/libpayload_sqlite_output.so \
     --set outputs.0.fast.enabled=no \
     --set outputs.1.eve-log.filetype=sqlite \
     --set outputs.1.eve-log.types.2.anomaly.types.decode=yes \
@@ -36,10 +37,6 @@ eval "$SURICATA_CMD" \
     --set outputs.3.pcap-log.compression=lz4 \
     --set outputs.3.pcap-log.dir=pcaps \
     --set outputs.5.stats.enabled=no \
-    --set outputs.9.lua.enabled=yes \
-    --set outputs.9.lua.cpath=/usr/lib/lua/5.4/?.so \
-    --set outputs.9.lua.scripts.0=suricata/suricata-tcp-payload-sqlite-output.lua \
-    --set outputs.9.lua.scripts.1=suricata/suricata-udp-payload-sqlite-output.lua \
     --set app-layer.protocols.pgsql.enabled=yes \
     --set app-layer.protocols.modbus.enabled=yes \
     --set app-layer.protocols.dnp3.enabled=yes \

@@ -259,6 +259,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "suricata-payload-sqlite-output"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "log",
+ "rusqlite",
+ "suricata-sys",
+]
+
+[[package]]
 name = "suricata-sys"
 version = "8.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"

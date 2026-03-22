@@ -45,6 +45,8 @@ async def api_filedata_get(request):
         "SELECT sz, data FROM sqlar WHERE name = ?", (sha256,)
     ) as cursor:
         row = await cursor.fetchone()
+        if not row:
+            raise HTTPException(404)
         data = row["data"]
     extra_header = {"Content-Encoding": "deflate"} if row["sz"] != len(data) else {}
     return Response(data, headers={"Cache-Control": "max-age=86400"} | extra_header)
@@ -208,14 +210,14 @@ async def api_flow_raw_get(request):
 
     # Get associated raw data
     async with payload_db.execute(
-        "SELECT server_to_client, data FROM raw WHERE flow_id = ?1 ORDER BY count",
+        "SELECT direction, data FROM raw WHERE flow_id = ?1 ORDER BY count",
         (flow_id,),
     ) as cursor:
         rows = await cursor.fetchall()
         result = []
         for r in rows:
             data = base64.b64encode(r["data"]).decode()
-            result.append({"server_to_client": r["server_to_client"], "data": data})
+            result.append({"direction": r["direction"], "data": data})
 
     return JSONResponse(result, headers={"Cache-Control": "max-age=86400"})
 
@@ -281,7 +283,7 @@ async def api_replay_raw(request):
 
     # Get associated raw data
     async with payload_db.execute(
-        "SELECT server_to_client, data FROM raw WHERE flow_id = ?1 ORDER BY count",
+        "SELECT direction, data FROM raw WHERE flow_id = ?1 ORDER BY count",
         (flow_id,),
     ) as cursor:
         rows = await cursor.fetchall()
@@ -291,7 +293,7 @@ async def api_replay_raw(request):
     # Load files
     data["raw_data"] = []
     for row in rows:
-        sc, raw_data = row["server_to_client"], row["data"]
+        sc, raw_data = row["direction"], row["data"]
         if data["raw_data"] and data["raw_data"][-1][1] == sc and sc == 1:
             # Concat servers messages together
             data["raw_data"][-1][0] += raw_data

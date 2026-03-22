@@ -1,4 +1,4 @@
-# Copyright (C) 2024  ANSSI
+# Copyright (C) 2026  A. Iooss
 # SPDX-License-Identifier: CC0-1.0
 
 [workspace]
@@ -6,4 +6,5 @@ resolver = "2"
 members = [
     "suricata-eve-sqlite-output",
     "suricata-filedata-sqlite-output",
+    "suricata-payload-sqlite-output",
 ]

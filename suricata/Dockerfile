@@ -6,6 +6,7 @@ RUN apk add --no-cache musl-dev
 COPY Cargo.lock Cargo.toml /src/
 COPY suricata-eve-sqlite-output/ /src/suricata-eve-sqlite-output/
 COPY suricata-filedata-sqlite-output/ /src/suricata-filedata-sqlite-output/
+COPY suricata-payload-sqlite-output/ /src/suricata-payload-sqlite-output/
 RUN RUSTFLAGS="-C target-feature=-crt-static" cargo build --release
 
 FROM alpine:3.23

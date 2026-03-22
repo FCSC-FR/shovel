@@ -44,8 +44,8 @@ r = remote(HOST, {{ data.port }}, typ="{{ data.proto | lower }}", timeout=2)
 # FIXME: You should identify if a flag_id was used in the following
 # payload. If it is the case, then you should replace it with FLAG_ID.
 
-{%- for payload, server_to_client in data.raw_data %}
-{%-   if server_to_client == 0 %}
+{%- for payload, direction in data.raw_data %}
+{%-   if direction == 0 %}
 {%-     if payload and payload[-1] == 10 %}
 r.sendline({{ payload[:-1] | safe }})
 {%-     else %}

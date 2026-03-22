@@ -47,8 +47,8 @@ s.connect((HOST, {{ data.port }}))
 # FIXME: You should identify if a flag_id was used in the following
 # payload. If it is the case, then you should replace it with FLAG_ID.
 
-{%- for payload, server_to_client in data.raw_data %}
-{%- if server_to_client == 0 %}
+{%- for payload, direction in data.raw_data %}
+{%- if direction == 0 %}
 
 s.sendall({{ payload | safe }})
 {%- else %}
