@@ -23,9 +23,9 @@ struct Config {
 impl Config {
     fn new() -> Self {
         Self {
-            filename: std::env::var("PAYLOAD_FILENAME")
+            filename: std::env::var("RAWDATA_FILENAME")
                 .unwrap_or_else(|_| DEFAULT_DATABASE_URI.into()),
-            buffer: std::env::var("PAYLOAD_BUFFER")
+            buffer: std::env::var("RAWDATA_BUFFER")
                 .unwrap_or_else(|_| DEFAULT_BUFFER_SIZE.to_string())
                 .parse()
                 .unwrap_or(DEFAULT_BUFFER_SIZE),
@@ -46,18 +46,13 @@ struct Context {
     flow_packet_count: HashMap<i64, u32>,
 }
 
-extern "C" fn payload_log(
+extern "C" fn packet_log(
     _thread_vars: *mut *mut c_void, // ThreadVars *
     thread_data: *mut *mut c_void,
     pkt: *const ffi::Packet,
 ) -> c_int {
     // Handle FFI arguments
     let pkt = unsafe { &*pkt };
-    if pkt.payload_len == 0
-        || pkt.flags & (ffi::PKT_NOPACKET_INSPECTION | ffi::PKT_STREAM_NOPCAPLOG) > 0
-    {
-        return 0; // early bail out
-    }
     let data = unsafe { std::slice::from_raw_parts(pkt.payload, pkt.payload_len as usize) };
     let flow = unsafe { &*pkt.flow };
     let flow_id = ffi::flow_get_id(flow);
@@ -84,15 +79,17 @@ extern "C" fn payload_log(
     0
 }
 
-const extern "C" fn payload_log_condition(
+const extern "C" fn packet_log_condition(
     _thread_vars: *mut *mut c_void, // ThreadVars *
     _thread_data: *mut *mut c_void,
-    _pkt: *const ffi::Packet,
+    pkt: *const ffi::Packet,
 ) -> bool {
-    true
+    let pkt = unsafe { &*pkt };
+    pkt.payload_len != 0
+        && (pkt.flags & (ffi::PKT_NOPACKET_INSPECTION | ffi::PKT_STREAM_NOPCAPLOG) == 0)
 }
 
-extern "C" fn payload_thread_init(
+extern "C" fn packet_thread_init(
     _thread_vars: *mut *mut c_void, // ThreadVars *
     _initdata: *const *mut c_void,
     thread_data: *mut *mut c_void,
@@ -122,9 +119,9 @@ extern "C" fn payload_thread_init(
     0
 }
 
-extern "C" fn payload_thread_deinit(_thread_vars: *mut *mut c_void, thread_data: *mut *mut c_void) {
+extern "C" fn packet_thread_deinit(_thread_vars: *mut *mut c_void, thread_data: *mut *mut c_void) {
     let context = unsafe { Box::from_raw(thread_data.cast::<Context>()) };
-    log::info!("SQLite payload output finished: count={}", context.count);
+    log::info!("SQLite rawdata output finished: count={}", context.count);
     std::mem::drop(context);
 }
 
@@ -133,20 +130,20 @@ extern "C" fn plugin_init() {
     // don't log using `suricata` crate to reduce build time.
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
-    // Register new filedata logger
+    // Register new packets logger
     if !unsafe {
         ffi::SCOutputRegisterPacketLogger(
             ffi::LOGGER_USER,
-            c"payload-sqlite".as_ptr(),
-            payload_log,
-            payload_log_condition,
+            c"rawdata-sqlite".as_ptr(),
+            packet_log,
+            packet_log_condition,
             std::ptr::null_mut(),
-            payload_thread_init,
-            payload_thread_deinit,
+            packet_thread_init,
+            packet_thread_deinit,
         )
     } == 0
     {
-        log::error!("Failed to register sqlite plugin");
+        log::error!("Failed to register packets logger in rawdata sqlite plugin");
     }
 }
 
@@ -156,7 +153,7 @@ extern "C" fn SCPluginRegister() -> *const SCPlugin {
     let plugin = SCPlugin {
         version: SC_API_VERSION,
         suricata_version: SC_PACKAGE_VERSION.as_ptr().cast::<::std::os::raw::c_char>(),
-        name: c"Payload SQLite Output".as_ptr(),
+        name: c"Rawdata SQLite Output".as_ptr(),
         plugin_version: c"0.1.0".as_ptr(),
         license: c"GPL-2.0".as_ptr(),
         author: c"ECSC TeamFrance".as_ptr(),

@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: CC0-1.0
 
 [package]
-name = "suricata-payload-sqlite-output"
+name = "suricata-rawdata-sqlite-output"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
 crate-type = ["cdylib"]
-name = "payload_sqlite_output"
+name = "rawdata_sqlite_output"
 
 [dependencies]
 env_logger = { version = "0.11.5", default-features = false }

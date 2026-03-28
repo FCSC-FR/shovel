@@ -6,5 +6,5 @@ resolver = "2"
 members = [
     "suricata-eve-sqlite-output",
     "suricata-filedata-sqlite-output",
-    "suricata-payload-sqlite-output",
+    "suricata-rawdata-sqlite-output",
 ]

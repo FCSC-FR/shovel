@@ -6,11 +6,11 @@ RUN apk add --no-cache musl-dev
 COPY Cargo.lock Cargo.toml /src/
 COPY suricata-eve-sqlite-output/ /src/suricata-eve-sqlite-output/
 COPY suricata-filedata-sqlite-output/ /src/suricata-filedata-sqlite-output/
-COPY suricata-payload-sqlite-output/ /src/suricata-payload-sqlite-output/
+COPY suricata-rawdata-sqlite-output/ /src/suricata-rawdata-sqlite-output/
 RUN RUSTFLAGS="-C target-feature=-crt-static" cargo build --release
 
 FROM alpine:3.23
-RUN apk add --no-cache lua5.4-sqlite netcat-openbsd
+RUN apk add --no-cache netcat-openbsd
 # Alpine 3.23 is still on Suricata 8.0.0. Pull 8.0.3 from edge.
 RUN apk add --no-cache suricata --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
 COPY . /suricata

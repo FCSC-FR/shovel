@@ -19,12 +19,7 @@ CREATE INDEX IF NOT EXISTS raw_flow_id_idx ON raw(flow_id);";
 fn write_rawdata(transaction: &Transaction, rd: &Rawdata) -> Result<usize, rusqlite::Error> {
     transaction.execute(
         "INSERT OR IGNORE INTO raw (flow_id, count, direction, data) values(?, ?, ?, ?)",
-        (
-            rd.flow_id,
-            rd.packet_count,
-            rd.direction,
-            &rd.data,
-        ),
+        (rd.flow_id, rd.packet_count, rd.direction, &rd.data),
     )
 }
 

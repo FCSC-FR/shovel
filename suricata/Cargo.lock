@@ -259,7 +259,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "suricata-payload-sqlite-output"
+name = "suricata-rawdata-sqlite-output"
 version = "0.1.0"
 dependencies = [
  "env_logger",
