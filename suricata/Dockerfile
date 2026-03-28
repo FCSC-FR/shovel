@@ -4,9 +4,9 @@ FROM rust:1.88.0-alpine3.22 AS builder
 WORKDIR /src/
 RUN apk add --no-cache musl-dev
 COPY Cargo.lock Cargo.toml /src/
-COPY suricata-eve-sqlite-output/ /src/suricata-eve-sqlite-output/
-COPY suricata-filedata-sqlite-output/ /src/suricata-filedata-sqlite-output/
-COPY suricata-rawdata-sqlite-output/ /src/suricata-rawdata-sqlite-output/
+COPY suricata-eve-sql-output/ /src/suricata-eve-sql-output/
+COPY suricata-filedata-sql-output/ /src/suricata-filedata-sql-output/
+COPY suricata-rawdata-sql-output/ /src/suricata-rawdata-sql-output/
 RUN RUSTFLAGS="-C target-feature=-crt-static" cargo build --release
 
 FROM alpine:3.23

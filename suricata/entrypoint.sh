@@ -19,11 +19,11 @@ eval "$SURICATA_CMD" \
     --runmode=single --no-random -k none \
     -l suricata/output \
     --set default-rule-path=suricata/rules \
-    --set plugins.0=suricata/libeve_sqlite_output.so \
-    --set plugins.1=suricata/libfiledata_sqlite_output.so \
-    --set plugins.2=suricata/librawdata_sqlite_output.so \
+    --set plugins.0=suricata/libeve_sql_output.so \
+    --set plugins.1=suricata/libfiledata_sql_output.so \
+    --set plugins.2=suricata/librawdata_sql_output.so \
     --set outputs.0.fast.enabled=no \
-    --set outputs.1.eve-log.filetype=sqlite \
+    --set outputs.1.eve-log.filetype=sql \
     --set outputs.1.eve-log.types.2.anomaly.types.decode=yes \
     --set outputs.1.eve-log.types.2.anomaly.types.stream=yes \
     --set outputs.1.eve-log.types.2.anomaly.types.applayer=yes \

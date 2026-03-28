@@ -2,16 +2,17 @@
 # SPDX-License-Identifier: CC0-1.0
 
 [package]
-name = "suricata-eve-sqlite-output"
+name = "suricata-eve-sql-output"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
 crate-type = ["cdylib"]
-name = "eve_sqlite_output"
+name = "eve_sql_output"
 
 [dependencies]
 env_logger = { version = "0.11.5", default-features = false }
 log = "0.4.22"
-rusqlite = { version = "0.39.0", features = ["bundled"] }
+sqlx = { version = "0.8.6", features = ["any", "postgres", "runtime-tokio", "sqlite"], default-features = false }
 suricata-sys = "8.0.4"
+tokio = { version = "1.50.0", features = ["rt"] }

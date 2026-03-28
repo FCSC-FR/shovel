@@ -11,20 +11,20 @@ use std::sync::mpsc;
 use suricata_sys::sys::{SC_API_VERSION, SC_PACKAGE_VERSION, SCPlugin};
 
 // Default configuration values.
-const DEFAULT_DATABASE_URI: &str = "file:suricata/output/filedata.sqlar";
+const DEFAULT_DATABASE_URL: &str = "sqlite://./suricata/output/filedata.sqlar?mode=rwc";
 const DEFAULT_BUFFER_SIZE: usize = 1000;
 
 #[derive(Debug, Clone)]
 struct Config {
-    filename: String,
+    database_url: String,
     buffer: usize,
 }
 
 impl Config {
     fn new() -> Self {
         Self {
-            filename: std::env::var("FILEDATA_FILENAME")
-                .unwrap_or_else(|_| DEFAULT_DATABASE_URI.into()),
+            database_url: std::env::var("FILEDATA_DATABASE_URL")
+                .unwrap_or_else(|_| DEFAULT_DATABASE_URL.into()),
             buffer: std::env::var("FILEDATA_BUFFER")
                 .unwrap_or_else(|_| DEFAULT_BUFFER_SIZE.to_string())
                 .parse()
@@ -98,13 +98,7 @@ extern "C" fn filedata_thread_init(
 
     // Create thread context
     let (tx, rx) = mpsc::sync_channel(config.buffer);
-    let mut database_client = match database::Database::new(config.filename, rx) {
-        Ok(client) => client,
-        Err(err) => {
-            log::error!("Failed to initialize database client: {err:?}");
-            panic!()
-        }
-    };
+    let mut database_client = database::Database::new(config.database_url, rx);
     std::thread::spawn(move || database_client.run());
     let context_ptr = Box::into_raw(Box::new(Context {
         tx,
@@ -123,7 +117,7 @@ extern "C" fn filedata_thread_deinit(
     thread_data: *mut *mut c_void,
 ) {
     let context = unsafe { Box::from_raw(thread_data.cast::<Context>()) };
-    log::info!("SQLite filedata output finished: count={}", context.count);
+    log::info!("SQL filedata output finished: count={}", context.count);
     std::mem::drop(context);
 }
 
@@ -143,7 +137,7 @@ extern "C" fn plugin_init() {
     if !unsafe {
         ffi::SCOutputRegisterFiledataLogger(
             ffi::LOGGER_USER,
-            c"filedata-sqlite".as_ptr(),
+            c"filedata-sql".as_ptr(),
             filedata_log,
             std::ptr::null_mut(),
             filedata_thread_init,
@@ -151,7 +145,7 @@ extern "C" fn plugin_init() {
         )
     } == 0
     {
-        log::error!("Failed to register sqlite plugin");
+        log::error!("Failed to register SQL filedata plugin");
     }
 }
 
@@ -161,7 +155,7 @@ extern "C" fn SCPluginRegister() -> *const SCPlugin {
     let plugin = SCPlugin {
         version: SC_API_VERSION,
         suricata_version: SC_PACKAGE_VERSION.as_ptr().cast::<::std::os::raw::c_char>(),
-        name: c"Filedata SQLite Output".as_ptr(),
+        name: c"Filedata SQL Output".as_ptr(),
         plugin_version: c"0.1.0".as_ptr(),
         license: c"GPL-2.0".as_ptr(),
         author: c"ECSC TeamFrance".as_ptr(),

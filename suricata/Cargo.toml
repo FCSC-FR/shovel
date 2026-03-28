@@ -4,7 +4,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "suricata-eve-sqlite-output",
-    "suricata-filedata-sqlite-output",
-    "suricata-rawdata-sqlite-output",
+    "suricata-eve-sql-output",
+    "suricata-filedata-sql-output",
+    "suricata-rawdata-sql-output",
 ]
