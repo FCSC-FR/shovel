@@ -1,7 +1,7 @@
--- Copyright (C) 2024  ANSSI
+-- Copyright (C) 2026  A. Iooss
 -- SPDX-License-Identifier: GPL-2.0-or-later
 CREATE TABLE IF NOT EXISTS "flow" (
-    id INTEGER NOT NULL PRIMARY KEY,
+    id BIGINT NOT NULL PRIMARY KEY,
     ts_start INTEGER,
     ts_end INTEGER,
     src_ip TEXT NOT NULL,
@@ -10,25 +10,23 @@ CREATE TABLE IF NOT EXISTS "flow" (
     dest_port INTEGER,
     proto TEXT NOT NULL,
     app_proto TEXT,
-    metadata BLOB,
-    extra_data BLOB
+    metadata BYTEA,
+    extra_data BYTEA
 );
 CREATE TABLE IF NOT EXISTS "alert" (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    flow_id INTEGER,
-    tag TEXT,
+    flow_id BIGINT NOT NULL,
+    tag TEXT NOT NULL,
     color TEXT,
     timestamp INTEGER NOT NULL,
-    extra_data BLOB,
-    UNIQUE(flow_id, tag)
+    extra_data BYTEA,
+    PRIMARY KEY(flow_id, tag)
 );
 CREATE TABLE IF NOT EXISTS "other-event" (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    flow_id INTEGER,
+    flow_id BIGINT,
     timestamp INTEGER NOT NULL,
     event_type TEXT NOT NULL,
-    extra_data BLOB,
-    UNIQUE(flow_id, event_type, timestamp)
+    extra_data BYTEA,
+    PRIMARY KEY(flow_id, event_type, timestamp)
 );
 CREATE INDEX IF NOT EXISTS "flow_ts_start_idx" ON flow(ts_start);
 CREATE INDEX IF NOT EXISTS "flow_app_proto_idx" ON flow(app_proto);

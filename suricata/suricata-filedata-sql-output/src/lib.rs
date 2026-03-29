@@ -11,7 +11,7 @@ use std::sync::mpsc;
 use suricata_sys::sys::{SC_API_VERSION, SC_PACKAGE_VERSION, SCPlugin};
 
 // Default configuration values.
-const DEFAULT_DATABASE_URL: &str = "sqlite://./suricata/output/filedata.sqlar?mode=rwc";
+const DEFAULT_DATABASE_URL: &str = "sqlite://./suricata/output/filedata.db?mode=rwc";
 const DEFAULT_BUFFER_SIZE: usize = 1000;
 
 #[derive(Debug, Clone)]
@@ -41,6 +41,7 @@ struct Filedata {
 struct Context {
     tx: mpsc::SyncSender<Filedata>,
     count: usize,
+    count_drop: usize,
     filedata_blob: HashMap<u32, Vec<u8>>,
 }
 
@@ -75,14 +76,15 @@ extern "C" fn filedata_log(
 
     if flags & ffi::OUTPUT_FILEDATA_FLAG_CLOSE != 0 {
         // Got last part of data, send filedata to database thread
-        context.count = context.count.saturating_add(1);
         if let Some(blob) = context.filedata_blob.remove(&ff.file_store_id) {
             let sha256 = ff.sha256.to_owned();
             let filedata = Filedata { blob, sha256 };
             if let Err(_err) = context.tx.send(filedata) {
-                log::error!("Failed to send filedata to database thread");
+                context.count_drop = context.count_drop.saturating_add(1);
+                log::debug!("Failed to send filedata to database thread");
                 return -1;
             }
+            context.count = context.count.saturating_add(1);
         }
     }
     0
@@ -98,11 +100,15 @@ extern "C" fn filedata_thread_init(
 
     // Create thread context
     let (tx, rx) = mpsc::sync_channel(config.buffer);
-    let mut database_client = database::Database::new(config.database_url, rx);
+    let mut database_client = match database::Database::new(&config.database_url, rx) {
+        Ok(db) => db,
+        Err(err) => panic!("Failed to open database {}: {err:?}", config.database_url),
+    };
     std::thread::spawn(move || database_client.run());
     let context_ptr = Box::into_raw(Box::new(Context {
         tx,
         count: 0,
+        count_drop: 0,
         filedata_blob: HashMap::new(),
     }));
 
@@ -117,7 +123,11 @@ extern "C" fn filedata_thread_deinit(
     thread_data: *mut *mut c_void,
 ) {
     let context = unsafe { Box::from_raw(thread_data.cast::<Context>()) };
-    log::info!("SQL filedata output finished: count={}", context.count);
+    log::info!(
+        "SQL filedata output finished: count={} drop={}",
+        context.count,
+        context.count_drop
+    );
     std::mem::drop(context);
 }
 

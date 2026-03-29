@@ -4,7 +4,6 @@ input_pcaps/*
 suricata/output/pcaps
 suricata/output/*.log
 suricata/output/*.db
-suricata/output/*.sqlar
 suricata/output/*-shm
 suricata/output/*-wal
 suricata/target

@@ -42,7 +42,7 @@ async def api_filedata_get(request):
     sha256 = request.path_params["sha256"]
 
     async with filedata_db.execute(
-        "SELECT sz, data FROM sqlar WHERE name = ?", (sha256,)
+        "SELECT sz, data FROM filedata WHERE name = ?", (sha256,)
     ) as cursor:
         row = await cursor.fetchone()
         if not row:
@@ -98,15 +98,15 @@ async def api_flow_list(request):
     search_fid = []
     if search:
         # Collect all flows id with raw payload matching search
-        async with payload_db.execute(
-            "SELECT flow_id FROM raw WHERE data GLOB ?1", (f"*{search}*",)
+        async with rawdata_db.execute(
+            "SELECT flow_id FROM rawdata WHERE data GLOB ?1", (f"*{search}*",)
         ) as cursor:
             rows = await cursor.fetchall()
             search_fid = [r["flow_id"] for r in rows]
 
         # Collect all flows id with uncompressed filedata matching search
         async with filedata_db.execute(
-            "SELECT name FROM sqlar WHERE length(data) == sz AND data GLOB ?1",
+            "SELECT name FROM filedata WHERE length(data) == sz AND data GLOB ?1",
             (f"*{search}*",),
         ) as cursor:
             rows = await cursor.fetchall()
@@ -158,7 +158,7 @@ async def api_flow_get(request):
 
     # Get associated events
     async with eve_db.execute(
-        "SELECT event_type, json(extra_data) FROM 'other-event' WHERE flow_id = ? ORDER BY id",
+        "SELECT event_type, json(extra_data) FROM 'other-event' WHERE flow_id = ? ORDER BY timestamp",
         (flow_id,),
     ) as cursor:
         for row in await cursor.fetchall():
@@ -169,7 +169,7 @@ async def api_flow_get(request):
     # Get associated alert
     if result["flow"]["alerted"]:
         async with eve_db.execute(
-            "SELECT json(extra_data), color FROM alert WHERE flow_id = ? ORDER BY id",
+            "SELECT json(extra_data), color FROM alert WHERE flow_id = ? ORDER BY timestamp",
             (flow_id,),
         ) as cursor:
             rows = await cursor.fetchall()
@@ -209,8 +209,8 @@ async def api_flow_raw_get(request):
     flow_id = request.path_params["flow_id"]
 
     # Get associated raw data
-    async with payload_db.execute(
-        "SELECT direction, data FROM raw WHERE flow_id = ?1 ORDER BY count",
+    async with rawdata_db.execute(
+        "SELECT direction, data FROM rawdata WHERE flow_id = ?1 ORDER BY count",
         (flow_id,),
     ) as cursor:
         rows = await cursor.fetchall()
@@ -227,7 +227,7 @@ async def api_replay_http(request):
 
     # Get HTTP events
     async with eve_db.execute(
-        "SELECT flow_id, json(extra_data) FROM 'other-event' WHERE flow_id = ? AND event_type = 'http' ORDER BY id",
+        "SELECT flow_id, json(extra_data) FROM 'other-event' WHERE flow_id = ? AND event_type = 'http' ORDER BY timestamp",
         (flow_id,),
     ) as cursor:
         rows = await cursor.fetchall()
@@ -240,7 +240,7 @@ async def api_replay_http(request):
         if req["http_method"] in ["POST"]:
             # First result should be the request
             async with eve_db.execute(
-                "SELECT extra_data->>'sha256' AS sha256 FROM 'other-event' WHERE flow_id = ? AND event_type = 'fileinfo' AND extra_data->>'tx_id' = ? ORDER BY id",
+                "SELECT extra_data->>'sha256' AS sha256 FROM 'other-event' WHERE flow_id = ? AND event_type = 'fileinfo' AND extra_data->>'tx_id' = ? ORDER BY timestamp",
                 (flow_id, tx_id),
             ) as cursor:
                 fileinfo_first_event = await cursor.fetchone()
@@ -250,7 +250,7 @@ async def api_replay_http(request):
 
             # Load filedata
             async with filedata_db.execute(
-                "SELECT sz, data FROM sqlar WHERE name = ?",
+                "SELECT sz, data FROM filedata WHERE name = ?",
                 (sha256,),
             ) as cursor:
                 row = await cursor.fetchone()
@@ -282,8 +282,8 @@ async def api_replay_raw(request):
         }
 
     # Get associated raw data
-    async with payload_db.execute(
-        "SELECT direction, data FROM raw WHERE flow_id = ?1 ORDER BY count",
+    async with rawdata_db.execute(
+        "SELECT direction, data FROM rawdata WHERE flow_id = ?1 ORDER BY count",
         (flow_id,),
     ) as cursor:
         rows = await cursor.fetchall()
@@ -375,29 +375,31 @@ async def lifespan(app):
     Open databases on startup.
     Close databases on exit.
     """
-    global eve_db, payload_db, filedata_db
-    eve_db = await open_database(EVE_DB_URI)
-    payload_db = await open_database(PAYLOAD_DB_URI, bytes)
-    filedata_db = await open_database(FILEDATA_DB_URI, bytes)
+    global eve_db, rawdata_db, filedata_db
+    eve_db = await open_database(EVE_DATABASE_URL)
+    rawdata_db = await open_database(RAWDATA_DATABASE_URL, bytes)
+    filedata_db = await open_database(FILEDATA_DATABASE_URL, bytes)
     yield
     await eve_db.close()
-    await payload_db.close()
+    await rawdata_db.close()
     await filedata_db.close()
 
 
 # Load configuration from environment variables, then .env file
 config = Config("../.env")
 DEBUG = config("DEBUG", cast=bool, default=False)
-EVE_DB_URI = config(
-    "EVE_DB_URI", cast=str, default="file:../suricata/output/eve.db?mode=ro"
+EVE_DATABASE_URL = config(
+    "EVE_DATABASE_URL", cast=str, default="file:../suricata/output/eve.db?mode=ro"
 )
-PAYLOAD_DB_URI = config(
-    "PAYLOAD_DB_URI", cast=str, default="file:../suricata/output/payload.db?mode=ro"
-)
-FILEDATA_DB_URI = config(
-    "FILEDATA_DB_URI",
+RAWDATA_DATABASE_URL = config(
+    "RAWDATA_DATABASE_URL",
     cast=str,
-    default="file:../suricata/output/filedata.sqlar?mode=ro",
+    default="file:../suricata/output/rawdata.db?mode=ro",
+)
+FILEDATA_DATABASE_URL = config(
+    "FILEDATA_DATABASE_URL",
+    cast=str,
+    default="file:../suricata/output/filedata.db?mode=ro",
 )
 CTF_CONFIG = {
     "start_date": config("CTF_START_DATE", cast=str, default="1970-01-01T00:00+00:00"),
@@ -411,7 +413,7 @@ for name in service_names:
 
 # Define web application
 eve_db = None
-payload_db = None
+rawdata_db = None
 filedata_db = None
 templates = Jinja2Templates(directory="templates")
 app = Starlette(

@@ -36,6 +36,7 @@ impl Config {
 struct Context {
     tx: mpsc::SyncSender<String>,
     count: usize,
+    count_drop: usize,
 }
 
 extern "C" fn output_init(_conf: *const c_void, threaded: bool, data: *mut *mut c_void) -> c_int {
@@ -48,9 +49,16 @@ extern "C" fn output_init(_conf: *const c_void, threaded: bool, data: *mut *mut 
     let config = Config::new();
 
     let (tx, rx) = mpsc::sync_channel(config.buffer);
-    let mut database_client = database::Database::new(config.database_url, rx);
+    let mut database_client = match database::Database::new(&config.database_url, rx) {
+        Ok(db) => db,
+        Err(err) => panic!("Failed to open database {}: {err:?}", config.database_url),
+    };
     std::thread::spawn(move || database_client.run());
-    let context_ptr = Box::into_raw(Box::new(Context { tx, count: 0 }));
+    let context_ptr = Box::into_raw(Box::new(Context {
+        tx,
+        count: 0,
+        count_drop: 0,
+    }));
 
     unsafe {
         *data = context_ptr.cast();
@@ -60,7 +68,11 @@ extern "C" fn output_init(_conf: *const c_void, threaded: bool, data: *mut *mut 
 
 extern "C" fn output_deinit(data: *const c_void) {
     let context = unsafe { Box::from_raw(data as *mut Context) };
-    log::info!("SQL Eve output finished: count={}", context.count);
+    log::info!(
+        "SQL Eve output finished: count={} drop={}",
+        context.count,
+        context.count_drop
+    );
     std::mem::drop(context);
 }
 
@@ -83,11 +95,12 @@ extern "C" fn output_write(
     };
 
     // Send text buffer to database thread
-    context.count = context.count.saturating_add(1);
     if let Err(_err) = context.tx.send(text.to_owned()) {
-        log::error!("Failed to send Eve record to database thread");
+        context.count_drop = context.count_drop.saturating_add(1);
+        log::debug!("Failed to send Eve record to database thread");
         return -1;
     }
+    context.count = context.count.saturating_add(1);
     0
 }
 

@@ -11,7 +11,7 @@ use std::sync::mpsc;
 use suricata_sys::sys::{SC_API_VERSION, SC_PACKAGE_VERSION, SCPlugin};
 
 // Default configuration values.
-const DEFAULT_DATABASE_URL: &str = "sqlite://./suricata/output/payload.db?mode=rwc";
+const DEFAULT_DATABASE_URL: &str = "sqlite://./suricata/output/rawdata.db?mode=rwc";
 const DEFAULT_BUFFER_SIZE: usize = 1000;
 
 #[derive(Debug, Clone)]
@@ -43,6 +43,7 @@ struct Rawdata {
 struct Context {
     tx: mpsc::SyncSender<Rawdata>,
     count: usize,
+    count_drop: usize,
     flow_packet_count: HashMap<i64, i64>,
 }
 
@@ -60,7 +61,6 @@ extern "C" fn packet_log(
 
     // Get payload count for this flow
     let context = unsafe { &mut *thread_data.cast::<Context>() };
-    context.count = context.count.saturating_add(1);
     let packet_count = *context.flow_packet_count.get(&flow_id).unwrap_or(&0);
     context
         .flow_packet_count
@@ -73,9 +73,11 @@ extern "C" fn packet_log(
         direction,
     };
     if let Err(_err) = context.tx.send(rawdata) {
-        log::error!("Failed to send rawdata to database thread");
+        context.count_drop = context.count_drop.saturating_add(1);
+        log::debug!("Failed to send rawdata to database thread");
         return -1;
     }
+    context.count = context.count.saturating_add(1);
     0
 }
 
@@ -99,11 +101,15 @@ extern "C" fn packet_thread_init(
 
     // Create thread context
     let (tx, rx) = mpsc::sync_channel(config.buffer);
-    let mut database_client = database::Database::new(config.database_url, rx);
+    let mut database_client = match database::Database::new(&config.database_url, rx) {
+        Ok(db) => db,
+        Err(err) => panic!("Failed to open database {}: {err:?}", config.database_url),
+    };
     std::thread::spawn(move || database_client.run());
     let context_ptr = Box::into_raw(Box::new(Context {
         tx,
         count: 0,
+        count_drop: 0,
         flow_packet_count: HashMap::new(),
     }));
 
@@ -115,7 +121,11 @@ extern "C" fn packet_thread_init(
 
 extern "C" fn packet_thread_deinit(_thread_vars: *mut *mut c_void, thread_data: *mut *mut c_void) {
     let context = unsafe { Box::from_raw(thread_data.cast::<Context>()) };
-    log::info!("SQL rawdata output finished: count={}", context.count);
+    log::info!(
+        "SQL rawdata output finished: count={} drop={}",
+        context.count,
+        context.count_drop
+    );
     std::mem::drop(context);
 }
 
