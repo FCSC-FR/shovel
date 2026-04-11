@@ -163,7 +163,7 @@ If you don't want to use Docker, you may manually launch Suricata and the web
 application using the two following commands:
 
 ```bash
-PCAP_OVER_IP=pcap-broker:4242 ./suricata/entrypoint.sh -r /dev/stdin
+./suricata/entrypoint.sh --capture-plugin=pcap-over-ip --set pcap-over-ip.endpoint=squirrel-submission.fcsc.fr:2356
 (cd webapp && uvicorn --host 127.0.0.1 main:app)
 ```
 
