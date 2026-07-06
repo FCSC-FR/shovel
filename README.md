@@ -92,6 +92,7 @@ If you don't want to use Docker, you may manually launch Suricata and the web
 application using the two following commands:
 
 ```bash
+export DATABASE_URL=postgres://shovel:unsecure_password@localhost/shovel
 ./suricata/entrypoint.sh -r input_pcaps
 (cd webapp && uvicorn --host 127.0.0.1 main:app)
 ```
@@ -128,6 +129,7 @@ If you don't want to use Docker, you may manually launch Suricata and the web
 application using the two following commands:
 
 ```bash
+export DATABASE_URL=postgres://shovel:unsecure_password@localhost/shovel
 sudo ./suricata/entrypoint.sh -i tun5
 (cd webapp && uvicorn --host 127.0.0.1 main:app)
 ```
@@ -163,6 +165,7 @@ If you don't want to use Docker, you may manually launch Suricata and the web
 application using the two following commands:
 
 ```bash
+export DATABASE_URL=postgres://shovel:unsecure_password@localhost/shovel
 PCAP_OVER_IP=pcap-broker:4242 ./suricata/entrypoint.sh -r /dev/stdin
 (cd webapp && uvicorn --host 127.0.0.1 main:app)
 ```
