@@ -324,7 +324,7 @@ class FlowDisplay {
     while (alertsDiv.lastChild) {
       alertsDiv.removeChild(alertsDiv.lastChild)
     }
-    flow.alert?.forEach(d => this.createSimpleCard(alertsDiv, d.color, d.signature, d.count, `Suricata alert rule with sid ${d.signature_id}`))
+    flow.alert?.forEach(d => this.createSimpleCard(alertsDiv, d.metadata?.color[0], d.signature, d.count, `Suricata alert rule with sid ${d.signature_id}`))
     flow.anomaly?.forEach(d => this.createSimpleCard(alertsDiv, 'warning', `Dissection anomaly: ${JSON.stringify(d)}`))
     flow.flow.exception_policy?.forEach(d => this.createSimpleCard(alertsDiv, 'warning', `Flow exception: ${JSON.stringify(d)}`))
 

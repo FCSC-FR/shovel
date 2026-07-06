@@ -135,21 +135,13 @@ async def api_flow_get(request):
     # Get associated events
     async with db.acquire() as con:
         rows = await con.fetch(
-            'SELECT event_type, any_value(extra_data) AS json_extra_data, COUNT(*) AS count FROM "other-event" WHERE flow_id = $1 GROUP BY event_type, extra_data ORDER BY MIN(timestamp)',
+            'SELECT event_type, extra_data AS json_extra_data, COUNT(*) AS count FROM "other-event" WHERE flow_id = $1 GROUP BY event_type, extra_data ORDER BY MIN(timestamp)',
             flow_id,
         )
     for row in rows:
         result[row["event_type"]] = result.get(row["event_type"], []) + [
             row_flatten_json(dict(row))
         ]
-
-    # Get associated alerts
-    async with db.acquire() as con:
-        rows = await con.fetch(
-            "SELECT any_value(extra_data) AS json_extra_data, color, COUNT(*) AS count FROM alert WHERE flow_id = $1 GROUP BY extra_data, color ORDER BY MIN(timestamp)",
-            flow_id,
-        )
-    result["alert"] = [row_flatten_json(dict(r)) for r in rows]
 
     return JSONResponse(result, headers={"Cache-Control": "max-age=86400"})
 
@@ -289,15 +281,9 @@ async def stream_events():
                     "SELECT MIN(ts_start) as min, MAX(ts_start) as max FROM flow"
                 )
                 ts_minmax = row["min"], row["max"]
-                rows = await con.fetch("SELECT DISTINCT app_proto FROM flow")
-                prs = [
-                    r["app_proto"]
-                    for r in rows
-                    if r["app_proto"] not in [None, "failed"]
-                ]
-                rows = await con.fetch(
-                    "SELECT DISTINCT tag, color FROM alert ORDER BY color"
-                )
+                rows = await con.fetch("SELECT app_proto FROM app_protos")
+                prs = [r["app_proto"] for r in rows if r["app_proto"] != "failed"]
+                rows = await con.fetch("SELECT tag, color FROM tags")
                 tags = [dict(row) for row in rows]
 
             # Send delta to client

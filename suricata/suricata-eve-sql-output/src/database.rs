@@ -7,6 +7,7 @@ use sqlx::Connection;
 use std::str::FromStr;
 
 const SQL_SCHEMA: &str = include_str!("schema.sql");
+const SQL_SHOVEL_SCHEMA: &str = include_str!("schema_shovel.sql");
 
 fn sc_ip_format(buf: &str) -> (String, String) {
     let src_ip_part = buf.split(r#","src_ip":""#).nth(1).unwrap_or_default();
@@ -52,20 +53,6 @@ async fn write_batch_sqlite(
                 .await
                 .map(|r| r.rows_affected())
             },
-            "alert" => sqlx::query(
-                "WITH vars AS (SELECT jsonb_extract($1, '$.alert') AS extra_data) \
-                INSERT OR IGNORE INTO alert (flow_id, tag, color, timestamp, extra_data) \
-                SELECT $1->>'flow_id', (vars.extra_data->>'$.metadata.tag[0]'), (vars.extra_data->>'$.metadata.color[0]'), (UNIXEPOCH(SUBSTR($1->>'timestamp', 1, 19))*1000000 + SUBSTR($1->>'timestamp', 21, 6)), vars.extra_data \
-                FROM vars")
-                .bind(&event.data)
-                .execute(&mut *transaction)
-                .await
-                .map(|r| r.rows_affected()),
-            "stats" => sqlx::query("INSERT INTO stats (timestamp, extra_data) VALUES ((UNIXEPOCH(SUBSTR($1->>'timestamp', 1, 19))*1000000 + SUBSTR($1->>'timestamp', 21, 6)), jsonb_extract($1, '$.stats')) ON CONFLICT DO NOTHING")
-                .bind(&event.data)
-                .execute(&mut *transaction)
-                .await
-                .map(|r| r.rows_affected()),
             _ => sqlx::query(
                 "INSERT INTO 'other-event' (flow_id, timestamp, event_type, extra_data) \
                 VALUES ($1->>'flow_id', (UNIXEPOCH(SUBSTR($1->>'timestamp', 1, 19))*1000000 + SUBSTR($1->>'timestamp', 21, 6)), $2, jsonb_extract($1, '$.' || $2)) \
@@ -88,17 +75,11 @@ async fn write_batch_postgres(
     events: &[EveEvent],
 ) -> Result<u64, sqlx::Error> {
     let mut batch_flow = vec![];
-    let mut batch_alert = vec![];
-    let mut batch_stats = vec![];
     let mut batch_other = vec![];
     events.iter().for_each(|e| match e.type_.as_str() {
         "flow" => batch_flow.extend(Some(e.data.as_str())),
-        "alert" => batch_alert.extend(Some(e.data.as_str())),
-        "stats" => batch_stats.extend(Some(e.data.as_str())),
         _ => batch_other.extend(Some((e.data.as_str(), e.type_.as_str()))),
     });
-
-    let mut inserted = 0u64;
 
     let (batch_flow_src_ip, batch_flow_dest_ip): (Vec<_>, Vec<_>) =
         batch_flow.clone().into_iter().map(sc_ip_format).unzip();
@@ -116,33 +97,7 @@ async fn write_batch_postgres(
         .await
         .map(|r| r.rows_affected())?;
     transaction.commit().await?;
-    inserted = inserted.saturating_add(count);
-
-    let mut transaction = conn.begin().await?;
-    let count = sqlx::query(
-        "INSERT INTO alert (flow_id, tag, color, timestamp, extra_data) \
-        SELECT (event->>'flow_id')::bigint, COALESCE(event#>>'{alert,metadata,tag,0}', ''), (event#>>'{alert,metadata,color,0}'), \
-        EXTRACT(EPOCH FROM (event->>'timestamp')::timestamp) * 1000000, event::json->'alert' \
-        FROM UNNEST($1::json[]) AS event ON CONFLICT DO NOTHING")
-        .bind(&batch_alert)
-        .execute(&mut *transaction)
-        .await
-        .map(|r| r.rows_affected())?;
-    transaction.commit().await?;
-    inserted = inserted.saturating_add(count);
-
-    let mut transaction = conn.begin().await?;
-    let count = sqlx::query(
-        "INSERT INTO stats (timestamp, extra_data) \
-        SELECT EXTRACT(EPOCH FROM (event->>'timestamp')::timestamp) * 1000000, event->'stats' \
-        FROM UNNEST($1::json[]) AS event ON CONFLICT DO NOTHING",
-    )
-    .bind(&batch_stats)
-    .execute(&mut *transaction)
-    .await
-    .map(|r| r.rows_affected())?;
-    transaction.commit().await?;
-    inserted = inserted.saturating_add(count);
+    let mut inserted = count;
 
     let (batch_other_data, batch_other_type): (Vec<_>, Vec<_>) = batch_other.into_iter().unzip();
     let mut transaction = conn.begin().await?;
@@ -202,6 +157,8 @@ impl Database {
                     maybe_conn.unwrap() // won't panic
                 };
                 sqlx::raw_sql(SQL_SCHEMA).execute(&mut conn).await?;
+                // Shovel extra index and tables, don't upstream this
+                sqlx::raw_sql(SQL_SHOVEL_SCHEMA).execute(&mut conn).await?;
                 Ok(DatabaseConnection::Postgres(conn))
             } else {
                 Err(sqlx::Error::Configuration(
