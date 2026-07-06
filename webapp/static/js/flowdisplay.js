@@ -382,12 +382,15 @@ class FlowDisplay {
             const renderView = document.createElement('div')
             const utf8View = document.createElement('code')
             const hexView = document.createElement('code')
-            utf8View.innerText = ' ' // prevent single-line flicker on page load
-            hexView.innerText = ' '
+            renderView.classList.add('loading')
+            utf8View.classList.add('loading')
+            hexView.classList.add('loading')
             fetch(fileHref).then(r => r.blob()).then(blob => {
               this.renderBlob(blob, ext, renderView)
+              renderView.classList.remove('loading')
               blob.text().then(t => {
                 utf8View.innerHTML = this.highlightPayload(t, flow.flow.flowvars?.map(d => d.match))
+                utf8View.classList.remove('loading')
                 if (!renderView.firstChild) {
                   // no render done, show UTF-8 on render view
                   const renderCodeEl = document.createElement('code')
@@ -398,6 +401,7 @@ class FlowDisplay {
               blob.arrayBuffer().then(arrayBuf => {
                 const b = new Uint8Array(arrayBuf)
                 hexView.textContent = this.renderHexDump(b)
+                hexView.classList.remove('loading')
               })
             })
 
@@ -431,36 +435,36 @@ class FlowDisplay {
 
     // Show raw data card if a TCP or UDP connection was established
     if (['TCP', 'UDP'].includes(flow.flow.proto) && flowEstablished) {
+      document.getElementById('display-raw').classList.add('loading')
       document.getElementById('display-raw').classList.remove('d-none')
       document.getElementById('display-raw-replay').href = `api/flow/${flowId}/replay-raw`
 
-      // Display loading indicator before sending HTTP request
-      const utf8View = document.getElementById('display-raw-utf8')
-      const hexView = document.getElementById('display-raw-hex')
-      utf8View.textContent = 'Loading...'
-      hexView.textContent = 'Loading...'
-
       const chunks = await this.apiClient.getFlowRaw(flowId)
-      utf8View.textContent = ''
-      hexView.textContent = ''
-      chunks.forEach(chunk => {
-        const byteArray = Uint8Array.from(atob(chunk.data), c => c.charCodeAt(0))
-        const utf8Decoder = new TextDecoder()
+      // Remove loading indicator after HTTP response
+      document.getElementById('display-raw').classList.remove('loading')
 
+      const utf8Decoder = new TextDecoder()
+      const utf8View = document.getElementById('display-raw-utf8')
+      utf8View.classList.add('text-white')
+      utf8View.replaceChildren(...chunks.map(chunk => {
+        const byteArray = Uint8Array.from(atob(chunk.data), c => c.charCodeAt(0))
         const codeElUtf8 = document.createElement('code')
-        codeElUtf8.classList.add('text-white')
         codeElUtf8.classList.toggle('bg-danger', chunk.direction === 0)
         codeElUtf8.classList.toggle('bg-success', chunk.direction === 1)
         codeElUtf8.innerHTML = this.highlightPayload(utf8Decoder.decode(byteArray), flow.flow.flowvars?.map(d => d.match))
-        utf8View.appendChild(codeElUtf8)
+        return codeElUtf8
+      }))
 
+      const hexView = document.getElementById('display-raw-hex')
+      hexView.classList.add('text-white')
+      hexView.replaceChildren(...chunks.map(chunk => {
+        const byteArray = Uint8Array.from(atob(chunk.data), c => c.charCodeAt(0))
         const codeElHex = document.createElement('code')
-        codeElHex.classList.add('text-white')
         codeElHex.classList.toggle('bg-danger', chunk.direction === 0)
         codeElHex.classList.toggle('bg-success', chunk.direction === 1)
         codeElHex.textContent = this.renderHexDump(byteArray) + '\n'
-        hexView.appendChild(codeElHex)
-      })
+        return codeElHex
+      }))
     }
   }
 }

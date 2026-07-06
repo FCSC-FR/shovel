@@ -88,7 +88,7 @@ select.is-active {
   color: inherit;
 }
 
-pre {
+pre, pre code {
   white-space: pre-wrap;
   word-break: break-all;
 }
@@ -110,6 +110,13 @@ iframe {
 /* Extend background color on whole line height */
 pre code {
   padding: .1875em 0;
+}
+
+/* Loading placeholder */
+.loading {
+  min-height: 1em;
+  cursor: wait;
+  opacity: .8;
 }
 
 @keyframes slidein {
