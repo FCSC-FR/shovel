@@ -348,8 +348,12 @@ class FlowDisplay {
           data.request_headers?.filter(x => !HTTP_HEADER_BL.includes(x?.name?.toLowerCase()))?.forEach(x => allRequestHeaders.add(`${x.name}: ${x.value}`))
           data.response_headers?.filter(x => !HTTP_HEADER_BL.includes(x?.name?.toLowerCase()))?.forEach(x => allResponseHeaders.add(`${x.name}: ${x.value}`))
         })
-        body.textContent += [...allRequestHeaders].join('\n') + '\n'
-        body.textContent += [...allResponseHeaders].join('\n') + '\n\n'
+        if (allRequestHeaders.size) {
+          body.textContent += [...allRequestHeaders].join('\n') + '\n\n'
+        }
+        if (allResponseHeaders.size) {
+          body.textContent += [...allResponseHeaders].join('\n') + '\n\n'
+        }
       }
 
       let txId = 0
