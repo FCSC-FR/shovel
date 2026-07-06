@@ -47,7 +47,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 3,
         "w": 6,
         "x": 0,
         "y": 0
@@ -81,91 +81,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  time,\n  (LEAD(bytes) OVER(ORDER BY time) - bytes) / (LEAD(time) OVER(ORDER BY time) - time) as Bandwidth\nFROM (\n  SELECT \n    timestamp / 1000000 as time,\n    (extra_data#>>'{decoder,bytes}')::bigint as bytes\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PA478B4566BE5CB00"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "fieldMinMax": false,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 6,
-        "y": 0
-      },
-      "id": 10,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": false
-      },
-      "pluginVersion": "12.4.2",
-      "targets": [
-        {
-          "dataset": "shovel",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "PA478B4566BE5CB00"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  timestamp / 1000000 as time,\n  (extra_data->>'uptime')::bigint as Uptime\nFROM stats\nWHERE\n  $__unixEpochNanoFilter(timestamp * 1000)",
+          "rawSql": "SELECT\n  time,\n  (LEAD(bytes) OVER(ORDER BY time) - bytes) / (LEAD(time) OVER(ORDER BY time) - time) as \"Bandwidth\"\nFROM (\n  SELECT \n    timestamp / 1000000 as time,\n    (extra_data#>>'{decoder,bytes}')::bigint as bytes\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
           "refId": "A",
           "sql": {
             "columns": [
@@ -208,238 +124,14 @@
               {
                 "color": "green",
                 "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
               }
             ]
           },
-          "unit": "bytes"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Maximum packet size"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Average packet size"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 6,
-        "x": 9,
-        "y": 0
-      },
-      "id": 5,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.4.2",
-      "targets": [
-        {
-          "dataset": "shovel",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "PA478B4566BE5CB00"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  timestamp / 1000000 as time,\n  (extra_data#>>'{decoder,max_pkt_size}')::bigint as \"Maximum packet size\",\n  (extra_data#>>'{decoder,avg_pkt_size}')::bigint as \"Average packet size\"\nFROM stats\nWHERE\n  $__unixEpochNanoFilter(timestamp * 1000)",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PA478B4566BE5CB00"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 13,
-            "gradientMode": "hue",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 9,
-        "x": 15,
-        "y": 0
-      },
-      "id": 11,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.4.2",
-      "targets": [
-        {
-          "dataset": "shovel",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "PA478B4566BE5CB00"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  timestamp / 1000000 as time,\n  (extra_data#>>'{tcp,memuse}')::bigint as TCP,\n  (extra_data#>>'{tcp,reassembly_memuse}')::bigint as \"TCP reassembly\",\n  (extra_data#>>'{flow,memuse}')::bigint as Flow,\n  (extra_data#>>'{defrag,memuse}')::bigint as Defragmentation,\n  (extra_data#>>'{http,memuse}')::bigint as HTTP,\n  (extra_data#>>'{http,byterange,memuse}')::bigint as \"HTTP byterange\",\n  (extra_data#>>'{ippair,memuse}')::bigint as \"IP pair\",\n  (extra_data#>>'{host,memuse}')::bigint as Host\nFROM stats\nWHERE\n  $__unixEpochNanoFilter(timestamp * 1000)",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Memory usage",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PA478B4566BE5CB00"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "fieldMinMax": true,
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          }
+          "unit": "rules"
         },
         "overrides": [
           {
@@ -467,7 +159,7 @@
                 "id": "color",
                 "value": {
                   "fixedColor": "yellow",
-                  "mode": "fixed"
+                  "mode": "thresholds"
                 }
               }
             ]
@@ -482,7 +174,7 @@
                 "id": "color",
                 "value": {
                   "fixedColor": "red",
-                  "mode": "fixed"
+                  "mode": "thresholds"
                 }
               }
             ]
@@ -493,7 +185,7 @@
         "h": 3,
         "w": 9,
         "x": 6,
-        "y": 3
+        "y": 0
       },
       "id": 13,
       "options": {
@@ -556,7 +248,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "fixedColor": "purple",
+            "mode": "shades"
           },
           "custom": {
             "axisBorderShow": false,
@@ -564,6 +257,471 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 15,
+        "y": 0
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "dataset": "shovel",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "PA478B4566BE5CB00"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp / 1000000 as time,\n  (extra_data#>>'{tcp,memuse}')::bigint as \"TCP\",\n  (extra_data#>>'{tcp,reassembly_memuse}')::bigint as \"TCP reassembly\",\n  (extra_data#>>'{flow,memuse}')::bigint as \"Flow\",\n  (extra_data#>>'{defrag,memuse}')::bigint as \"Defragmentation\",\n  (extra_data#>>'{http,memuse}')::bigint as \"HTTP\",\n  (extra_data#>>'{http,byterange,memuse}')::bigint as \"HTTP byterange\",\n  (extra_data#>>'{ippair,memuse}')::bigint as \"IP pair\",\n  (extra_data#>>'{host,memuse}')::bigint as \"Host\"\nFROM stats\nWHERE\n  $__unixEpochNanoFilter(timestamp * 1000)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Memory usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PA478B4566BE5CB00"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "pps"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "TCP"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "UDP"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ICMPv4"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "thresholds"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ICMPv6"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "thresholds"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 8,
+        "x": 0,
+        "y": 3
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "dataset": "shovel",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "PA478B4566BE5CB00"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  time,\n  (LEAD(decoder_tcp) OVER(ORDER BY time) - decoder_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"TCP\",\n  (LEAD(decoder_udp) OVER(ORDER BY time) - decoder_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"UDP\",\n  (LEAD(decoder_icmpv4) OVER(ORDER BY time) - decoder_icmpv4) / (LEAD(time) OVER(ORDER BY time) - time) as \"ICMPv4\",\n  (LEAD(decoder_icmpv6) OVER(ORDER BY time) - decoder_icmpv6) / (LEAD(time) OVER(ORDER BY time) - time) as \"ICMPv6\"\nFROM (\n  SELECT \n    timestamp / 1000000 as time,\n    (extra_data#>>'{decoder,tcp}')::bigint as decoder_tcp,\n    (extra_data#>>'{decoder,udp}')::bigint as decoder_udp,\n    (extra_data#>>'{decoder,icmpv4}')::bigint as decoder_icmpv4,\n    (extra_data#>>'{decoder,icmpv6}')::bigint as decoder_icmpv6\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PA478B4566BE5CB00"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 8,
+        "y": 3
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": false
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "dataset": "shovel",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "PA478B4566BE5CB00"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp / 1000000 as time,\n  (extra_data->>'uptime')::bigint as \"Uptime\"\nFROM stats\nWHERE\n  $__unixEpochNanoFilter(timestamp * 1000)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PA478B4566BE5CB00"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": true,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Maximum packet size"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Average packet size"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 10,
+        "y": 3
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "dataset": "shovel",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "PA478B4566BE5CB00"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp / 1000000 as time,\n  (extra_data#>>'{decoder,max_pkt_size}')::bigint as \"Maximum packet size\",\n  (extra_data#>>'{decoder,avg_pkt_size}')::bigint as \"Average packet size\"\nFROM stats\nWHERE\n  $__unixEpochNanoFilter(timestamp * 1000)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PA478B4566BE5CB00"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "thresholds",
+            "seriesBy": "max"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -593,42 +751,53 @@
             }
           },
           "mappings": [],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "text",
                 "value": 0
               },
               {
-                "color": "red",
-                "value": 80
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "super-light-green",
+                "value": 10
+              },
+              {
+                "color": "green",
+                "value": 100
               }
             ]
           },
-          "unit": "pps"
+          "unit": "cps"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
+        "w": 12,
         "x": 0,
         "y": 6
       },
-      "id": 1,
+      "id": 16,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
-          "hideZeros": false,
+          "hideZeros": true,
           "mode": "multi",
-          "sort": "none"
+          "sort": "desc"
         }
       },
       "pluginVersion": "12.4.2",
@@ -642,7 +811,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  time,\n  (LEAD(decoder_tcp) OVER(ORDER BY time) - decoder_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as TCP,\n  (LEAD(decoder_udp) OVER(ORDER BY time) - decoder_udp) / (LEAD(time) OVER(ORDER BY time) - time) as UDP,\n  (LEAD(decoder_icmpv4) OVER(ORDER BY time) - decoder_icmpv4) / (LEAD(time) OVER(ORDER BY time) - time) as ICMPv4,\n  (LEAD(decoder_icmpv6) OVER(ORDER BY time) - decoder_icmpv6) / (LEAD(time) OVER(ORDER BY time) - time) as ICMPv6\nFROM (\n  SELECT \n    timestamp / 1000000 as time,\n    (extra_data#>>'{decoder,tcp}')::bigint as decoder_tcp,\n    (extra_data#>>'{decoder,udp}')::bigint as decoder_udp,\n    (extra_data#>>'{decoder,icmpv4}')::bigint as decoder_icmpv4,\n    (extra_data#>>'{decoder,icmpv6}')::bigint as decoder_icmpv6\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
+          "rawSql": "SELECT\n  time,\n  (LEAD(flow_failed_tcp) OVER(ORDER BY time) - flow_failed_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"Raw / Failed TCP\",\n  (LEAD(flow_http) OVER(ORDER BY time) - flow_http) / (LEAD(time) OVER(ORDER BY time) - time) as \"HTTP\",\n  (LEAD(flow_ftp) OVER(ORDER BY time) - flow_ftp) / (LEAD(time) OVER(ORDER BY time) - time) as \"FTP\",\n  (LEAD(flow_smtp) OVER(ORDER BY time) - flow_smtp) / (LEAD(time) OVER(ORDER BY time) - time) as \"SMTP\",\n  (LEAD(flow_tls) OVER(ORDER BY time) - flow_tls) / (LEAD(time) OVER(ORDER BY time) - time) as \"TLS\",\n  (LEAD(flow_ssh) OVER(ORDER BY time) - flow_ssh) / (LEAD(time) OVER(ORDER BY time) - time) as \"SSH\",\n  (LEAD(flow_imap) OVER(ORDER BY time) - flow_imap) / (LEAD(time) OVER(ORDER BY time) - time) as \"IMAP\",\n  (LEAD(flow_smb) OVER(ORDER BY time) - flow_smb) / (LEAD(time) OVER(ORDER BY time) - time) as \"Samba\",\n  (LEAD(flow_dcerpc_tcp) OVER(ORDER BY time) - flow_dcerpc_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"DCERPC TCP\",\n  (LEAD(flow_dns_tcp) OVER(ORDER BY time) - flow_dns_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"DNS TCP\",\n  (LEAD(flow_modbus) OVER(ORDER BY time) - flow_modbus) / (LEAD(time) OVER(ORDER BY time) - time) as \"Modbus\",\n  (LEAD(flow_enip_tcp) OVER(ORDER BY time) - flow_enip_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"ENIP TCP\",\n  (LEAD(flow_dnp3) OVER(ORDER BY time) - flow_dnp3) / (LEAD(time) OVER(ORDER BY time) - time) as \"DNP3\",\n  (LEAD(flow_nfs_tcp) OVER(ORDER BY time) - flow_nfs_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"NFS TCP\",\n  (LEAD(flow_ntp) OVER(ORDER BY time) - flow_ntp) / (LEAD(time) OVER(ORDER BY time) - time) as \"NTP\",\n  (LEAD(flow_ftp_data) OVER(ORDER BY time) - flow_ftp_data) / (LEAD(time) OVER(ORDER BY time) - time) as \"ftp-data\",\n  (LEAD(flow_tftp) OVER(ORDER BY time) - flow_tftp) / (LEAD(time) OVER(ORDER BY time) - time) as \"TFTP\",\n  (LEAD(flow_ike) OVER(ORDER BY time) - flow_ike) / (LEAD(time) OVER(ORDER BY time) - time) as \"IKE\",\n  (LEAD(flow_krb5_tcp) OVER(ORDER BY time) - flow_krb5_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"KRB5 TCP\",\n  (LEAD(flow_quic) OVER(ORDER BY time) - flow_quic) / (LEAD(time) OVER(ORDER BY time) - time) as \"QUIC\",\n  (LEAD(flow_dhcp) OVER(ORDER BY time) - flow_dhcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"DHCP\",\n  (LEAD(flow_rfb) OVER(ORDER BY time) - flow_rfb) / (LEAD(time) OVER(ORDER BY time) - time) as \"RFB\",\n  (LEAD(flow_mqtt) OVER(ORDER BY time) - flow_mqtt) / (LEAD(time) OVER(ORDER BY time) - time) as \"MQTT\",\n  (LEAD(flow_pgsql) OVER(ORDER BY time) - flow_pgsql) / (LEAD(time) OVER(ORDER BY time) - time) as \"PostgreSQL\",\n  (LEAD(flow_telnet) OVER(ORDER BY time) - flow_telnet) / (LEAD(time) OVER(ORDER BY time) - time) as \"Telnet\",\n  (LEAD(flow_websocket) OVER(ORDER BY time) - flow_websocket) / (LEAD(time) OVER(ORDER BY time) - time) as \"WebSocket\",\n  (LEAD(flow_ldap_tcp) OVER(ORDER BY time) - flow_ldap_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"LDAP TCP\",\n  (LEAD(flow_doh2) OVER(ORDER BY time) - flow_doh2) / (LEAD(time) OVER(ORDER BY time) - time) as \"DoH2\",\n  (LEAD(flow_rdp) OVER(ORDER BY time) - flow_rdp) / (LEAD(time) OVER(ORDER BY time) - time) as \"RDP\",\n  (LEAD(flow_http2) OVER(ORDER BY time) - flow_http2) / (LEAD(time) OVER(ORDER BY time) - time) as \"HTTP 2\",\n  (LEAD(flow_bittorrent_dht) OVER(ORDER BY time) - flow_bittorrent_dht) / (LEAD(time) OVER(ORDER BY time) - time) as \"BitTorrent DHT\",\n  (LEAD(flow_pop3) OVER(ORDER BY time) - flow_pop3) / (LEAD(time) OVER(ORDER BY time) - time) as \"POP3\",\n  (LEAD(flow_mdns) OVER(ORDER BY time) - flow_mdns) / (LEAD(time) OVER(ORDER BY time) - time) as \"mDNS\",\n  (LEAD(flow_snmp) OVER(ORDER BY time) - flow_snmp) / (LEAD(time) OVER(ORDER BY time) - time) as \"SNMP\",\n  (LEAD(flow_failed_udp) OVER(ORDER BY time) - flow_failed_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"Raw / Failed UDP\",\n  (LEAD(flow_dcerpc_udp) OVER(ORDER BY time) - flow_dcerpc_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"DCERPC UDP\",\n  (LEAD(flow_dns_udp) OVER(ORDER BY time) - flow_dns_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"DNS\",\n  (LEAD(flow_enip_udp) OVER(ORDER BY time) - flow_enip_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"ENIP UDP\",\n  (LEAD(flow_nfs_udp) OVER(ORDER BY time) - flow_nfs_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"NFS UDP\",\n  (LEAD(flow_krb5_udp) OVER(ORDER BY time) - flow_krb5_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"KRB5 UDP\",\n  (LEAD(flow_ldap_udp) OVER(ORDER BY time) - flow_ldap_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"LDAP UDP\"\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{app_layer,flow,failed_tcp}')::bigint as flow_failed_tcp,\n    (extra_data#>>'{app_layer,flow,http}')::bigint as flow_http,\n    (extra_data#>>'{app_layer,flow,ftp}')::bigint as flow_ftp,\n    (extra_data#>>'{app_layer,flow,smtp}')::bigint as flow_smtp,\n    (extra_data#>>'{app_layer,flow,tls}')::bigint as flow_tls,\n    (extra_data#>>'{app_layer,flow,ssh}')::bigint as flow_ssh,\n    (extra_data#>>'{app_layer,flow,imap}')::bigint as flow_imap,\n    (extra_data#>>'{app_layer,flow,smb}')::bigint as flow_smb,\n    (extra_data#>>'{app_layer,flow,dcerpc_tcp}')::bigint as flow_dcerpc_tcp,\n    (extra_data#>>'{app_layer,flow,dns_tcp}')::bigint as flow_dns_tcp,\n    (extra_data#>>'{app_layer,flow,modbus}')::bigint as flow_modbus,\n    (extra_data#>>'{app_layer,flow,enip_tcp}')::bigint as flow_enip_tcp,\n    (extra_data#>>'{app_layer,flow,dnp3}')::bigint as flow_dnp3,\n    (extra_data#>>'{app_layer,flow,nfs_tcp}')::bigint as flow_nfs_tcp,\n    (extra_data#>>'{app_layer,flow,ntp}')::bigint as flow_ntp,\n    (extra_data#>>'{app_layer,flow,ftp-data}')::bigint as flow_ftp_data,\n    (extra_data#>>'{app_layer,flow,tftp}')::bigint as flow_tftp,\n    (extra_data#>>'{app_layer,flow,ike}')::bigint as flow_ike,\n    (extra_data#>>'{app_layer,flow,krb5_tcp}')::bigint as flow_krb5_tcp,\n    (extra_data#>>'{app_layer,flow,quic}')::bigint as flow_quic,\n    (extra_data#>>'{app_layer,flow,dhcp}')::bigint as flow_dhcp,\n    (extra_data#>>'{app_layer,flow,rfb}')::bigint as flow_rfb,\n    (extra_data#>>'{app_layer,flow,mqtt}')::bigint as flow_mqtt,\n    (extra_data#>>'{app_layer,flow,pgsql}')::bigint as flow_pgsql,\n    (extra_data#>>'{app_layer,flow,telnet}')::bigint as flow_telnet,\n    (extra_data#>>'{app_layer,flow,websocket}')::bigint as flow_websocket,\n    (extra_data#>>'{app_layer,flow,ldap_tcp}')::bigint as flow_ldap_tcp,\n    (extra_data#>>'{app_layer,flow,doh2}')::bigint as flow_doh2,\n    (extra_data#>>'{app_layer,flow,rdp}')::bigint as flow_rdp,\n    (extra_data#>>'{app_layer,flow,http2}')::bigint as flow_http2,\n    (extra_data#>>'{app_layer,flow,bittorrent-dht}')::bigint as flow_bittorrent_dht,\n    (extra_data#>>'{app_layer,flow,pop3}')::bigint as flow_pop3,\n    (extra_data#>>'{app_layer,flow,mdns}')::bigint as flow_mdns,\n    (extra_data#>>'{app_layer,flow,snmp}')::bigint as flow_snmp,\n    (extra_data#>>'{app_layer,flow,failed_udp}')::bigint as flow_failed_udp,\n    (extra_data#>>'{app_layer,flow,dcerpc_udp}')::bigint as flow_dcerpc_udp,\n    (extra_data#>>'{app_layer,flow,dns_udp}')::bigint as flow_dns_udp,\n    (extra_data#>>'{app_layer,flow,enip_udp}')::bigint as flow_enip_udp,\n    (extra_data#>>'{app_layer,flow,nfs_udp}')::bigint as flow_nfs_udp,\n    (extra_data#>>'{app_layer,flow,krb5_udp}')::bigint as flow_krb5_udp,\n    (extra_data#>>'{app_layer,flow,ldap_udp}')::bigint as flow_ldap_udp\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -663,7 +832,7 @@
           }
         }
       ],
-      "title": "Packets seen by decoder",
+      "title": "Application layer",
       "type": "timeseries"
     },
     {
@@ -757,8 +926,8 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 6,
+        "w": 12,
+        "x": 12,
         "y": 6
       },
       "id": 14,
@@ -786,7 +955,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  time,\n  (LEAD(detect_alert) OVER(ORDER BY time) - detect_alert) / (LEAD(time) OVER(ORDER BY time) - time) as Alerts,\n  (LEAD(detect_alerts_suppressed) OVER(ORDER BY time) - detect_alerts_suppressed) / (LEAD(time) OVER(ORDER BY time) - time) as \"Alerts suppressed\"\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{detect,alert}')::bigint as detect_alert,\n    (extra_data#>>'{detect,alerts_suppressed}')::bigint as detect_alerts_suppressed\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
+          "rawSql": "SELECT\n  time,\n  (LEAD(detect_alert) OVER(ORDER BY time) - detect_alert) / (LEAD(time) OVER(ORDER BY time) - time) as \"Alerts\",\n  (LEAD(detect_alerts_suppressed) OVER(ORDER BY time) - detect_alerts_suppressed) / (LEAD(time) OVER(ORDER BY time) - time) as \"Alerts suppressed\"\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{detect,alert}')::bigint as detect_alert,\n    (extra_data#>>'{detect,alerts_suppressed}')::bigint as detect_alerts_suppressed\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
           "refId": "A",
           "sql": {
             "columns": [
@@ -861,255 +1030,77 @@
               {
                 "color": "green",
                 "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "cps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 6
-      },
-      "id": 21,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.4.2",
-      "targets": [
-        {
-          "dataset": "shovel",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "PA478B4566BE5CB00"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  time,\n  (LEAD(state_new) OVER(ORDER BY time) - state_new) / (LEAD(time) OVER(ORDER BY time) - time) as New,\n  (LEAD(state_established) OVER(ORDER BY time) - state_established) / (LEAD(time) OVER(ORDER BY time) - time) as Established,\n  (LEAD(state_closed) OVER(ORDER BY time) - state_closed) / (LEAD(time) OVER(ORDER BY time) - time) as Closed\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{flow,end,state,new}')::bigint as state_new,\n    (extra_data#>>'{flow,end,state,established}')::bigint as state_established,\n    (extra_data#>>'{flow,end,state,closed}')::bigint as state_closed\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Flow end state",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PA478B4566BE5CB00"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "cps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 18,
-        "y": 6
-      },
-      "id": 16,
-      "options": {
-        "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "sortBy": "Total",
-          "sortDesc": true
-        },
-        "tooltip": {
-          "hideZeros": true,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.4.2",
-      "targets": [
-        {
-          "dataset": "shovel",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "PA478B4566BE5CB00"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  time,\n  (LEAD(flow_failed_tcp) OVER(ORDER BY time) - flow_failed_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"Raw / Failed TCP\",\n  (LEAD(flow_http) OVER(ORDER BY time) - flow_http) / (LEAD(time) OVER(ORDER BY time) - time) as HTTP,\n  (LEAD(flow_ftp) OVER(ORDER BY time) - flow_ftp) / (LEAD(time) OVER(ORDER BY time) - time) as FTP,\n  (LEAD(flow_smtp) OVER(ORDER BY time) - flow_smtp) / (LEAD(time) OVER(ORDER BY time) - time) as SMTP,\n  (LEAD(flow_tls) OVER(ORDER BY time) - flow_tls) / (LEAD(time) OVER(ORDER BY time) - time) as TLS,\n  (LEAD(flow_ssh) OVER(ORDER BY time) - flow_ssh) / (LEAD(time) OVER(ORDER BY time) - time) as SSH,\n  (LEAD(flow_imap) OVER(ORDER BY time) - flow_imap) / (LEAD(time) OVER(ORDER BY time) - time) as IMAP,\n  (LEAD(flow_smb) OVER(ORDER BY time) - flow_smb) / (LEAD(time) OVER(ORDER BY time) - time) as Samba,\n  (LEAD(flow_dcerpc_tcp) OVER(ORDER BY time) - flow_dcerpc_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"DCERPC TCP\",\n  (LEAD(flow_dns_tcp) OVER(ORDER BY time) - flow_dns_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"DNS TCP\",\n  (LEAD(flow_modbus) OVER(ORDER BY time) - flow_modbus) / (LEAD(time) OVER(ORDER BY time) - time) as \"Modbus\",\n  (LEAD(flow_enip_tcp) OVER(ORDER BY time) - flow_enip_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as enip_tcp,\n  (LEAD(flow_dnp3) OVER(ORDER BY time) - flow_dnp3) / (LEAD(time) OVER(ORDER BY time) - time) as dnp3,\n  (LEAD(flow_nfs_tcp) OVER(ORDER BY time) - flow_nfs_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as nfs_tcp,\n  (LEAD(flow_ntp) OVER(ORDER BY time) - flow_ntp) / (LEAD(time) OVER(ORDER BY time) - time) as \"NTP\",\n  (LEAD(flow_ftp_data) OVER(ORDER BY time) - flow_ftp_data) / (LEAD(time) OVER(ORDER BY time) - time) as \"ftp-data\",\n  (LEAD(flow_tftp) OVER(ORDER BY time) - flow_tftp) / (LEAD(time) OVER(ORDER BY time) - time) as tftp,\n  (LEAD(flow_ike) OVER(ORDER BY time) - flow_ike) / (LEAD(time) OVER(ORDER BY time) - time) as IKE,\n  (LEAD(flow_krb5_tcp) OVER(ORDER BY time) - flow_krb5_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"KRB5 TCP\",\n  (LEAD(flow_quic) OVER(ORDER BY time) - flow_quic) / (LEAD(time) OVER(ORDER BY time) - time) as \"QUIC\",\n  (LEAD(flow_dhcp) OVER(ORDER BY time) - flow_dhcp) / (LEAD(time) OVER(ORDER BY time) - time) as DHCP,\n  (LEAD(flow_rfb) OVER(ORDER BY time) - flow_rfb) / (LEAD(time) OVER(ORDER BY time) - time) as RFB,\n  (LEAD(flow_mqtt) OVER(ORDER BY time) - flow_mqtt) / (LEAD(time) OVER(ORDER BY time) - time) as MQTT,\n  (LEAD(flow_pgsql) OVER(ORDER BY time) - flow_pgsql) / (LEAD(time) OVER(ORDER BY time) - time) as PostgreSQL,\n  (LEAD(flow_telnet) OVER(ORDER BY time) - flow_telnet) / (LEAD(time) OVER(ORDER BY time) - time) as Telnet,\n  (LEAD(flow_websocket) OVER(ORDER BY time) - flow_websocket) / (LEAD(time) OVER(ORDER BY time) - time) as WebSocket,\n  (LEAD(flow_ldap_tcp) OVER(ORDER BY time) - flow_ldap_tcp) / (LEAD(time) OVER(ORDER BY time) - time) as \"LDAP TCP\",\n  (LEAD(flow_doh2) OVER(ORDER BY time) - flow_doh2) / (LEAD(time) OVER(ORDER BY time) - time) as DoH2,\n  (LEAD(flow_rdp) OVER(ORDER BY time) - flow_rdp) / (LEAD(time) OVER(ORDER BY time) - time) as RDP,\n  (LEAD(flow_http2) OVER(ORDER BY time) - flow_http2) / (LEAD(time) OVER(ORDER BY time) - time) as \"HTTP 2\",\n  (LEAD(flow_bittorrent_dht) OVER(ORDER BY time) - flow_bittorrent_dht) / (LEAD(time) OVER(ORDER BY time) - time) as \"BitTorrent DHT\",\n  (LEAD(flow_pop3) OVER(ORDER BY time) - flow_pop3) / (LEAD(time) OVER(ORDER BY time) - time) as POP3,\n  (LEAD(flow_mdns) OVER(ORDER BY time) - flow_mdns) / (LEAD(time) OVER(ORDER BY time) - time) as mDNS,\n  (LEAD(flow_snmp) OVER(ORDER BY time) - flow_snmp) / (LEAD(time) OVER(ORDER BY time) - time) as SNMP,\n  (LEAD(flow_failed_udp) OVER(ORDER BY time) - flow_failed_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"Raw / Failed UDP\",\n  (LEAD(flow_dcerpc_udp) OVER(ORDER BY time) - flow_dcerpc_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"DCERPC UDP\",\n  (LEAD(flow_dns_udp) OVER(ORDER BY time) - flow_dns_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"DNS\",\n  (LEAD(flow_enip_udp) OVER(ORDER BY time) - flow_enip_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"ENIP UDP\",\n  (LEAD(flow_nfs_udp) OVER(ORDER BY time) - flow_nfs_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"NFS UDP\",\n  (LEAD(flow_krb5_udp) OVER(ORDER BY time) - flow_krb5_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"KRB5 UDP\",\n  (LEAD(flow_ldap_udp) OVER(ORDER BY time) - flow_ldap_udp) / (LEAD(time) OVER(ORDER BY time) - time) as \"LDAP UDP\"\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{app_layer,flow,failed_tcp}')::bigint as flow_failed_tcp,\n    (extra_data#>>'{app_layer,flow,http}')::bigint as flow_http,\n    (extra_data#>>'{app_layer,flow,ftp}')::bigint as flow_ftp,\n    (extra_data#>>'{app_layer,flow,smtp}')::bigint as flow_smtp,\n    (extra_data#>>'{app_layer,flow,tls}')::bigint as flow_tls,\n    (extra_data#>>'{app_layer,flow,ssh}')::bigint as flow_ssh,\n    (extra_data#>>'{app_layer,flow,imap}')::bigint as flow_imap,\n    (extra_data#>>'{app_layer,flow,smb}')::bigint as flow_smb,\n    (extra_data#>>'{app_layer,flow,dcerpc_tcp}')::bigint as flow_dcerpc_tcp,\n    (extra_data#>>'{app_layer,flow,dns_tcp}')::bigint as flow_dns_tcp,\n    (extra_data#>>'{app_layer,flow,modbus}')::bigint as flow_modbus,\n    (extra_data#>>'{app_layer,flow,enip_tcp}')::bigint as flow_enip_tcp,\n    (extra_data#>>'{app_layer,flow,dnp3}')::bigint as flow_dnp3,\n    (extra_data#>>'{app_layer,flow,nfs_tcp}')::bigint as flow_nfs_tcp,\n    (extra_data#>>'{app_layer,flow,ntp}')::bigint as flow_ntp,\n    (extra_data#>>'{app_layer,flow,ftp-data}')::bigint as flow_ftp_data,\n    (extra_data#>>'{app_layer,flow,tftp}')::bigint as flow_tftp,\n    (extra_data#>>'{app_layer,flow,ike}')::bigint as flow_ike,\n    (extra_data#>>'{app_layer,flow,krb5_tcp}')::bigint as flow_krb5_tcp,\n    (extra_data#>>'{app_layer,flow,quic}')::bigint as flow_quic,\n    (extra_data#>>'{app_layer,flow,dhcp}')::bigint as flow_dhcp,\n    (extra_data#>>'{app_layer,flow,rfb}')::bigint as flow_rfb,\n    (extra_data#>>'{app_layer,flow,mqtt}')::bigint as flow_mqtt,\n    (extra_data#>>'{app_layer,flow,pgsql}')::bigint as flow_pgsql,\n    (extra_data#>>'{app_layer,flow,telnet}')::bigint as flow_telnet,\n    (extra_data#>>'{app_layer,flow,websocket}')::bigint as flow_websocket,\n    (extra_data#>>'{app_layer,flow,ldap_tcp}')::bigint as flow_ldap_tcp,\n    (extra_data#>>'{app_layer,flow,doh2}')::bigint as flow_doh2,\n    (extra_data#>>'{app_layer,flow,rdp}')::bigint as flow_rdp,\n    (extra_data#>>'{app_layer,flow,http2}')::bigint as flow_http2,\n    (extra_data#>>'{app_layer,flow,bittorrent-dht}')::bigint as flow_bittorrent_dht,\n    (extra_data#>>'{app_layer,flow,pop3}')::bigint as flow_pop3,\n    (extra_data#>>'{app_layer,flow,mdns}')::bigint as flow_mdns,\n    (extra_data#>>'{app_layer,flow,snmp}')::bigint as flow_snmp,\n    (extra_data#>>'{app_layer,flow,failed_udp}')::bigint as flow_failed_udp,\n    (extra_data#>>'{app_layer,flow,dcerpc_udp}')::bigint as flow_dcerpc_udp,\n    (extra_data#>>'{app_layer,flow,dns_udp}')::bigint as flow_dns_udp,\n    (extra_data#>>'{app_layer,flow,enip_udp}')::bigint as flow_enip_udp,\n    (extra_data#>>'{app_layer,flow,nfs_udp}')::bigint as flow_nfs_udp,\n    (extra_data#>>'{app_layer,flow,krb5_udp}')::bigint as flow_krb5_udp,\n    (extra_data#>>'{app_layer,flow,ldap_udp}')::bigint as flow_ldap_udp\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)\n",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Application layer",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PA478B4566BE5CB00"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
           "unit": "pps"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URG"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "RST"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SYNACK"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SYN"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
+        "w": 8,
         "x": 0,
         "y": 13
       },
@@ -1138,7 +1129,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  time,\n  (LEAD(tcp_syn) OVER(ORDER BY time) - tcp_syn) / (LEAD(time) OVER(ORDER BY time) - time) as SYN,\n  (LEAD(tcp_synack) OVER(ORDER BY time) - tcp_synack) / (LEAD(time) OVER(ORDER BY time) - time) as SYNACK,\n  (LEAD(tcp_rst) OVER(ORDER BY time) - tcp_rst) / (LEAD(time) OVER(ORDER BY time) - time) as RST,\n  (LEAD(tcp_urg) OVER(ORDER BY time) - tcp_urg) / (LEAD(time) OVER(ORDER BY time) - time) as URG\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{tcp,syn}')::bigint as tcp_syn,\n    (extra_data#>>'{tcp,synack}')::bigint as tcp_synack,\n    (extra_data#>>'{tcp,rst}')::bigint as tcp_rst,\n    (extra_data#>>'{tcp,urg}')::bigint as tcp_urg\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
+          "rawSql": "SELECT\n  time,\n  (LEAD(tcp_syn) OVER(ORDER BY time) - tcp_syn) / (LEAD(time) OVER(ORDER BY time) - time) as \"SYN\",\n  (LEAD(tcp_synack) OVER(ORDER BY time) - tcp_synack) / (LEAD(time) OVER(ORDER BY time) - time) as \"SYNACK\",\n  (LEAD(tcp_rst) OVER(ORDER BY time) - tcp_rst) / (LEAD(time) OVER(ORDER BY time) - time) as \"RST\",\n  (LEAD(tcp_urg) OVER(ORDER BY time) - tcp_urg) / (LEAD(time) OVER(ORDER BY time) - time) as \"URG\"\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{tcp,syn}')::bigint as tcp_syn,\n    (extra_data#>>'{tcp,synack}')::bigint as tcp_synack,\n    (extra_data#>>'{tcp,rst}')::bigint as tcp_rst,\n    (extra_data#>>'{tcp,urg}')::bigint as tcp_urg\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1170,6 +1161,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
+            "fixedColor": "green",
             "mode": "palette-classic"
           },
           "custom": {
@@ -1226,8 +1218,8 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 6,
+        "w": 8,
+        "x": 8,
         "y": 13
       },
       "id": 3,
@@ -1236,7 +1228,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": false
+          "showLegend": true
         },
         "tooltip": {
           "hideZeros": false,
@@ -1295,131 +1287,10 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "barWidthFactor": 0.5,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "cps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 13
-      },
-      "id": 22,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true,
-          "sortBy": "Last *",
-          "sortDesc": true
-        },
-        "tooltip": {
-          "hideZeros": true,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.4.2",
-      "targets": [
-        {
-          "dataset": "shovel",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "PA478B4566BE5CB00"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  time,\n  (LEAD(wrk_spare_sync_avg) OVER(ORDER BY time) - wrk_spare_sync_avg) / (LEAD(time) OVER(ORDER BY time) - time) as spare_sync_avg,\n  (LEAD(wrk_spare_sync) OVER(ORDER BY time) - wrk_spare_sync) / (LEAD(time) OVER(ORDER BY time) - time) as spare_sync,\n  (LEAD(wrk_spare_sync_incomplete) OVER(ORDER BY time) - wrk_spare_sync_incomplete) / (LEAD(time) OVER(ORDER BY time) - time) as spare_sync_incomplete,\n  (LEAD(wrk_spare_sync_empty) OVER(ORDER BY time) - wrk_spare_sync_empty) / (LEAD(time) OVER(ORDER BY time) - time) as spare_sync_empty,\n  (LEAD(wrk_flows_evicted_needs_work) OVER(ORDER BY time) - wrk_flows_evicted_needs_work) / (LEAD(time) OVER(ORDER BY time) - time) as flows_evicted_needs_work,\n  (LEAD(wrk_flows_evicted_pkt_inject) OVER(ORDER BY time) - wrk_flows_evicted_pkt_inject) / (LEAD(time) OVER(ORDER BY time) - time) as flows_evicted_pkt_inject,\n  (LEAD(wrk_flows_evicted) OVER(ORDER BY time) - wrk_flows_evicted) / (LEAD(time) OVER(ORDER BY time) - time) as flows_evicted,\n  (LEAD(wrk_flows_injected) OVER(ORDER BY time) - wrk_flows_injected) / (LEAD(time) OVER(ORDER BY time) - time) as flows_injected,\n  (LEAD(wrk_flows_injected_max) OVER(ORDER BY time) - wrk_flows_injected_max) / (LEAD(time) OVER(ORDER BY time) - time) as flows_injected_max\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{flow,wrk,spare_sync_avg}')::bigint as wrk_spare_sync_avg,\n    (extra_data#>>'{flow,wrk,spare_sync}')::bigint as wrk_spare_sync,\n    (extra_data#>>'{flow,wrk,spare_sync_incomplete}')::bigint as wrk_spare_sync_incomplete,\n    (extra_data#>>'{flow,wrk,spare_sync_empty}')::bigint as wrk_spare_sync_empty,\n    (extra_data#>>'{flow,wrk,flows_evicted_needs_work}')::bigint as wrk_flows_evicted_needs_work,\n    (extra_data#>>'{flow,wrk,flows_evicted_pkt_inject}')::bigint as wrk_flows_evicted_pkt_inject,\n    (extra_data#>>'{flow,wrk,flows_evicted}')::bigint as wrk_flows_evicted,\n    (extra_data#>>'{flow,wrk,flows_injected}')::bigint as wrk_flows_injected,\n    (extra_data#>>'{flow,wrk,flows_injected_max}')::bigint as wrk_flows_injected_max\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Flow worker",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PA478B4566BE5CB00"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMin": 0,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 0,
+            "fillOpacity": 100,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -1438,7 +1309,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "none"
+              "mode": "normal"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -1451,34 +1322,60 @@
               {
                 "color": "green",
                 "value": 0
-              },
+              }
+            ]
+          },
+          "unit": "cps"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "closed"
+            },
+            "properties": [
               {
-                "color": "red",
-                "value": 80
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "new"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
               }
             ]
           }
-        },
-        "overrides": []
+        ]
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 18,
+        "w": 8,
+        "x": 16,
         "y": 13
       },
-      "id": 23,
+      "id": 21,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true,
-          "sortBy": "Last *",
-          "sortDesc": true
+          "showLegend": true
         },
         "tooltip": {
-          "hideZeros": true,
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
@@ -1494,7 +1391,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  timestamp / 1000000 as time,\n  (extra_data#>>'{flow,mgr,full_hash_pass}')::bigint as \"full_hash_pass\",\n  (extra_data#>>'{flow,mgr,rows_per_sec}')::bigint as \"rows_per_sec\",\n  (extra_data#>>'{flow,mgr,rows_maxlen}')::bigint as \"rows_maxlen\",\n  (extra_data#>>'{flow,mgr,flows_checked}')::bigint as \"flows_checked\",\n  (extra_data#>>'{flow,mgr,flows_notimeout}')::bigint as \"flows_notimeout\",\n  (extra_data#>>'{flow,mgr,flows_timeout}')::bigint as \"flows_timeout\",\n  (extra_data#>>'{flow,mgr,flows_evicted}')::bigint as \"flows_evicted\",\n  (extra_data#>>'{flow,mgr,flows_evicted_needs_work}')::bigint as \"flows_evicted_needs_work\"\nFROM stats\nWHERE\n  $__unixEpochNanoFilter(timestamp * 1000)",
+          "rawSql": "SELECT\n  time,\n  (LEAD(state_new) OVER(ORDER BY time) - state_new) / (LEAD(time) OVER(ORDER BY time) - time) as New,\n  (LEAD(state_established) OVER(ORDER BY time) - state_established) / (LEAD(time) OVER(ORDER BY time) - time) as Established,\n  (LEAD(state_closed) OVER(ORDER BY time) - state_closed) / (LEAD(time) OVER(ORDER BY time) - time) as Closed\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{flow,end,state,new}')::bigint as state_new,\n    (extra_data#>>'{flow,end,state,established}')::bigint as state_established,\n    (extra_data#>>'{flow,end,state,closed}')::bigint as state_closed\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1515,7 +1412,7 @@
           }
         }
       ],
-      "title": "Flow manager",
+      "title": "State of the flow on end",
       "type": "timeseries"
     },
     {
@@ -1539,7 +1436,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds",
+            "seriesBy": "max"
           },
           "custom": {
             "axisBorderShow": false,
@@ -1547,6 +1445,8 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": 10,
+            "axisSoftMin": 0,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -1585,10 +1485,11 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 1
               }
             ]
-          }
+          },
+          "unit": "cps"
         },
         "overrides": []
       },
@@ -1659,7 +1560,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds",
+            "seriesBy": "max"
           },
           "custom": {
             "axisBorderShow": false,
@@ -1706,7 +1608,7 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 1
               }
             ]
           },
@@ -1782,7 +1684,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds",
+            "seriesBy": "max"
           },
           "custom": {
             "axisBorderShow": false,
@@ -1790,6 +1693,7 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": 10,
             "axisSoftMin": 0,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -1819,6 +1723,7 @@
               "mode": "off"
             }
           },
+          "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1829,10 +1734,11 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 1
               }
             ]
-          }
+          },
+          "unit": "cps"
         },
         "overrides": []
       },
@@ -1903,7 +1809,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds",
+            "seriesBy": "max"
           },
           "custom": {
             "axisBorderShow": false,
@@ -1911,6 +1818,7 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": 10,
             "axisSoftMin": 0,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -1950,7 +1858,7 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 1
               }
             ]
           },
@@ -2016,6 +1924,261 @@
         }
       ],
       "title": "Application layer issues",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 26,
+      "panels": [],
+      "title": "Flow engine",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PA478B4566BE5CB00"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "purple",
+            "mode": "shades"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.5,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "cps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 36
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "dataset": "shovel",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "PA478B4566BE5CB00"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  time,\n  (LEAD(wrk_spare_sync_avg) OVER(ORDER BY time) - wrk_spare_sync_avg) / (LEAD(time) OVER(ORDER BY time) - time) as spare_sync_avg,\n  (LEAD(wrk_spare_sync) OVER(ORDER BY time) - wrk_spare_sync) / (LEAD(time) OVER(ORDER BY time) - time) as spare_sync,\n  (LEAD(wrk_spare_sync_incomplete) OVER(ORDER BY time) - wrk_spare_sync_incomplete) / (LEAD(time) OVER(ORDER BY time) - time) as spare_sync_incomplete,\n  (LEAD(wrk_spare_sync_empty) OVER(ORDER BY time) - wrk_spare_sync_empty) / (LEAD(time) OVER(ORDER BY time) - time) as spare_sync_empty,\n  (LEAD(wrk_flows_evicted_needs_work) OVER(ORDER BY time) - wrk_flows_evicted_needs_work) / (LEAD(time) OVER(ORDER BY time) - time) as flows_evicted_needs_work,\n  (LEAD(wrk_flows_evicted_pkt_inject) OVER(ORDER BY time) - wrk_flows_evicted_pkt_inject) / (LEAD(time) OVER(ORDER BY time) - time) as flows_evicted_pkt_inject,\n  (LEAD(wrk_flows_evicted) OVER(ORDER BY time) - wrk_flows_evicted) / (LEAD(time) OVER(ORDER BY time) - time) as flows_evicted,\n  (LEAD(wrk_flows_injected) OVER(ORDER BY time) - wrk_flows_injected) / (LEAD(time) OVER(ORDER BY time) - time) as flows_injected,\n  (LEAD(wrk_flows_injected_max) OVER(ORDER BY time) - wrk_flows_injected_max) / (LEAD(time) OVER(ORDER BY time) - time) as flows_injected_max\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{flow,wrk,spare_sync_avg}')::bigint as wrk_spare_sync_avg,\n    (extra_data#>>'{flow,wrk,spare_sync}')::bigint as wrk_spare_sync,\n    (extra_data#>>'{flow,wrk,spare_sync_incomplete}')::bigint as wrk_spare_sync_incomplete,\n    (extra_data#>>'{flow,wrk,spare_sync_empty}')::bigint as wrk_spare_sync_empty,\n    (extra_data#>>'{flow,wrk,flows_evicted_needs_work}')::bigint as wrk_flows_evicted_needs_work,\n    (extra_data#>>'{flow,wrk,flows_evicted_pkt_inject}')::bigint as wrk_flows_evicted_pkt_inject,\n    (extra_data#>>'{flow,wrk,flows_evicted}')::bigint as wrk_flows_evicted,\n    (extra_data#>>'{flow,wrk,flows_injected}')::bigint as wrk_flows_injected,\n    (extra_data#>>'{flow,wrk,flows_injected_max}')::bigint as wrk_flows_injected_max\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Flow worker",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PA478B4566BE5CB00"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "purple",
+            "mode": "shades"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "cps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 36
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "dataset": "shovel",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "PA478B4566BE5CB00"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  time,\n  (LEAD(full_hash_pass) OVER(ORDER BY time) - full_hash_pass) / (LEAD(time) OVER(ORDER BY time) - time) as full_hash_pass,\n  (LEAD(rows_per_sec) OVER(ORDER BY time) - rows_per_sec) / (LEAD(time) OVER(ORDER BY time) - time) as rows_per_sec,\n  (LEAD(rows_maxlen) OVER(ORDER BY time) - rows_maxlen) / (LEAD(time) OVER(ORDER BY time) - time) as rows_maxlen,\n  (LEAD(flows_checked) OVER(ORDER BY time) - flows_checked) / (LEAD(time) OVER(ORDER BY time) - time) as flows_checked,\n  (LEAD(flows_notimeout) OVER(ORDER BY time) - flows_notimeout) / (LEAD(time) OVER(ORDER BY time) - time) as \"flows no timeout\",\n  (LEAD(flows_timeout) OVER(ORDER BY time) - flows_timeout) / (LEAD(time) OVER(ORDER BY time) - time) as \"flows with timeout\",\n  (LEAD(flows_evicted) OVER(ORDER BY time) - flows_evicted) / (LEAD(time) OVER(ORDER BY time) - time) as flows_evicted,\n  (LEAD(flows_evicted_needs_work) OVER(ORDER BY time) - flows_evicted_needs_work) / (LEAD(time) OVER(ORDER BY time) - time) as flows_evicted_needs_work\nFROM (\n  SELECT\n    timestamp / 1000000 as time,\n    (extra_data#>>'{flow,mgr,full_hash_pass}')::bigint as full_hash_pass,\n    (extra_data#>>'{flow,mgr,rows_per_sec}')::bigint as rows_per_sec,\n    (extra_data#>>'{flow,mgr,rows_maxlen}')::bigint as rows_maxlen,\n    (extra_data#>>'{flow,mgr,flows_checked}')::bigint as flows_checked,\n    (extra_data#>>'{flow,mgr,flows_notimeout}')::bigint as flows_notimeout,\n    (extra_data#>>'{flow,mgr,flows_timeout}')::bigint as flows_timeout,\n    (extra_data#>>'{flow,mgr,flows_evicted}')::bigint as flows_evicted,\n    (extra_data#>>'{flow,mgr,flows_evicted_needs_work}')::bigint as flows_evicted_needs_work\n  FROM stats\n  WHERE\n    $__unixEpochNanoFilter(timestamp * 1000)\n)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Flow manager (garbage collector)",
       "type": "timeseries"
     }
   ],
