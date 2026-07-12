@@ -138,6 +138,7 @@ impl Database {
             .enable_all()
             .build()
             .unwrap();
+        log::info!("Opening database...");
         let conn = runtime.block_on(async {
             if url.starts_with("sqlite:") {
                 let options = sqlx::sqlite::SqliteConnectOptions::from_str(url)?
@@ -145,6 +146,7 @@ impl Database {
                     .synchronous(sqlx::sqlite::SqliteSynchronous::Off);
                 let mut conn = sqlx::sqlite::SqliteConnection::connect_with(&options).await?;
                 sqlx::raw_sql(SQL_SCHEMA).execute(&mut conn).await?;
+                log::info!("SQLite database opened");
                 Ok(DatabaseConnection::Sqlite(conn))
             } else if url.starts_with("postgres:") {
                 // Wait for database to be ready
@@ -159,6 +161,7 @@ impl Database {
                 sqlx::raw_sql(SQL_SCHEMA).execute(&mut conn).await?;
                 // Shovel extra index and tables, don't upstream this
                 sqlx::raw_sql(SQL_SHOVEL_SCHEMA).execute(&mut conn).await?;
+                log::info!("Connection established with PostgreSQL");
                 Ok(DatabaseConnection::Postgres(conn))
             } else {
                 Err(sqlx::Error::Configuration(

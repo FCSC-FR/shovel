@@ -1,12 +1,13 @@
 # Copyright (C) 2023-2024  ANSSI
 # SPDX-License-Identifier: CC0-1.0
-FROM rust:1.88.0-alpine3.22 AS builder
+FROM rust:1.97-alpine3.23 AS builder
 WORKDIR /src/
 RUN apk add --no-cache musl-dev
 COPY Cargo.lock Cargo.toml /src/
 COPY suricata-eve-sql-output/ /src/suricata-eve-sql-output/
 COPY suricata-filedata-sql-output/ /src/suricata-filedata-sql-output/
 COPY suricata-rawdata-sql-output/ /src/suricata-rawdata-sql-output/
+COPY suricata-shovel-fuzzyhash/ /src/suricata-shovel-fuzzyhash/
 RUN RUSTFLAGS="-C target-feature=-crt-static" cargo build --release
 
 FROM alpine:3.23

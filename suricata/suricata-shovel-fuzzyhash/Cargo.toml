@@ -1,18 +1,19 @@
-# Copyright (C) 2024  ANSSI
+# Copyright (C) 2026  A. Iooss
 # SPDX-License-Identifier: CC0-1.0
 
 [package]
-name = "suricata-eve-sql-output"
+name = "suricata-shovel-fuzzyhash"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
 crate-type = ["cdylib"]
-name = "eve_sql_output"
+name = "shovel_fuzzyhash"
 
 [dependencies]
 env_logger = { version = "0.11.5", default-features = false }
 log = "0.4"
-sqlx = { version = "0.9", features = ["postgres", "runtime-tokio", "sqlite"], default-features = false }
+sqlx = { version = "0.9", features = ["postgres", "runtime-tokio"], default-features = false }
 suricata-sys = "8.0.4"
 tokio = { version = "1.52", features = ["rt"] }
+ffuzzy = { version = "0.3", default-features = false, features = ["alloc"] }

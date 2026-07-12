@@ -29,6 +29,7 @@ eval "$SURICATA_CMD" \
     --set plugins.0=suricata/libeve_sql_output.so \
     --set plugins.1=suricata/libfiledata_sql_output.so \
     --set plugins.2=suricata/librawdata_sql_output.so \
+    --set plugins.3=suricata/libshovel_fuzzyhash.so \
     --set outputs.0.fast.enabled=no \
     --set outputs.1.eve-log.filetype=sql \
     --set outputs.1.eve-log.types.2.anomaly.types.decode=yes \

@@ -7,4 +7,5 @@ members = [
     "suricata-eve-sql-output",
     "suricata-filedata-sql-output",
     "suricata-rawdata-sql-output",
+    "suricata-shovel-fuzzyhash",
 ]
