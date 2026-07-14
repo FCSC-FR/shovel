@@ -1,19 +1,16 @@
-# Copyright (C) 2023-2024  ANSSI
+# Copyright (C) 2026  A. Iooss
 # SPDX-License-Identifier: CC0-1.0
-FROM rust:1.97-alpine3.23 AS builder
+FROM rust:1.97 AS builder
 WORKDIR /src/
-RUN apk add --no-cache musl-dev
 COPY Cargo.lock Cargo.toml /src/
 COPY suricata-eve-sql-output/ /src/suricata-eve-sql-output/
 COPY suricata-filedata-sql-output/ /src/suricata-filedata-sql-output/
 COPY suricata-rawdata-sql-output/ /src/suricata-rawdata-sql-output/
 COPY suricata-shovel-fuzzyhash/ /src/suricata-shovel-fuzzyhash/
-RUN RUSTFLAGS="-C target-feature=-crt-static" cargo build --release
+RUN cargo build --release
 
-FROM alpine:3.23
-RUN apk add --no-cache netcat-openbsd
-# Alpine 3.23 is still on Suricata 8.0.0. Pull 8.0.3 from edge.
-RUN apk add --no-cache suricata --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
+FROM jasonish/suricata:8.0.6
+RUN dnf install -y netcat && dnf clean all
 COPY . /suricata
 COPY --from=builder /src/target/release/*.so /suricata/
 ENTRYPOINT ["/suricata/entrypoint.sh"]
