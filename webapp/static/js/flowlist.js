@@ -303,9 +303,9 @@ class FlowList {
     delay = delay / 1000
     if (delay > 1000) {
       delay = delay / 1000
-      return `${delay.toPrecision(3)} s`
+      return `${delay.toFixed(3)} s`
     } else {
-      return `${delay.toPrecision(3)} ms`
+      return `${delay.toFixed(3)} ms`
     }
   }
 
