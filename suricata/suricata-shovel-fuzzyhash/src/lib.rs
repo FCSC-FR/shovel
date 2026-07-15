@@ -12,27 +12,20 @@ const SQL_SCHEMA: &str = r#"CREATE TABLE IF NOT EXISTS "flow-fuzzyhash" (
 );"#;
 
 async fn hash_new_flows(conn: &mut sqlx::postgres::PgConnection) -> Result<u64, sqlx::Error> {
-    // Find flows that haven't been hashed yet.
+    // Find 50 flows that haven't been hashed yet
+    // For each flow, concat all filedata if exists, or fallback and concat all rawdata
     let rows = match sqlx::query(
-        r#"SELECT id,
-        json_object(
-            'src_ip': src_ip,
-            'src_port': src_port,
-            'dest_ip': dest_ip,
-            'dest_port': dest_port,
-            'delay': (ts_end - ts_start) / 100000,
-            'proto': proto,
-            'app_proto': app_proto,
-            'metadata': metadata,
-            'extra_data': flow.extra_data,
-            'events': json_agg(evts.extra_data))::text AS data
-        FROM flow
-        JOIN "other-event" evts ON evts.flow_id = flow.id
-        WHERE NOT EXISTS (
-            SELECT 1 FROM "flow-fuzzyhash" ff WHERE ff.flow_id = flow.id
-        )
-        GROUP BY flow.id
-        LIMIT 100"#,
+        r#"(
+            SELECT e.flow_id, STRING_AGG(f.data, ''::bytea ORDER BY e.timestamp) AS data FROM "other-event" e JOIN filedata f ON f.name = e.extra_data->>'sha256'
+            WHERE event_type = 'fileinfo'
+            AND NOT EXISTS (SELECT 1 FROM "flow-fuzzyhash" ff WHERE ff.flow_id = e.flow_id)
+            GROUP BY e.flow_id
+        ) UNION ALL (
+            SELECT r.flow_id, STRING_AGG(r.data, ''::bytea ORDER BY count) AS data FROM rawdata r
+            WHERE NOT EXISTS (SELECT 1 FROM "flow-fuzzyhash" ff WHERE ff.flow_id = r.flow_id)
+            AND NOT EXISTS (SELECT 1 FROM "other-event" e WHERE e.event_type = 'fileinfo' AND e.flow_id = r.flow_id)
+            GROUP BY r.flow_id
+        ) LIMIT 50"#,
     )
     .fetch_all(&mut *conn)
     .await {
@@ -50,11 +43,11 @@ async fn hash_new_flows(conn: &mut sqlx::postgres::PgConnection) -> Result<u64, 
     let mut ids = vec![];
     let mut hashs = vec![];
     for row in &rows {
-        let flow_id: i64 = row.try_get("id")?;
-        let data_opt: Option<String> = row.try_get("data")?;
+        let flow_id: i64 = row.try_get("flow_id")?;
+        let data_opt: Option<&[u8]> = row.try_get("data")?;
         if let Some(data) = data_opt {
             let mut generator = ssdeep::Generator::new();
-            generator.update_by_iter(data.bytes());
+            generator.update(data);
             let hash: ssdeep::RawFuzzyHash = generator.finalize().unwrap();
             ids.extend(Some(flow_id));
             hashs.extend(Some(hash.to_string()));
