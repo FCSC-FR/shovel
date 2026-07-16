@@ -8,6 +8,7 @@
  */
 
 import Api from './api.js'
+import { ssdeepCompare } from './ssdeep.js'
 
 const DATE_PARAMS = { hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 1 }
 
@@ -545,6 +546,8 @@ class FlowList {
       flowEl.href = url.href
       flowEl.dataset.flow = flow.id
       flowEl.dataset.ts_start = flow.ts_start
+      flowEl.dataset.ts_end = flow.ts_end
+      flowEl.dataset.fuzzyhash = flow.fuzzyhash ?? ''
 
       const flowInfoDiv = document.createElement('div')
       flowInfoDiv.classList.add('d-flex', 'justify-content-between', 'mb-1')
@@ -590,6 +593,17 @@ class FlowList {
     linkElement?.classList.add('active')
     if (scrollInto) {
       linkElement?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
+    }
+
+    // Highlight similar flows using {fuzzyhash,delay} distances
+    const fuzzyhashReference = linkElement?.dataset.fuzzyhash
+    if (fuzzyhashReference) {
+      const delayReference = linkElement.dataset.ts_end - linkElement.dataset.ts_start
+      document.querySelectorAll('#flow-list a[data-fuzzyhash]').forEach(e => {
+        const fuzzyhash = e.dataset.fuzzyhash
+        const delay = e.dataset.ts_end - e.dataset.ts_start
+        e.dataset.similarity = 5000 / (100 + Math.abs(delayReference - delay)) + ssdeepCompare(fuzzyhashReference, fuzzyhash) / 2
+      })
     }
   }
 

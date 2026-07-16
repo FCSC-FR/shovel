@@ -86,7 +86,8 @@ async def api_flow_list(request):
     # To get all flows matching all chosen tag, a relational division is used
     query = """
         SELECT id, ts_start, ts_end, dest_ip, dest_port, app_proto, json(metadata) AS json_metadata,
-            (SELECT json_build_object('tags', json_agg(r)) AS json_tags FROM (SELECT tag, color, COUNT(*) as count FROM alert WHERE flow_id = flow.id GROUP BY tag, color) r)
+            (SELECT json_build_object('tags', json_agg(r)) AS json_tags FROM (SELECT tag, color, COUNT(*) as count FROM alert WHERE flow_id = flow.id GROUP BY tag, color) r),
+            (SELECT fuzzyhash FROM "flow-fuzzyhash" WHERE flow_id = flow.id)
         FROM flow
         WHERE ts_start <= $1
             AND ($2::text IS NULL OR $2::text = app_proto)
