@@ -5,7 +5,7 @@ SPDX-License-Identifier: CC0-1.0
 -->
 
 This plugin spawns a thread to compute flows fuzzyhash in a PostgreSQL database.
-It reads `other-event`, `filedata` and `rawdata` tables and writes `flow-fuzzyhash` table.
+It reads `flow`, `other-event`, `filedata` and `rawdata` tables and writes `flow-fuzzyhash` table.
 It could have been a separate executable, but managing this worker with Suricata simplifies the architecture.
 
 ## Hashing choices

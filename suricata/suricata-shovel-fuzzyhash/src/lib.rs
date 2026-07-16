@@ -15,17 +15,20 @@ async fn hash_new_flows(conn: &mut sqlx::postgres::PgConnection) -> Result<u64, 
     // Find 50 flows that haven't been hashed yet
     // For each flow, concat all filedata if exists, or fallback and concat all rawdata
     let rows = match sqlx::query(
-        r#"(
-            SELECT e.flow_id, STRING_AGG(f.data, ''::bytea ORDER BY e.timestamp) AS data FROM "other-event" e JOIN filedata f ON f.name = e.extra_data->>'sha256'
-            WHERE event_type = 'fileinfo'
-            AND NOT EXISTS (SELECT 1 FROM "flow-fuzzyhash" ff WHERE ff.flow_id = e.flow_id)
-            GROUP BY e.flow_id
-        ) UNION ALL (
-            SELECT r.flow_id, STRING_AGG(r.data, ''::bytea ORDER BY count) AS data FROM rawdata r
-            WHERE NOT EXISTS (SELECT 1 FROM "flow-fuzzyhash" ff WHERE ff.flow_id = r.flow_id)
-            AND NOT EXISTS (SELECT 1 FROM "other-event" e WHERE e.event_type = 'fileinfo' AND e.flow_id = r.flow_id)
-            GROUP BY r.flow_id
-        ) LIMIT 50"#,
+        r#"SELECT flow.id, ((
+                SELECT STRING_AGG(f.data, ''::bytea ORDER BY e.timestamp) AS data
+                FROM "other-event" e JOIN filedata f ON f.name = e.extra_data->>'sha256'
+                WHERE event_type = 'fileinfo' AND e.flow_id = flow.id
+                GROUP BY e.flow_id
+            ) UNION ALL (
+                SELECT STRING_AGG(r.data, ''::bytea ORDER BY count) AS data
+                FROM rawdata r
+                WHERE r.flow_id = flow.id AND NOT EXISTS (SELECT 1 FROM "other-event" e WHERE e.event_type = 'fileinfo' AND e.flow_id = flow.id)
+                GROUP BY r.flow_id
+            ))
+        FROM flow
+        WHERE NOT EXISTS (SELECT 1 FROM "flow-fuzzyhash" ff WHERE ff.flow_id = flow.id)
+        LIMIT 100"#,
     )
     .fetch_all(&mut *conn)
     .await {
@@ -43,15 +46,13 @@ async fn hash_new_flows(conn: &mut sqlx::postgres::PgConnection) -> Result<u64, 
     let mut ids = vec![];
     let mut hashs = vec![];
     for row in &rows {
-        let flow_id: i64 = row.try_get("flow_id")?;
-        let data_opt: Option<&[u8]> = row.try_get("data")?;
-        if let Some(data) = data_opt {
-            let mut generator = ssdeep::Generator::new();
-            generator.update(data);
-            let hash: ssdeep::RawFuzzyHash = generator.finalize().unwrap();
-            ids.extend(Some(flow_id));
-            hashs.extend(Some(hash.to_string()));
-        }
+        let flow_id: i64 = row.try_get("id")?;
+        let data: Option<&[u8]> = row.try_get("data")?;
+        let mut generator = ssdeep::Generator::new();
+        generator.update(data.unwrap_or_default());
+        let hash: ssdeep::RawFuzzyHash = generator.finalize().unwrap();
+        ids.extend(Some(flow_id));
+        hashs.extend(Some(hash.to_string()));
     }
 
     // Batch insert
