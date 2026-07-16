@@ -139,3 +139,7 @@ pre code {
 #app {
   padding-top: 5px;
 }
+
+.similarity-indicator {
+    width: 8px;
+}

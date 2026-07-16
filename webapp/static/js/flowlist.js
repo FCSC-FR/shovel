@@ -542,7 +542,7 @@ class FlowList {
 
       // Build DOM elements
       const flowEl = document.createElement('a')
-      flowEl.classList.add('list-group-item', 'list-group-item-action', 'py-1', 'px-2', 'lh-sm', 'border-0', 'border-bottom')
+      flowEl.classList.add('list-group-item', 'list-group-item-action', 'py-1', 'ps-2', 'pe-3', 'lh-sm', 'border-0', 'border-bottom')
       flowEl.href = url.href
       flowEl.dataset.flow = flow.id
       flowEl.dataset.ts_start = flow.ts_start
@@ -568,6 +568,10 @@ class FlowList {
         const badge = this.tagBadge(t.tag, t.color, t.count)
         flowEl.appendChild(badge)
       })
+
+      const similarityIndicator = document.createElement('div')
+      similarityIndicator.classList.add('similarity-indicator', 'position-absolute', 'top-0', 'end-0', 'h-100', 'text-bg-purple')
+      flowEl.appendChild(similarityIndicator)
 
       flowList.appendChild(flowEl)
     })
@@ -597,14 +601,16 @@ class FlowList {
 
     // Highlight similar flows using {fuzzyhash,delay} distances
     const fuzzyhashReference = linkElement?.dataset.fuzzyhash
-    if (fuzzyhashReference) {
-      const delayReference = linkElement.dataset.ts_end - linkElement.dataset.ts_start
-      document.querySelectorAll('#flow-list a[data-fuzzyhash]').forEach(e => {
-        const fuzzyhash = e.dataset.fuzzyhash
-        const delay = e.dataset.ts_end - e.dataset.ts_start
-        e.dataset.similarity = 5000 / (100 + Math.abs(delayReference - delay)) + ssdeepCompare(fuzzyhashReference, fuzzyhash) / 2
-      })
-    }
+    const delayReference = linkElement?.dataset.ts_end - linkElement?.dataset.ts_start
+    document.querySelectorAll('#flow-list a.list-group-item').forEach(e => {
+      const fuzzyhash = e.dataset.fuzzyhash
+      const delay = e.dataset.ts_end - e.dataset.ts_start
+      let similarity = 0
+      if (fuzzyhashReference && fuzzyhash) {
+        similarity = 50 / (100 + Math.abs(delayReference - delay)) + ssdeepCompare(fuzzyhashReference, fuzzyhash) / 200
+      }
+      e.querySelector('.similarity-indicator').style.opacity = similarity
+    })
   }
 
   /**
