@@ -84,15 +84,37 @@ extern "C" fn output_write(
     .unwrap_or("unknown");
 
     // Send event to database thread
-    // Null byte is replaced as it cause issues with PostgreSQL
     let event = EveEvent {
         type_: event_type.to_owned(),
-        data: text.replace("\\u0000", "<NULL>").to_owned(),
+        data: escape_unicode_null(text).to_owned(),
     };
     if let Err(err) = context.tx.send(event) {
         panic!("Database thread is no longer alive: {err:?}");
     }
     0
+}
+
+/// PostgreSQL TEXT cannot contain NULL bytes: `\u0000 cannot be converted to text`.
+/// This means that PostgreSQL JSON fails to convert some Unicode escape sequence to TEXT.
+/// Let's replace these unicodes sequences with <NULL> placeholder.
+fn escape_unicode_null(string: &str) -> String {
+    string
+        .split('\\')
+        .fold(
+            (String::new(), false),
+            |(new_string, escape_state), piece| match (piece, escape_state) {
+                ("", true) => (new_string + "\\\\", false),
+                (s, true) => {
+                    if let Some(stripped) = s.strip_prefix("u0000") {
+                        (new_string + "<NULL>" + stripped, true)
+                    } else {
+                        (new_string + "\\" + s, true)
+                    }
+                }
+                (s, false) => (new_string + s, true),
+            },
+        )
+        .0
 }
 
 extern "C" fn output_thread_init(
@@ -158,4 +180,21 @@ extern "C" fn SCPluginRegister() -> *const SCPlugin {
         Init: Some(plugin_init),
     };
     Box::into_raw(Box::new(plugin))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn escape_unicode_null_1() {
+        let result = escape_unicode_null("test1\\test2\ntest3\\u0000\\\\u0000");
+        assert_eq!(result, "test1\\test2\ntest3<NULL>\\\\u0000");
+    }
+
+    #[test]
+    fn escape_unicode_null_2() {
+        let result = escape_unicode_null("\\u0000\\\\u0000\\\\\\u0000\\\\\\\\u0000");
+        assert_eq!(result, "<NULL>\\\\u0000\\\\<NULL>\\\\\\\\u0000");
+    }
 }
