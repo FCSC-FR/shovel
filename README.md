@@ -33,7 +33,9 @@ making opinionated choices for the frontend. This has a few nice implications:
 - flows dissections are stored inside structured SQL databases for fast queries,
 - ingest can be a folder of pcaps, a network interface, or pcap-over-IP,
 - tags are defined using the power of Suricata rules (including regex, libmagic
-  matching, HTTP headers and custom Lua scripts).
+  matching, HTTP headers and custom Lua scripts),
+- payloads fuzzyhash (ssdeep) are computed during ingest, allowing the JS
+  frontend to quickly compute the similarity of multiple flows.
 
 Shovel source code is kept simple to reduce technical debt, and make the code
 more welcoming to newcomers. We welcome contributions to this repository as long
