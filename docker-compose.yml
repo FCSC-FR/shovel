@@ -11,12 +11,12 @@ services:
       - "./suricata/rules:/suricata/rules:ro"
       # Only needed for pcap output
       - "./output_suricata:/output_suricata:rw"
-    environment:
-      - DATABASE_URL=postgres://shovel:unsecure_password@db/shovel
 
     # Mode A: pcap replay mode (slower, for archives replay or rootless CTF)
     # Add `--pcap-file-continuous` to watch for new pcap in folder.
     command: -r /input_pcaps
+    environment:
+      - DATABASE_URL=postgres://shovel:unsecure_password@db/shovel
 
     # Mode B: capture interface (fast, requires root on vulnbox and in Docker)
     # Drastically reduces ingest delay, but requires to setup traffic mirroring
@@ -25,6 +25,7 @@ services:
     #cap_add:
     #  - NET_ADMIN
     #environment:
+    #  - DATABASE_URL=postgres://shovel:unsecure_password@127.0.0.1/shovel
     #  - PCAP_LOG=yes
     #network_mode: "host"
 
@@ -35,6 +36,7 @@ services:
     #depends_on:
     #  - pcap-broker
     #environment:
+    #  - DATABASE_URL=postgres://shovel:unsecure_password@db/shovel
     #  - PCAP_LOG=yes
     #  - PCAP_OVER_IP=pcap-broker:4242
 
@@ -78,6 +80,9 @@ services:
     environment:
       - POSTGRES_USER=shovel
       - POSTGRES_PASSWORD=unsecure_password
+    ports:
+      # required if suricata runs with `network_mode: host`
+      - 127.0.0.1:5432:5432
 
   #pcap-broker:
   #  container_name: pcap-broker
