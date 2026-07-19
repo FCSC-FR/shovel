@@ -331,6 +331,7 @@ class FlowDisplay {
     // Application protocol card
     const appProto = flow.flow.app_proto?.replace('http2', 'http')
     const flowEstablished = flow.flow.state !== 'new'
+    const flowMatches = flow.flow.flowvars?.filter(d => 'match' in d).map(d => d.match)
     document.getElementById('display-down').classList.toggle('d-none', flowEstablished)
     if (appProto && appProto !== 'failed' && flow[appProto] !== undefined) {
       document.getElementById('display-app').classList.remove('d-none')
@@ -393,12 +394,12 @@ class FlowDisplay {
               this.renderBlob(blob, ext, renderView)
               renderView.classList.remove('loading')
               blob.text().then(t => {
-                utf8View.innerHTML = this.highlightPayload(t, flow.flow.flowvars?.map(d => d.match))
+                utf8View.innerHTML = this.highlightPayload(t, flowMatches)
                 utf8View.classList.remove('loading')
                 if (!renderView.firstChild) {
                   // no render done, show UTF-8 on render view
                   const renderCodeEl = document.createElement('code')
-                  renderCodeEl.innerHTML = this.highlightPayload(t, flow.flow.flowvars?.map(d => d.match))
+                  renderCodeEl.innerHTML = this.highlightPayload(t, flowMatches)
                   renderView.appendChild(renderCodeEl)
                 }
               })
@@ -455,7 +456,7 @@ class FlowDisplay {
         const codeElUtf8 = document.createElement('code')
         codeElUtf8.classList.toggle('bg-danger', chunk.direction === 0)
         codeElUtf8.classList.toggle('bg-success', chunk.direction === 1)
-        codeElUtf8.innerHTML = this.highlightPayload(utf8Decoder.decode(byteArray), flow.flow.flowvars?.map(d => d.match))
+        codeElUtf8.innerHTML = this.highlightPayload(utf8Decoder.decode(byteArray), flowMatches)
         return codeElUtf8
       }))
 
