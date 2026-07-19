@@ -564,7 +564,7 @@ class FlowList {
       const badge = this.tagBadge(appProto.toUpperCase())
       flowEl.appendChild(badge)
 
-      flow.tags?.forEach(t => {
+      flow.tags?.filter(t => t.tag).forEach(t => {
         const badge = this.tagBadge(t.tag, t.color, t.count)
         flowEl.appendChild(badge)
       })
