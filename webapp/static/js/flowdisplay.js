@@ -20,6 +20,7 @@ const MAGIC_EXT = {
   'PDF document': 'pdf',
   'PNG image': 'png',
   'RIFF (little-endian) data, WAVE audio': 'wav',
+  'RIFF (little-endian) data, Web/P image': 'webp',
   'SVG Scalable Vector Graphics image': 'svg',
   'VGM Video Game Music': 'vgm',
   'Web Open Font': 'woff',
@@ -159,7 +160,7 @@ class FlowDisplay {
    * @param {HTMLElement} targetEl - Renderer will be appened as child of this element
    */
   renderBlob (blob, fileType, targetEl) {
-    if (['gif', 'jpg', 'png', 'svg'].includes(fileType)) {
+    if (['gif', 'jpg', 'png', 'svg', 'webp'].includes(fileType)) {
       const imgEl = document.createElement('img')
       imgEl.classList.add('img-payload')
       imgEl.src = URL.createObjectURL(blob)
