@@ -199,8 +199,17 @@ function buildDigestWithHash (hash) {
   return new Digest(checksum, lValue, q, body)
 }
 
+/**
+ * @param {String} d1 First hex digest starting with T1
+ * @param {String} d2 Second hex digest starting with T1
+ * @returns Distance, 0 if same
+ */
 function fuzzyCompare (d1, d2) {
-  return buildDigestWithHash(d2).calculateDifference(buildDigestWithHash(d1), true)
+  if (d1.startsWith('T1') && d2.startsWith('T1')) {
+    return buildDigestWithHash(d2).calculateDifference(buildDigestWithHash(d1), true)
+  } else {
+    return 10000
+  }
 }
 
 export { fuzzyCompare }

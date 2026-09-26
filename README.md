@@ -34,7 +34,7 @@ making opinionated choices for the frontend. This has a few nice implications:
 - ingest can be a folder of pcaps, a network interface, or pcap-over-IP,
 - tags are defined using the power of Suricata rules (including regex, libmagic
   matching, HTTP headers and custom Lua scripts),
-- payloads fuzzyhash (ssdeep) are computed during ingest, allowing the JS
+- payloads fuzzyhash are computed during ingest, allowing the JS
   frontend to quickly compute the similarity of multiple flows.
 
 Shovel source code is kept simple to reduce technical debt, and make the code
