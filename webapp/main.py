@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
 # Copyright (C) 2023-2024  ANSSI
 # Copyright (C) 2025-2026  A. Iooss
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Start with: uvicorn --host 127.0.0.1 main:app
 
 import asyncio
 import base64
@@ -81,7 +81,7 @@ async def api_flow_list(request):
     # Handle the filtering of flows related to no services
     services_inverse = services == ["!"]
     if services == ["!"]:
-        services = sum(CTF_CONFIG["services"].values(), [])
+        services = [ipport for srv in CTF_CONFIG["services"].values() for ipport in srv]
 
     # To get all flows matching all chosen tag, a relational division is used
     query = """
