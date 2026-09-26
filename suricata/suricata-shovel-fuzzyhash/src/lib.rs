@@ -12,7 +12,7 @@ const SQL_SCHEMA: &str = r#"CREATE TABLE IF NOT EXISTS "flow-fuzzyhash" (
 );"#;
 
 async fn hash_new_flows(conn: &mut sqlx::postgres::PgConnection) -> Result<u64, sqlx::Error> {
-    // Find 50 flows that haven't been hashed yet
+    // Find some flows that haven't been hashed yet
     // For each flow, concat all filedata if exists, or fallback and concat all rawdata
     let rows = match sqlx::query(
         r#"SELECT flow.id, ((
@@ -48,11 +48,18 @@ async fn hash_new_flows(conn: &mut sqlx::postgres::PgConnection) -> Result<u64, 
     for row in &rows {
         let flow_id: i64 = row.try_get("id")?;
         let data: Option<&[u8]> = row.try_get("data")?;
-        let mut generator = ssdeep::Generator::new();
-        generator.update(data.unwrap_or_default());
-        let hash: ssdeep::RawFuzzyHash = generator.finalize().unwrap();
+        let hash = {
+            use tlsh::GeneratorType;
+
+            let mut generator = tlsh::TlshGenerator::new();
+            generator.update(data.unwrap_or_default());
+            match generator.finalize() {
+                Ok(digest) => digest.to_string(),
+                Err(_) => "".to_string(),
+            }
+        };
         ids.extend(Some(flow_id));
-        hashs.extend(Some(hash.to_string()));
+        hashs.extend(Some(hash));
     }
 
     // Batch insert

@@ -8,7 +8,7 @@
  */
 
 import Api from './api.js'
-import { ssdeepCompare } from './ssdeep.js'
+import { fuzzyCompare } from './fuzzy.js'
 
 const DATE_PARAMS = { hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 1 }
 
@@ -603,13 +603,21 @@ class FlowList {
     const fuzzyhashReference = linkElement?.dataset.fuzzyhash
     const delayReference = linkElement?.dataset.ts_end - linkElement?.dataset.ts_start
     document.querySelectorAll('#flow-list a.list-group-item').forEach(e => {
-      const fuzzyhash = e.dataset.fuzzyhash
       const delay = e.dataset.ts_end - e.dataset.ts_start
-      let similarity = 0
-      if (fuzzyhashReference && fuzzyhash) {
-        similarity = 50 / (100 + Math.abs(delayReference - delay)) + ssdeepCompare(fuzzyhashReference, fuzzyhash) / 200
+      let delaySimilarity = 0
+      if (delayReference && delay) {
+        delaySimilarity = delayReference / (delayReference + 0.5 * Math.abs(delayReference - delay))
+        delaySimilarity *= delaySimilarity // more aggressive curve
       }
-      e.querySelector('.similarity-indicator').style.opacity = similarity
+
+      const fuzzyhash = e.dataset.fuzzyhash
+      let fuzzySimilarity = 0
+      if (fuzzyhashReference && fuzzyhash) {
+        const fuzzyDistance = fuzzyCompare(fuzzyhashReference, fuzzyhash) / 500
+        fuzzySimilarity = 1 / (1 + fuzzyDistance)
+      }
+
+      e.querySelector('.similarity-indicator').style.opacity = delaySimilarity * fuzzySimilarity
     })
   }
 
