@@ -9,7 +9,7 @@ COPY suricata-rawdata-sql-output/ /src/suricata-rawdata-sql-output/
 COPY suricata-shovel-fuzzyhash/ /src/suricata-shovel-fuzzyhash/
 RUN cargo build --release
 
-FROM jasonish/suricata:8.0.6
+FROM jasonish/suricata:8.0.7
 RUN dnf install -y netcat && dnf clean all
 COPY . /suricata
 COPY --from=builder /src/target/release/*.so /suricata/
